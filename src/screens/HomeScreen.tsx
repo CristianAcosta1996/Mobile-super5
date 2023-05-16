@@ -1,5 +1,7 @@
 import React from "react";
+
 import { StyleSheet, Text, View } from "react-native";
+import { Stepper } from "../stepper/Stepper";
 
 export const HomeScreen = () => {
   return (

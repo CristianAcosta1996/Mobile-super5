@@ -35,7 +35,7 @@ const ContenidoDrawer = (props: any) => {
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
-        <PrimeraSeccion />
+        <PrimeraSeccion props = {props}/>
         <CustomDivider
           style={customDividerProps.style}
           bold={customDividerProps.bold}
@@ -81,7 +81,7 @@ const ContenidoDrawer = (props: any) => {
   );
 };
 
-const PrimeraSeccion = () => (
+const PrimeraSeccion = (props: any) => (
   <View>
     <Image
       source={require("../../assets/imagenSinFondo.png")}
@@ -91,7 +91,7 @@ const PrimeraSeccion = () => (
       mode="contained"
       style={{ width: 250, marginVertical: 25 }}
       onPress={() => {
-        console.log("click");
+        props.props.navigation.navigate("Login");
       }}
     >
       Iniciar Sesion
@@ -159,6 +159,7 @@ const SegundaSeccion = () => {
           >
             {btn.title}
           </Button>
+          
         );
       })}
     </View>

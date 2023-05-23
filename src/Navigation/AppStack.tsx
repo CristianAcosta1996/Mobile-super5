@@ -4,8 +4,8 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { AppBarSuper5 } from "../components/AppBarSuper5";
 import { CarritoScreen } from "../carrito/screens/CarritoScreen";
 import { BuscarScreen } from "../screens/BuscarScreen";
-import LoginScreen from "../screens/LoginScreen";
-import AltaUserScreen from "../screens/AltaUserScreen";
+import LoginScreen from "../auth/screens/LoginScreen";
+import AltaUserScreen from "../auth/screens/AltaUserScreen";
 import PasswordScreen from "../screens/PasswordScreen";
 
 const Stack = createStackNavigator();

@@ -6,6 +6,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';
 import { IconButton } from 'react-native-paper';
 
+import { useAuth } from "../hooks/useAuth"
+
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 //import Google from 'expo-google-app-auth';
@@ -75,45 +77,8 @@ const PrimeraSeccion = (props: any) => {
   </View>
 )};
 const SegundaSeccion = (props: any) => {
-  const [accessToken, setAccessToken] = useState('');
-  const [user, setUser] =  useState<any | null>('');
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    androidClientId: "638964535088-j4p9bqehns5miunqcil5b0hg1dsnsuir.apps.googleusercontent.com",
-    expoClientId: "638964535088-j4p9bqehns5miunqcil5b0hg1dsnsuir.apps.googleusercontent.com"
-  });
-
-  useEffect(() => {
-    if (response?.type === "success" && response.authentication) {
-      let valor = response.authentication.accessToken;
-      setAccessToken(valor);
-    }
-  }, [response]);
-
-  useEffect(() => {
-    if (accessToken) {
-      fetchUserInfo();
-    }
-  }, [accessToken]);
-
-  async function fetchUserInfo() {
-    let response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
-    const useInfo = await response.json();
-    setUser(useInfo);
-  }
-
-  const ShowUserInfo = () => {
-    if (user) {
-      return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 35, fontWeight: 'bold', marginBottom: 20 }}>Welcome</Text>
-        </View>
-      );
-    } else {
-      return null; // Devuelve null cuando user es null
-    }
-  }
+  const { handleGoogleLogin, handleLogin, isAuthenticating } = useAuth();
+  
 return(
   <View>
     <View style={styles.buttonContainer}>
@@ -127,14 +92,8 @@ return(
 
     </View>
     <View>
-    <TouchableOpacity
-          style={styles.googleButton}
-          disabled={!request}
-          onPress={() => {
-            promptAsync();
-            }} 
-        >
-           <FontAwesome name="google" size={20} />
+    <TouchableOpacity onPress={() => handleGoogleLogin()}>
+          <FontAwesome name="google" size={20}/>
           <Text>Login with Google</Text>
         </TouchableOpacity>
     </View>

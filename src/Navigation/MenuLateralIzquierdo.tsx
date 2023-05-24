@@ -9,6 +9,7 @@ import { Button, Divider, Text } from "react-native-paper";
 
 import { AppStack } from "./AppStack";
 import { CustomDivider, CustomDividerProps } from "../components/CustomDivider";
+import { useNavigation } from "@react-navigation/native";
 
 const DrawerRoot = createDrawerNavigator();
 
@@ -35,7 +36,7 @@ const ContenidoDrawer = (props: any) => {
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
-        <PrimeraSeccion />
+        <PrimeraSeccion navigation={props.navigation} />
         <CustomDivider
           style={customDividerProps.style}
           bold={customDividerProps.bold}
@@ -81,23 +82,25 @@ const ContenidoDrawer = (props: any) => {
   );
 };
 
-const PrimeraSeccion = () => (
-  <View>
-    <Image
-      source={require("../../assets/imagenSinFondo.png")}
-      style={styles.brandLogo}
-    />
-    <Button
-      mode="contained"
-      style={{ width: 250, marginVertical: 25 }}
-      onPress={() => {
-        console.log("click");
-      }}
-    >
-      Iniciar Sesion
-    </Button>
-  </View>
-);
+const PrimeraSeccion = ({ navigation }: any) => {
+  return (
+    <View>
+      <Image
+        source={require("../../assets/imagenSinFondo.png")}
+        style={styles.brandLogo}
+      />
+      <Button
+        mode="contained"
+        style={{ width: 250, marginVertical: 25 }}
+        onPress={() => {
+          navigation.navigate("Login");
+        }}
+      >
+        Iniciar Sesion
+      </Button>
+    </View>
+  );
+};
 
 interface BtnPropertiesProps {
   icon?: string;

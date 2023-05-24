@@ -4,6 +4,7 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { AppBarSuper5 } from "../components/AppBarSuper5";
 import { CarritoScreen } from "../carrito/screens/CarritoScreen";
 import { BuscarScreen } from "../screens/BuscarScreen";
+import { LoginScreen } from "../auth/screens/LoginScreen";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,11 @@ export const AppStack = () => {
         name="Search"
         component={BuscarScreen}
         options={{ title: "Buscar" }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ title: "Login" }}
       />
     </Stack.Navigator>
   );

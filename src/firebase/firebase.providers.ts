@@ -18,8 +18,8 @@ export const signInWithGoogle = async () => {
     };
   } catch (error: any) {
     console.log(error.message);
-    const errorCode = error.code(0, -1);
-    const errorMessage = error.message(0, -1);
+    const errorCode = error.code.slice(0, -1);
+    const errorMessage = error.message.slice(0, -1);
     return {
       ok: false,
       errorMessage: errorMessage,

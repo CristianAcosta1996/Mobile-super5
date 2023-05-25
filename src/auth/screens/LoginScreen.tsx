@@ -1,36 +1,61 @@
 import * as React from 'react';
 import { View, StyleSheet, Image, TextInput, TouchableOpacity, Text } from 'react-native';
-import { Input, Button, Card } from 'react-native-elements';
+import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';
-import { IconButton } from 'react-native-paper';
-
+import { IconButton, useTheme, Modal, ActivityIndicator, Portal } from 'react-native-paper';
+import { useLoginMutation } from "../../store/super5/super5Api";
 import { useAuth } from "../hooks/useAuth"
+import { useAppSelector } from '../../hooks/hooks';
+import jwtDecode from 'jwt-decode';
+import ModalSucursal from '../../components/ModalSucursal';
 
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-//import Google from 'expo-google-app-auth';
-
-WebBrowser.maybeCompleteAuthSession()
 
 export const LoginScreen = (props: any) => {
-  return (
-    <View style={styles.container}>
-      <PrimeraSeccion props={props} />
-      <SegundaSeccion props={props} />
-    </View>
-  );
-};
-const PrimeraSeccion = (props: any) => {
-
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [startLogin, { isLoading, isSuccess, data }] = useLoginMutation();
+  const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+  const containerStyle = {backgroundColor: 'white', padding: 20};
+  const [dcode, setDcode] = React.useState("");
+
+  const handleLogin = () => {
+    startLogin({ usuarioOCorreo: email, contrasenia: password }).then(
+      (resp: any) => {
+        console.log(resp.data.token);
+        const dcode: any=jwtDecode(resp.data.token);
+        console.log(dcode.nombre);
+        setDcode(dcode);
+      }
+    );
+  };
+
+
+  if (isLoading)
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator animating={true} color={theme.colors.primary} />
+      </View>
+    );
+ if (isSuccess)
+    return (
+    <ModalSucursal/>
+    
+   );
+
+
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
   return(
-  <View>
+  <View style={styles.container}>
     <Input
       style={styles.input}
       placeholder='Nombre de usuario'
@@ -41,8 +66,8 @@ const PrimeraSeccion = (props: any) => {
           color='#7e57c2'
         />
       }
-    //value={}
-    //onChangeText={setUsername}
+    value={email}
+    onChangeText={(email) => setEmail(email)}
     />
     <Input
       style={styles.input}
@@ -64,42 +89,39 @@ const PrimeraSeccion = (props: any) => {
           onPress={handleTogglePasswordVisibility}
         />
       }
-      //value={}
-      //onChangeText={setUsername}
+      value={password}
+      onChangeText={(password) => setPassword(password)}
     />
 
        
-      <TouchableOpacity  onPress={() => { props.props.navigation.navigate("ForgotPassword"); }} >
+      <TouchableOpacity  onPress={() => { props.navigation.navigate("ForgotPassword"); }} >
         <Text style={styles.textPassword}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
 
-
-  </View>
-)};
-const SegundaSeccion = (props: any) => {
-  const { handleGoogleLogin, handleLogin, isAuthenticating } = useAuth();
-  
-return(
-  <View>
+      <View>
     <View style={styles.buttonContainer}>
-    <TouchableOpacity style={styles.button} onPress={() => { props.props.navigation.navigate("IniciarSesion"); }} >
+    <TouchableOpacity style={styles.button}  onPress={() => { handleLogin() }} >
         <Text style={styles.buttonText}>Iniciar sesion</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => { props.props.navigation.navigate("AltaUser"); }} >
+      <TouchableOpacity style={styles.button} onPress={() => { props.navigation.navigate("AltaUser"); }} >
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>
 
     </View>
     <View>
-    <TouchableOpacity onPress={() => handleGoogleLogin()}>
+    <TouchableOpacity >
           <FontAwesome name="google" size={20}/>
           <Text>Login with Google</Text>
         </TouchableOpacity>
     </View>
     
   </View>
+
+  </View>
+  
 )};
+
 
 
 

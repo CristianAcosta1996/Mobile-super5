@@ -1,26 +1,54 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { useObtenerSucursalesMutation } from "../store/super5/super5Api";
 
-const ModalSucursal = () => {
+interface ModalSucursalProps {
+  selectedName: string;
+  setSelectedName: (name: string) => void;
+}
+
+export const ModalSucursal = ({ selectedName, setSelectedName }: ModalSucursalProps) => {
+
   const [modalVisible, setModalVisible] = useState(true);
-  const [names, setNames] = useState([]);
-  const [selectedName, setSelectedName] = useState('');
+  const [names, setNames] = useState<string[]>([]);
+
+
+
+  const [obtenerSucursales, { data, isLoading, isError }] = useObtenerSucursalesMutation();
 
   useEffect(() => {
-    fetch('https://randomuser.me/api/?results=3')
-      .then(response => response.json())
-      .then(data => {
-        const threeNames = data.slice(0, 3); // Obtener los primeros tres nombres
-        setNames(threeNames);
-      })
-      .catch(error => console.log(error));
+    obtenerSucursales();
   }, []);
 
-  const handleNameSelection = (name: string) => {
-    setSelectedName(name);
-    setModalVisible(false);
-  };
+  useEffect(() => {
+    if (data) {
+        const nombres = data.map(sucursal => sucursal.nombre); 
+        setNames(nombres);
+    }
+  }, [data]);
 
+  const handleNameSelection = (name: string) => {
+    console.log(name);
+    let sucursal = '';
+   
+    if (name === 'CARRASCO') {
+      sucursal = '1';
+    } else if (name === 'CENTRO') {
+      sucursal = '2';
+    } else if (name === 'BRAZO ORIENTAL') {
+      sucursal = '3';
+    }else if (name === 'BELVEDERE') {
+      sucursal = '4';
+    };
+
+
+
+    setSelectedName(sucursal);
+    setModalVisible(false);
+    console.log(selectedName);
+
+
+  };
 
   const renderItem = ({ item }: { item: string }) => {
     return (
@@ -29,63 +57,72 @@ const ModalSucursal = () => {
       </TouchableOpacity>
     );
   };
-  
+
+  if (isLoading) {
+    return <Text>Cargando...</Text>;
+  }
+
+  if (isError) {
+    return <Text>Error al obtener los nombres de sucursales</Text>;
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>Abrir Modal</Text>
-      </TouchableOpacity>
       
       <Modal
         visible={modalVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => {}}>
-        <View style={styles.modalContainer}>
+        onRequestClose={() => {}}
+      >
+        <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <Text>Seleccione una sucursal :D</Text>
             <FlatList
               data={names}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
             />
-
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
-  },
-  item: {
-    fontSize: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-});
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      buttonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginVertical: 10,
+      },
+      modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        elevation: 5,
+        width: '80%', // Ancho del modal
+        maxHeight: '70%', // Altura máxima del modal
+      },
+      item: {
+        fontSize: 16,
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+      },
+});
 export default ModalSucursal;
+
+

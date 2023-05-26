@@ -27,7 +27,7 @@ interface AltaProps {
 }
 
 interface sucursalSelected {
-  sucursal: string;
+  sucursal: number;
 }
 
 interface ObtenerSucursalesProps {
@@ -77,16 +77,16 @@ export const super5Api = createApi({
       }),
     }),
 
-    obtenerSucursales: builder.query<ObtenerSucursalesProps[], void>({
-      query: () => ({
-        url: "/ruta/personalizada/para/obtener/sucursales",
+    obtenerSucursales: builder.mutation<ObtenerSucursalesProps[], void>({
+      query: (data) => ({
+        url: "/sucursal/obtener",
         method: "GET",
       }),
     }),
 
-    obtenerProds: builder.mutation<ObtenerProdsProps[], sucursalSelected>({
+    obtenerProds: builder.mutation<ObtenerProdsProps[], void>({ //sucursalSelected
       query: (data) => ({
-        url: `producto/obtenerPorSucursal/${data.sucursal}`,
+        url: "/producto/obtenerPorSucursal/1",
         method: "GET",
       }),
     }),
@@ -94,4 +94,9 @@ export const super5Api = createApi({
 });
 
 
-export const { useLoginMutation, useAltaMutation } = super5Api;
+export const { 
+  useLoginMutation, 
+  useAltaMutation, 
+  useObtenerSucursalesMutation,
+  useObtenerProdsMutation
+} = super5Api;

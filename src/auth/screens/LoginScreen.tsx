@@ -7,10 +7,10 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';
 import { IconButton, useTheme, Modal, ActivityIndicator, Portal } from 'react-native-paper';
 import { useLoginMutation } from "../../store/super5/super5Api";
-import { useAuth } from "../hooks/useAuth"
-import { useAppSelector } from '../../hooks/hooks';
+
 import jwtDecode from 'jwt-decode';
 import ModalSucursal from '../../components/ModalSucursal';
+import { HomeScreen } from '../../screens/HomeScreen';
 
 
 export const LoginScreen = (props: any) => {
@@ -45,8 +45,7 @@ export const LoginScreen = (props: any) => {
     );
  if (isSuccess)
     return (
-    <ModalSucursal/>
-    
+    <HomeScreen />
    );
 
 

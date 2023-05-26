@@ -4,7 +4,7 @@ import Swiper from 'react-native-swiper';
 
 const ImageSwiper = () => {
   const productImages = [
-    
+    '../../assets/1.png',
     'https://th.bing.com/th/id/R.837a8250e601ea514120fc8bf0632f2a?rik=35U3W3o4rb8hXQ&riu=http%3a%2f%2fimg2.rtve.es%2fimagenes%2fmayoria-alimentos-sanos-no-pueden-probar-cientificamente-sean%2f1212587585377.jpg&ehk=XNBCrtnwmGkGyHUIIIOsruM2AMxJZyCjkNQ1KOMXl70%3d&risl=&pid=ImgRaw&r=0',
     'https://via.placeholder.com/300',
     'https://via.placeholder.com/300',

@@ -4,17 +4,23 @@ import { LongPressGestureHandler, State } from 'react-native-gesture-handler';
 
 interface CardProps {
   product: {
-    image: string;
-    price: number;
-  };
+    id: number,
+    nombre: string,
+    imagen: string,
+    precio: number,
+    stock: number,
+    descripcion: string,
+    categoriaId: number,
+  },
 }
 
 const Card = ({ product }: CardProps) => {
   const [quantity, setQuantity] = useState(1);
   const [zoomed, setZoomed] = useState(false);
-
+  const [colorCat, setColorCat] = useState('#6748A4');
+  
   const addToCart = () => {
-    console.log(`Agregaste ${quantity} unidades al carrito por un total de ${product.price * quantity} dólares`);
+    console.log(`Agregaste ${quantity} unidades al carrito por un total de ${product.precio * quantity} dólares`);
   };
 
   const handlePressIn = () => {
@@ -24,6 +30,24 @@ const Card = ({ product }: CardProps) => {
   const handlePressOut = () => {
     setZoomed(false);
   };
+  
+    let categoria = '';
+   
+    if (product.categoriaId === 1) {
+      categoria = 'Refrescos';
+    } else if (product.categoriaId === 2) {
+      categoria = 'Papeleria';
+    } else if (product.categoriaId === 3) {
+      categoria = 'Congelados';
+    } else if (product.categoriaId === 4) {
+      categoria = 'Perfumeria';
+    } else if (product.categoriaId === 5) {
+      categoria = 'Almacen';
+    } else if (product.categoriaId === 6) {
+      categoria = 'Limpieza';
+    } else if (product.categoriaId === 7) {
+      categoria = 'Vinos';
+    };
 
   return (
     <View style={[styles.card]}>
@@ -37,13 +61,17 @@ const Card = ({ product }: CardProps) => {
         }}
       >
         <View>
-          <Image source={{ uri: product.image }} style={[styles.image, zoomed && styles.zoomed]} />
+          <Image source={{ uri: product.imagen }} style={[styles.image, zoomed && styles.zoomed]} />
         </View>
       </LongPressGestureHandler>
       <View style={styles.content}>
-        <Text style={[styles.title, zoomed && styles.hiddenText]}>Nombre del producto</Text>
-        <Text style={styles.price}>${product.price}</Text>
-        <Text style={styles.title}>Categoria</Text>
+       <View style={[styles.categoriaContainer, zoomed && styles.hiddenText]}>
+       <Text style={[styles.categoria, zoomed && styles.hiddenText]}>{categoria}</Text>
+
+       </View>
+        <Text style={[styles.title, zoomed && styles.hiddenText]}>{product.nombre}</Text>
+        <Text style={styles.price}>$ {product.precio}</Text>
+        <Text style={styles.descripcion}>{product.descripcion}</Text>
       </View>
       <View style={styles.quantityContainer}>
         <TouchableOpacity style={styles.quantityButton} onPress={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}>
@@ -140,6 +168,26 @@ const styles = StyleSheet.create({
   },
   hiddenText: {
     opacity: 0,
+  },
+  categoriaContainer: {
+    backgroundColor: '#FFDCFE',
+    borderRadius: 4,
+    marginBottom: 10,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    padding: 5,
+  },
+  categoria: {
+    fontWeight: 'bold',
+  },
+  descripcion: {
+    fontSize: 12,
   },
 });
 

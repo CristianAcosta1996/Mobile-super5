@@ -11,9 +11,12 @@ import { useLoginMutation } from "../../store/super5/super5Api";
 import jwtDecode from 'jwt-decode';
 import ModalSucursal from '../../components/ModalSucursal';
 import { HomeScreen } from '../../screens/HomeScreen';
-
+import { AuthContext } from '../../AuthContext';
 
 export const LoginScreen = (props: any) => {
+
+
+
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [startLogin, { isLoading, isSuccess, data }] = useLoginMutation();
@@ -24,17 +27,19 @@ export const LoginScreen = (props: any) => {
   const hideModal = () => setVisible(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
   const [dcode, setDcode] = React.useState("");
-
+  const { setIsLoggedIn } = React.useContext(AuthContext);
   const handleLogin = () => {
     startLogin({ usuarioOCorreo: email, contrasenia: password }).then(
       (resp: any) => {
         console.log(resp.data.token);
-        const dcode: any=jwtDecode(resp.data.token);
+        const dcode: any = jwtDecode(resp.data.token);
         console.log(dcode.nombre);
         setDcode(dcode);
+        setIsLoggedIn(true); // Establece el estado de inicio de sesión como true
       }
     );
   };
+  
 
 
   if (isLoading)

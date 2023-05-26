@@ -9,6 +9,7 @@ import { Button, Divider, Text } from "react-native-paper";
 
 import { AppStack } from "./AppStack";
 import { CustomDivider, CustomDividerProps } from "../components/CustomDivider";
+import { AuthContext } from "../AuthContext";
 
 const DrawerRoot = createDrawerNavigator();
 
@@ -81,23 +82,45 @@ const ContenidoDrawer = (props: any) => {
   );
 };
 
-const PrimeraSeccion = (props: any) => (
-  <View>
+const PrimeraSeccion = (props: any) => {
+  const { isLoggedIn, setIsLoggedIn } = React.useContext(AuthContext);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+  return(
+    <View>
     <Image
       source={require("../../assets/imagenSinFondo.png")}
       style={styles.brandLogo}
     />
-    <Button
-      mode="contained"
-      style={{ width: 250, marginVertical: 25 }}
-      onPress={() => {
-        props.props.navigation.navigate("Login");
-      }}
-    >
-      Iniciar Sesion
-    </Button>
+    {isLoggedIn ? ( // Verificar si el usuario ha iniciado sesión
+      <Button
+        mode="contained"
+        style={{ width: 250, marginVertical: 25 }}
+        onPress={() => {
+          setIsLoggedIn(false); // Establecer isLoggedIn en false para cerrar sesión
+        }}
+      >
+        Cerrar Sesión
+      </Button>
+    ) : (
+      <Button
+        mode="contained"
+        style={{ width: 250, marginVertical: 25 }}
+        onPress={() => {
+          props.props.navigation.navigate("Login");
+        }}
+      >
+        Iniciar Sesión
+      </Button>
+    )}
   </View>
-);
+  )
+}
+
+
+
 
 interface BtnPropertiesProps {
   icon?: string;

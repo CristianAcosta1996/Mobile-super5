@@ -14,7 +14,7 @@ interface CardProps {
   },
 }
 
-const Card = ({ product }: CardProps) => {
+export const Card = ({ product }: CardProps) => {
   const [quantity, setQuantity] = useState(1);
   const [zoomed, setZoomed] = useState(false);
   const [colorCat, setColorCat] = useState('#6748A4');

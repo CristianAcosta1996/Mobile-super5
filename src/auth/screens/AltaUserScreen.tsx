@@ -5,7 +5,7 @@ import { Modal, IconButton, useTheme, Portal } from 'react-native-paper';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import { useAltaMutation } from '../../store/super5/super5Api';
-import HomeScreen from '../../screens/HomeScreen';
+import LoginScreen from './LoginScreen';
 
 export const AltaUserScreen = (props: any) => {
   const today = moment();
@@ -51,7 +51,7 @@ export const AltaUserScreen = (props: any) => {
     );
   if (isSuccess)
     return (
-      <HomeScreen/>
+      <LoginScreen/>
     /*
       <Portal>
         <Modal visible={true} onDismiss={hideModal} contentContainerStyle={containerStyle}>

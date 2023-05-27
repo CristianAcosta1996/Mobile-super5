@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useObtenerSucursalesMutation } from "../store/super5/super5Api";
+import { ActivityIndicator, useTheme} from 'react-native-paper';
 
-interface ModalSucursalProps {
+export interface ModalSucursalProps {
   selectedName: string;
   setSelectedName: (name: string) => void;
+  setSelectedNameSuc: (name: string) => void;
+  visible: boolean;
+  setVisible: (visible: boolean) => void;
 }
 
-export const ModalSucursal = ({ selectedName, setSelectedName }: ModalSucursalProps) => {
-
+export const ModalSucursal = ({ selectedName, setSelectedName , setSelectedNameSuc, visible, setVisible }: ModalSucursalProps) => {
+  const theme = useTheme();
   const [modalVisible, setModalVisible] = useState(true);
+  
   const [names, setNames] = useState<string[]>([]);
 
 
@@ -27,6 +32,12 @@ export const ModalSucursal = ({ selectedName, setSelectedName }: ModalSucursalPr
     }
   }, [data]);
 
+  if (isError)
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator animating={true} color={theme.colors.primary} />
+    </View>
+  );
   const handleNameSelection = (name: string) => {
     console.log(name);
     let sucursal = '';
@@ -44,10 +55,10 @@ export const ModalSucursal = ({ selectedName, setSelectedName }: ModalSucursalPr
 
 
     setSelectedName(sucursal);
+    setSelectedNameSuc(name);
     setModalVisible(false);
-    console.log(selectedName);
-
-
+    //setModalVisible(!modalVisible);
+    setVisible(false);
   };
 
   const renderItem = ({ item }: { item: string }) => {
@@ -70,7 +81,7 @@ export const ModalSucursal = ({ selectedName, setSelectedName }: ModalSucursalPr
     <View style={styles.container}>
       
       <Modal
-        visible={modalVisible}
+        visible={modalVisible? modalVisible : visible }
         animationType="slide"
         transparent={true}
         onRequestClose={() => {}}

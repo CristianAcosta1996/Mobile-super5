@@ -17,7 +17,6 @@ interface CardProps {
 export const Card = ({ product }: CardProps) => {
   const [quantity, setQuantity] = useState(1);
   const [zoomed, setZoomed] = useState(false);
-  const [colorCat, setColorCat] = useState('#6748A4');
   
   const addToCart = () => {
     console.log(`Agregaste ${quantity} unidades al carrito por un total de ${product.precio * quantity} dólares`);

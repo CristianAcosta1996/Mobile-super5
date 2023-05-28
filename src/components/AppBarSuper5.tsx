@@ -2,9 +2,12 @@ import React from "react";
 import { Appbar } from "react-native-paper";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { Image, View } from "react-native";
+import { AntDesign } from '@expo/vector-icons'; 
+import { AuthContext } from '.././AuthContext';
 export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
   const titulo = getHeaderTitle(options, route.name);
-
+  const { isLoggedIn, setIsLoggedIn } = React.useContext(AuthContext);
+  setIsLoggedIn(true);
   return (
     <Appbar.Header>
       {titulo === "Home" && (
@@ -42,11 +45,14 @@ export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
         />
       )}
       {route.name !== "Search" && (
-        <Appbar.Action
-          icon="magnify"
+        <AntDesign 
+          name="user" 
+          size={24} 
+          color="black" 
           onPress={() => {
-            navigation.navigate("Search");
+            navigation.navigate(isLoggedIn?"Profile" : "Login");
           }}
+          visible={false}
         />
       )}
       {titulo !== "Mi Carrito" && (

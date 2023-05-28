@@ -3,7 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { HomeScreen } from "../screens/HomeScreen";
 import { AppBarSuper5 } from "../components/AppBarSuper5";
 import { CarritoScreen } from "../carrito/screens/CarritoScreen";
-import { BuscarScreen } from "../screens/BuscarScreen";
+import { ProfileScreen } from "../screens/ProfileScreen";
 import LoginScreen from "../auth/screens/LoginScreen";
 import AltaUserScreen from "../auth/screens/AltaUserScreen";
 import PasswordScreen from "../screens/PasswordScreen";
@@ -26,9 +26,9 @@ export const AppStack = () => {
         options={{ title: "Mi Carrito" }}
       />
       <Stack.Screen
-        name="Search"
-        component={BuscarScreen}
-        options={{ title: "Buscar" }}
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: "Perfil" }}
       />
     </Stack.Navigator>
   );

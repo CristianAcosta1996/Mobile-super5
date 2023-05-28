@@ -25,6 +25,14 @@ interface AltaProps {
   telefono: string;
   usuario: string;
 }
+interface AltaDireccionProps {
+direccion : string,
+ciudad: string,
+departamento: string,
+longitud:  Number | undefined,
+latitud: Number | undefined,
+aclaracion: null
+}
 
 interface sucursalSelected {
   sucursal: number;
@@ -77,6 +85,14 @@ export const super5Api = createApi({
       }),
     }),
 
+    altaDir: builder.mutation<Token, AltaDireccionProps>({
+      query: (body) => ({
+        url: "/direccion/crear",
+        method: "POST",
+        body,
+      }),
+    }),
+
     obtenerSucursales: builder.mutation<ObtenerSucursalesProps[], void>({
       query: (data) => ({
         url: "/sucursal/obtener",
@@ -98,5 +114,6 @@ export const {
   useLoginMutation, 
   useAltaMutation, 
   useObtenerSucursalesMutation,
-  useObtenerProdsMutation
+  useObtenerProdsMutation,
+  useAltaDirMutation,
 } = super5Api;

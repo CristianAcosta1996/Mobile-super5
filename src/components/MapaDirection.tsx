@@ -1,13 +1,14 @@
 // v2.66
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-import { useNavigation } from "@react-navigation/native";
-import { log } from "react-native-reanimated";
+import { useAltaDirMutation } from '.././store/super5/super5Api';
+import { ActivityIndicator } from "react-native-paper";
+import theme from "react-native-elements/dist/config/theme";
 
-export const MapaDirection = () => {
-
+export const MapaDirection = (props: any) => {
+  const [startCreate, { isLoading, isSuccess, data }] = useAltaDirMutation();
   const [address, setAddress] = useState("");
   const [addresses, setAddresses] = useState<string[]>([]);
   const [editMode, setEditMode] = useState(false);
@@ -16,6 +17,11 @@ export const MapaDirection = () => {
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
 
+  const [dir, setDir] = useState("");
+  const [ciud, setCiud] = useState("");
+  const [dept, setDept] = useState("");
+  const [long, setLong] = useState<Number | undefined>();
+  const [lat, setLat] = useState<Number | undefined>();
 
   const handleAddressChange = (text: string) => {
     setSelectedAddress(text);
@@ -27,6 +33,8 @@ export const MapaDirection = () => {
     } else {
       setAddresses([...addresses, selectedAddress]);
       setSelectedAddress("");
+      console.log('antes del alta');
+      handleCreate();
       //setEditMapMode(!editMapMode);
     }
   };
@@ -46,6 +54,24 @@ export const MapaDirection = () => {
     //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
   };
 
+  
+
+
+  const handleCreate = () => {
+    startCreate({ 
+      direccion : dir,
+      ciudad: ciud,
+      departamento: dept,
+      longitud: long,
+      latitud: lat,
+      aclaracion: null,
+    }).then(
+      (resp: any) => {
+        console.log(resp);
+      }
+    );
+    console.log('xxxxxxx')
+  };
   const handleSaveAddress = () => {
     if (selectedAddressIndex !== null && selectedAddress.trim() !== "") {
       const updatedAddresses = [...addresses];
@@ -53,7 +79,9 @@ export const MapaDirection = () => {
       setAddresses(updatedAddresses);
       setSelectedAddressIndex(null);
       setSelectedAddress("");
+      
     }
+    handleCreate();
     setEditInputMode(!editInputMode? editInputMode : !editInputMode);
     //setEditMapMode(editMapMode && !editMapMode);
   };
@@ -64,6 +92,7 @@ export const MapaDirection = () => {
     //setEditMapMode(editMapMode);
   };
 
+  
   const handleToggleEditMode = () => {
     console.log('2');
     setEditInputMode(!editInputMode);
@@ -89,6 +118,11 @@ export const MapaDirection = () => {
       const state = data.address.state || "";
       const { lat, lon } = data;
 
+        setDir(direccionlarga);
+        setCiud(city);
+        setDept(state);
+        setLong(long);
+        setLat(lat);
       console.log('Dirección:', direccionlarga);
       console.log('Ciudad:', city);
       console.log('Departamento:', state);
@@ -98,6 +132,9 @@ export const MapaDirection = () => {
       console.log('Error:', error);
     }
   };
+
+ 
+
 
   const [draggableMarkerCoord, setDraggableMarkerCoord] = useState({
     longitude: -56.1645,
@@ -215,6 +252,7 @@ export const MapaDirection = () => {
         />
       </MapView>
       </View>}
+
       
     </View>
   );
@@ -224,6 +262,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  containerModal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   header: {
     flexDirection: "row",

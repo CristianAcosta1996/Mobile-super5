@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import MapView from 'react-native-maps';
-import { Direccion, DirectionProps } from '../components/Direccion';
+import { MapaDirection } from '../components/MapaDirection';
+import { SafeAreaView } from "react-native-safe-area-context";
+
+
 
 export const ProfileScreen = () => {
   const [name, setName] = useState("El nombre");
@@ -88,10 +91,8 @@ export const ProfileScreen = () => {
     setEditMapMode(!editMapMode ? editMapMode: !editMapMode); 
   };
 
-  const directionProps: DirectionProps = {
-    direction: addresses,
-  };
   return (
+    
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>User Profile</Text>
@@ -208,8 +209,14 @@ export const ProfileScreen = () => {
           </View>
         )}
       </View>
-      {editMapMode && <Direccion {...directionProps}/>}
+      <MapaDirection/>
     </View>
+    
+
+    
+   
+
+    
   );
 };
 

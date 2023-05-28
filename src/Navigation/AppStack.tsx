@@ -1,4 +1,3 @@
-import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { HomeScreen } from "../screens/HomeScreen";
 import { AppBarSuper5 } from "../components/AppBarSuper5";
@@ -7,6 +6,7 @@ import { ProfileScreen } from "../screens/ProfileScreen";
 import LoginScreen from "../auth/screens/LoginScreen";
 import AltaUserScreen from "../auth/screens/AltaUserScreen";
 import PasswordScreen from "../screens/PasswordScreen";
+import { Directions } from "react-native-gesture-handler";
 
 const Stack = createStackNavigator();
 

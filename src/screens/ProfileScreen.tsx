@@ -194,20 +194,7 @@ export const ProfileScreen = () => {
             )}
           </View>
         ))}
-        {editMode && (
-          <View style={styles.field}>
-            <Feather name="plus-circle" size={20} color="black" />
-            <TextInput
-              style={styles.input}
-              value={address}
-              onChangeText={handleAddressChange}
-              placeholder="Agregar dirección"
-            />
-            <TouchableOpacity onPress={handleAddAddress}>
-              <Feather name="plus" size={20} color="black" />
-            </TouchableOpacity>
-          </View>
-        )}
+
       </View>
       <MapaDirection/>
     </View>

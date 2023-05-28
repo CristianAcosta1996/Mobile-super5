@@ -1,31 +1,33 @@
+// v2.66
 import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation } from "@react-navigation/native";
+import { log } from "react-native-reanimated";
 
 export const MapaDirection = () => {
 
   const [address, setAddress] = useState("");
   const [addresses, setAddresses] = useState<string[]>([]);
   const [editMode, setEditMode] = useState(false);
+  const [editInputMode, setEditInputMode] = useState(true);
   const [editMapMode, setEditMapMode] = useState(false);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
 
-  const navigation = useNavigation();
 
   const handleAddressChange = (text: string) => {
-    setAddress(text);
+    setSelectedAddress(text);
   };
 
   const handleAddAddress = () => {
-    if (address.trim() === "") {
-      setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
-      //setAddress();
+    if (selectedAddress.trim() === "") {
+      //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
     } else {
-      setAddresses([...addresses, address]);
-      setAddress("");
-      setEditMapMode(!editMapMode);
+      setAddresses([...addresses, selectedAddress]);
+      setSelectedAddress("");
+      //setEditMapMode(!editMapMode);
     }
   };
 
@@ -37,34 +39,38 @@ export const MapaDirection = () => {
   };
 
   const handleEditAddress = (index: number) => {
+    console.log('este');
+    setEditInputMode(editInputMode? editInputMode : !editInputMode);
     setSelectedAddressIndex(index);
-    setAddress(addresses[index]);
-    setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
+    setSelectedAddress(addresses[index]);
+    //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
   };
 
   const handleSaveAddress = () => {
-    if (selectedAddressIndex !== null && address.trim() !== "") {
+    if (selectedAddressIndex !== null && selectedAddress.trim() !== "") {
       const updatedAddresses = [...addresses];
-      updatedAddresses[selectedAddressIndex] = address;
+      updatedAddresses[selectedAddressIndex] = selectedAddress.trim();
       setAddresses(updatedAddresses);
       setSelectedAddressIndex(null);
-      setAddress("");
+      setSelectedAddress("");
     }
-    setEditMapMode(editMapMode && !editMapMode);
+    setEditInputMode(!editInputMode? editInputMode : !editInputMode);
+    //setEditMapMode(editMapMode && !editMapMode);
   };
 
   const handleCancelEditAddress = () => {
     setSelectedAddressIndex(null);
-    setEditMapMode(editMapMode);
-    setAddress("");
-    setEditMapMode(editMapMode && !editMapMode);
+    setSelectedAddress("");
+    //setEditMapMode(editMapMode);
   };
 
   const handleToggleEditMode = () => {
+    console.log('2');
+    setEditInputMode(!editInputMode);
     setEditMode(!editMode);
     setSelectedAddressIndex(null);
-    setAddress("");
-    setEditMapMode(!editMapMode ? editMapMode : !editMapMode);
+    setSelectedAddress("");
+    setEditMapMode(!editMapMode);
   };
 
   const getReverseGeocoding = async (latitude: number, longitude: number) => {
@@ -77,7 +83,7 @@ export const MapaDirection = () => {
       // Procesar la respuesta y obtener la dirección
       const direccionlarga = data.display_name;
       console.log('Dirección:', direccionlarga);
-      setAddress(direccionlarga)
+      setSelectedAddress(direccionlarga);
       // Lógica adicional para guardar o utilizar la dirección obtenida
       const city = data.address.city || data.address.town || data.address.village || "";
       const state = data.address.state || "";
@@ -107,24 +113,25 @@ export const MapaDirection = () => {
   const onMarkerDragEnd = (e: any) => {
     const { longitude, latitude } = e.nativeEvent.coordinate;
     setDraggableMarkerCoord({ longitude, latitude });
+    getReverseGeocoding(latitude, longitude);
   };
 
   const onRegionChangeComplete = (newRegion: any) => {
     setRegion(newRegion);
     setDraggableMarkerCoord(newRegion);
+    getReverseGeocoding(newRegion.latitude, newRegion.longitude);
   };
 
   const handleSetAddress = (latitude: number, longitude: number) => {
     setDraggableMarkerCoord({ longitude, latitude });
     console.log("Dirección establecida:", draggableMarkerCoord);
     getReverseGeocoding(latitude, longitude);
-    
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Direcciones </Text>
+        <Text style={styles.title}>Direcciones</Text>
         <TouchableOpacity onPress={handleToggleEditMode}>
           <Feather name={editMode ? "check" : "edit"} size={24} color="black" />
         </TouchableOpacity>
@@ -144,7 +151,7 @@ export const MapaDirection = () => {
                 <>
                   <TextInput
                     style={[styles.input, { flex: 1 }]}
-                    value={address}
+                    value={selectedAddress}
                     onChangeText={handleAddressChange}
                   />
                   <TouchableOpacity onPress={handleSaveAddress}>
@@ -177,27 +184,25 @@ export const MapaDirection = () => {
         ) : (
           <Text>No hay direcciones</Text>
         )}
-        {editMode && (
+        {editMode &&(
           <View style={styles.field}>
-            <Feather name="plus-circle" size={20} color="black" />
-            <TextInput
+             {!editInputMode &&   <Feather name="plus-circle" size={20} color="black" />}
+             {!editInputMode &&   
+             <TextInput
               style={styles.input}
-              value={address}
+              value={selectedAddress}
               onChangeText={handleAddressChange}
               placeholder="Agregar dirección"
-            />
+            />}
+            {!editInputMode &&
             <TouchableOpacity onPress={handleAddAddress}>
               <Feather name="plus" size={20} color="black" />
             </TouchableOpacity>
+            }
           </View>
         )}
       </View>
-      <TouchableOpacity
-        style={styles.confirmButton}
-        onPress={() => handleSetAddress(draggableMarkerCoord.latitude, draggableMarkerCoord.longitude) }
-      >
-        <Text style={styles.confirmButtonText}>Confirmar</Text>
-      </TouchableOpacity>
+      {editMapMode && <View style={{ flex: 1 }}>
       <MapView
         style={styles.map}
         region={region}
@@ -207,9 +212,10 @@ export const MapaDirection = () => {
           coordinate={draggableMarkerCoord}
           draggable
           onDragEnd={onMarkerDragEnd}
-          onPress={() => handleSetAddress(draggableMarkerCoord.latitude, draggableMarkerCoord.longitude)}
         />
       </MapView>
+      </View>}
+      
     </View>
   );
 };
@@ -279,3 +285,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export default MapaDirection;

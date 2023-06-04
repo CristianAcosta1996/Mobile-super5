@@ -1,8 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  CompraDTO,
+  Producto,
+  Sucursal,
+  Token,
+} from "../../interfaces/interfaces";
+import { RootState } from "../store";
 
 const apiUrl: string = "http://192.168.1.159:8080/api";
 
-interface Token {
+/*interface Token {
   sub: string;
   apellido: string;
   correo: string;
@@ -11,7 +18,8 @@ interface Token {
   nombre: string;
   iat: number;
   rol: number;
-}
+}*/
+
 interface LoginProps {
   usuarioOCorreo: string;
   contrasenia: string;
@@ -31,7 +39,7 @@ ciudad: string,
 departamento: string,
 longitud:  Number | undefined,
 latitud: Number | undefined,
-aclaracion: null
+aclaracion: string
 }
 
 interface sucursalSelected {
@@ -65,9 +73,61 @@ interface ObtenerProdsProps {
   descripcion: string 
 }
 
+interface ListarCategoriasProps{
+  id: number,
+  nombre: string
+}
+
+/*----------------------------------*/
+interface LoginProps {
+  usuarioOCorreo: string;
+  contrasenia: string;
+}
+
+interface SignupProps {
+  nombre: string;
+  apellido: string;
+  correo: string;
+  contrasenia: string;
+  telefono: string;
+  rol: 0 | 1;
+  eliminado: 0 | 1;
+  bloqueado: 0 | 1;
+  usuario: string;
+}
+
+interface AddressProps {
+  direccion: string;
+  ciudad: string;
+  departamento: string;
+  longitud: string;
+  latitud: string;
+  aclaracion: string;
+}
+
+interface ModificarCompradorProps {
+  nombre: string;
+  apellido: string;
+  telefono: string;
+}
+
+
+
 export const super5Api = createApi({
   reducerPath: "super5Api",
-  baseQuery: fetchBaseQuery({ baseUrl: apiUrl }),
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: apiUrl,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+    
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+    
+      return headers;
+    },
+  }),
+  
   endpoints: (builder) => ({
     login: builder.mutation<Token, LoginProps>({
       query: (body) => ({
@@ -100,13 +160,42 @@ export const super5Api = createApi({
       }),
     }),
 
-    obtenerProds: builder.mutation<ObtenerProdsProps[], void>({ //sucursalSelected
+    listarCategorias: builder.mutation<ListarCategoriasProps[], void>({
       query: (data) => ({
-        url: "/producto/obtenerPorSucursal/1",
+        url: "/producto/listarCategorias",
         method: "GET",
       }),
     }),
+
+    obtenerProds: builder.query<ObtenerProdsProps[], string>({ //sucursalSelected
+      query: (id) => `producto/obtenerPorSucursal/${id}`,
+    }), 
+
+    generarCompraPaypal: builder.mutation<CompraDTO, CompraDTO>({
+      query: (body) => ({
+        url: "paypal/crear",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    generarPago: builder.mutation<CompraDTO | undefined, CompraDTO>({
+      query: (body) => ({
+        url: "venta/generarPago",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    modificarComprador: builder.mutation<Token, ModificarCompradorProps>({
+      query: (body) => ({
+        url: "cliente/modificarComprador",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
+
 });
 
 
@@ -114,6 +203,10 @@ export const {
   useLoginMutation, 
   useAltaMutation, 
   useObtenerSucursalesMutation,
-  useObtenerProdsMutation,
+  useObtenerProdsQuery,
   useAltaDirMutation,
+  useGenerarCompraPaypalMutation,
+  useGenerarPagoMutation,
+  useModificarCompradorMutation,
+  useListarCategoriasMutation,
 } = super5Api;

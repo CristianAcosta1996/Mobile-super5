@@ -38,28 +38,23 @@ export const ModalSucursal = ({ selectedName, setSelectedName , setSelectedNameS
       <ActivityIndicator animating={true} color={theme.colors.primary} />
     </View>
   );
+  
   const handleNameSelection = (name: string) => {
-    console.log(name);
-    let sucursal = '';
-   
-    if (name === 'CARRASCO') {
-      sucursal = '1';
-    } else if (name === 'CENTRO') {
-      sucursal = '2';
-    } else if (name === 'BRAZO ORIENTAL') {
-      sucursal = '3';
-    }else if (name === 'BELVEDERE') {
-      sucursal = '4';
-    };
-
-
-
-    setSelectedName(sucursal);
-    setSelectedNameSuc(name);
-    setModalVisible(false);
-    //setModalVisible(!modalVisible);
-    setVisible(false);
+    if (data) {
+      const selectedSucursal = data.find(sucursal => sucursal.nombre === name);
+  
+      if (selectedSucursal) {
+        const sucursalNumber = selectedSucursal.id.toString();
+        setSelectedName(sucursalNumber);
+        setSelectedNameSuc(name);
+        setModalVisible(false);
+        setVisible(false);
+        console.log('sucursalNumber: '+ sucursalNumber + 'sucursal nombre: ' +name);
+      }
+      
+    }
   };
+  
 
   const renderItem = ({ item }: { item: string }) => {
     return (

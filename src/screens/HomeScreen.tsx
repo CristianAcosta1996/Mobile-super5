@@ -3,10 +3,11 @@ import { Button, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, Te
 import Card from '../components/Card';
 import ImageSwiper from "../components/ImageSwiper";
 import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
+import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
 import { Feather } from "@expo/vector-icons";
 
 interface Product {
-  id: number,
+  id: string,
   nombre: string,
   imagen: string,
   precio: number,
@@ -16,32 +17,37 @@ interface Product {
   precioDescuento: null,
   aplicaDescuento: null,
   descripcion: string 
+  cantidad: number,
 }
 
-interface Category {
-  id: number,
-  name: string
-}
 
 export const HomeScreen = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedName, setSelectedName] = useState('');// el numero
   const [selectedNameSuc, setSelectedNameSuc] = useState('');// el nombre string
-  const [showBuscarScreen, setShowBuscarScreen] = useState(true);
+  
+  const [selectedCatId, setSelectedCatId] = useState<number | null>(null);// el numero
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [isCatVisible, setIsCatVisible] = useState(false);
   const [visibleSuc, setVisibleSuc] = useState(false);
 
-  const categories: Category[] = [
-    { id: 1, name: 'Refrescos' },
-    { id: 2, name: 'Papeleria' },
-    { id: 3, name: 'Congelados' },
-    { id: 4, name: 'Perfumeria' },
-    { id: 5, name: 'Almacen' },
-    { id: 6, name: 'Limpieza' },
-    { id: 7, name: 'Vinos' },
-  ];
+  const modalSucursalProps: ModalSucursalProps = {
+    selectedName: selectedName,
+    setSelectedName: setSelectedName,
+    setSelectedNameSuc: setSelectedNameSuc,
+    visible: visibleSuc,
+    setVisible: setVisibleSuc
+  };
+
+  const modalCatProps: ModalCatProps = {
+    categorias: [],
+    product: null,
+    isVisible: isCatVisible,
+    setVisible: setIsCatVisible,
+    selectedCategory: selectedCatId,
+    setSelectedCategory: setSelectedCatId,
+  };
 
   useEffect(() => {
     fetch(`http://192.168.1.159:8080/api/producto/obtenerPorSucursal/${selectedName}`)
@@ -57,40 +63,25 @@ export const HomeScreen = () => {
   }, [selectedName, searchQuery]);
 
   const handleFilterIconPress = () => {
-    setIsModalVisible(true);
+    setIsCatVisible(true);
   };
 
-  const handleCategorySelect = (categoryId: number) => {
-    setSelectedCategory(categoryId);
-    setIsModalVisible(false);
-  };
 
-  const filteredProducts = selectedCategory
-    ? products.filter(product => product.categoriaId === selectedCategory)
+  const filteredProducts = selectedCatId
+    ? products.filter(product => product.categoriaId === selectedCatId)
     : products;
 
-  const handleClearFilters = () => {
-    setSelectedCategory(null);
-    setIsModalVisible(false);
-  };
+
 
   const handlePressSucursal = () => {
     setVisibleSuc(true);
     console.log('si');
   };
 
-  const modalProps: ModalSucursalProps = {
-    selectedName: selectedName,
-    setSelectedName: setSelectedName,
-    setSelectedNameSuc: setSelectedNameSuc,
-    visible: visibleSuc,
-    setVisible: setVisibleSuc
-  };
-
   return (
     <View style={styles.container}>
       <ModalSucursal 
-       {...modalProps}
+       {...modalSucursalProps}
       />
       <TouchableOpacity onPress={() => handlePressSucursal()}>
             <Text>Sucursal: {selectedNameSuc}</Text>
@@ -117,39 +108,9 @@ export const HomeScreen = () => {
           renderItem={({ item }) => <Card product={item} />}
         />
       </ScrollView>
-      
-      
-      <Modal visible={isModalVisible} 
-        animationType="slide"
-        transparent={true}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          
-            <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
-              <Feather name="x" size={24} color="gray" />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Categorías</Text>
-            <FlatList
-              data={categories}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[styles.categoryItem, item.id === selectedCategory && styles.selectedCategoryItem]}
-                  onPress={() => handleCategorySelect(item.id)}
-                >
-                  <Text style={styles.categoryName}>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity style={styles.clearFiltersButton} onPress={handleClearFilters}>
-              <Text style={styles.clearFiltersText}>Limpiar Filtros</Text>
-            </TouchableOpacity>
-          
-          </SafeAreaView>
-      </Modal>
-   
-      
-
+      <ModalCategorias 
+       {...modalCatProps}
+      />
     </View>
   );
 };

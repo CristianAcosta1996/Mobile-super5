@@ -24,7 +24,7 @@ const ImageSwiper = () => {
       <Swiper
         style={styles.wrapper}
         autoplay
-        autoplayTimeout={3}
+        autoplayTimeout={6}
         showsPagination={true}
       >
         {renderImages()}

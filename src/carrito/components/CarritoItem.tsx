@@ -1,50 +1,42 @@
-import React, { useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
-import {
-  Avatar,
-  Badge,
-  Button,
-  IconButton,
-  Text,
-  useTheme,
-} from "react-native-paper";
-import { useCarrito } from "../hooks/useCarrito";
+import React from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { Button, IconButton, Text, useTheme } from 'react-native-paper';
+import { useCarrito } from '../hooks/useCarrito';
+import { CarritoItem as CarritoItemType } from '../../interfaces/interfaces';
 
-export const CarritoItem = () => {
-  const {
-    cantidadProducto,
-    aumentarCantidadProducto,
-    reducirCantidadProducto,
-  } = useCarrito();
-
+export const CarritoItem = ({ product }: { product: CarritoItemType }) => {
+  const {agregarItemAlCarrito, quitarItemDelCarrito} = useCarrito();
   const theme = useTheme();
+
+  const handleReducirCantidad = () => {
+    agregarItemAlCarrito(product.producto, product.cantidad - 1);
+  };
+
+  const handleAumentarCantidad = () => {
+    agregarItemAlCarrito(product.producto, product.cantidad + 1);
+  };
+
   return (
     <View style={styles.card}>
       <IconButton
         icon="trash-can"
         mode="contained"
-        containerColor="red"
-        iconColor="white"
+        style={[styles.deleteBtn, { backgroundColor: 'white' }]}
         size={18}
-        style={styles.deleteBtn}
-        onPress={() => console.log("quite el producto")}
+        onPress={() => quitarItemDelCarrito(product.producto)}
       />
       <View style={styles.cardImageContainer}>
         <Image
-          source={{ uri: "https://picsum.photos/200" }}
-          style={{ width: "100%", height: "100%" }}
+          source={{ uri: product.producto.imagen }}
+          style={{ width: '100%', height: '100%' }}
         />
       </View>
       <View style={styles.cardContent}>
         <Text numberOfLines={1} variant="bodyMedium">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quasi error
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique
-          vel officia minus dignissimos obcaecati itaque tempora neque accusamus
-          nobis exercitationem a eaque, ipsa eum quibusdam in ex sed harum iste?
-          p
+          {product.producto.nombre}
         </Text>
         <Text style={{ marginTop: 15 }} variant="labelLarge">
-          $Precio
+          ${product.producto.precio}
         </Text>
       </View>
       <View
@@ -53,16 +45,16 @@ export const CarritoItem = () => {
           { backgroundColor: theme.colors.primary },
         ]}
       >
-        <Button mode="text" textColor="white" onPress={reducirCantidadProducto}>
+        <Button mode="text" textColor="white" onPress={handleReducirCantidad}>
           -
         </Button>
-        <Text style={{ color: "white" }} variant="bodyLarge">
-          {cantidadProducto}
+        <Text style={{ color: 'white' }} variant="bodyLarge">
+          {product.cantidad}
         </Text>
         <Button
           mode="text"
-          textColor="white"
-          onPress={aumentarCantidadProducto}
+          textColor ="white"
+          onPress={handleAumentarCantidad}
         >
           +
         </Button>
@@ -73,36 +65,36 @@ export const CarritoItem = () => {
 
 const styles = StyleSheet.create({
   card: {
-    width: "95%",
-    backgroundColor: "white",
+    width: '95%',
+    backgroundColor: 'white',
     height: 85,
     borderRadius: 9,
     paddingHorizontal: 10,
     paddingVertical: 5,
     elevation: 5,
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
     marginBottom: 30,
   },
   cardContent: {
     flex: 1,
-    overflow: "hidden",
+    overflow: 'hidden',
     paddingTop: 12,
   },
-  cardImageContainer: { width: "25%", backgroundColor: "red" },
+  cardImageContainer: { width: '25%', backgroundColor: 'red' },
   cantidadContainer: {
-    position: "absolute",
-    width: "40%",
+    position: 'absolute',
+    width: '40%',
     height: 40,
     borderRadius: 20,
-    flexDirection: "row",
-    top: "73%",
+    flexDirection: 'row',
+    top: '73%',
     right: -20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   deleteBtn: {
-    position: "absolute",
+    position: 'absolute',
     top: -12,
     right: -18,
     zIndex: 1,

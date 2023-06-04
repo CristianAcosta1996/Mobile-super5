@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { LongPressGestureHandler, State } from 'react-native-gesture-handler';
+import { useCarrito } from '../carrito/hooks/useCarrito';
+import { Producto } from '../interfaces/interfaces';
+import { useListarCategoriasMutation } from "../store/super5/super5Api";
 
 interface CardProps {
-  product: {
-    id: number,
-    nombre: string,
-    imagen: string,
-    precio: number,
-    stock: number,
-    descripcion: string,
-    categoriaId: number,
-  },
+  product: Producto;
+  
 }
 
 export const Card = ({ product }: CardProps) => {
   const [quantity, setQuantity] = useState(1);
   const [zoomed, setZoomed] = useState(false);
-  
+  const { agregarItemAlCarrito } = useCarrito();
+  const [categoria, setCategoria] = useState();
+  const [listarCategorias, { data, isLoading, isError }] = useListarCategoriasMutation();
+
   const addToCart = () => {
     console.log(`Agregaste ${quantity} unidades al carrito por un total de ${product.precio * quantity} dólares`);
+    agregarItemAlCarrito(product, quantity);
   };
 
   const handlePressIn = () => {
@@ -29,8 +29,27 @@ export const Card = ({ product }: CardProps) => {
   const handlePressOut = () => {
     setZoomed(false);
   };
+
   
-    let categoria = '';
+
+  useEffect(() => {
+    listarCategorias();
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      let categoriaName;
+      data.map(cat => {
+        if (cat.id === product.categoriaId) {
+          categoriaName = cat.nombre;
+        }
+      });
+      setCategoria(categoriaName)
+    }
+  }, [data]);
+  
+
+    /*let categoria = '';
    
     if (product.categoriaId === 1) {
       categoria = 'Refrescos';
@@ -46,7 +65,7 @@ export const Card = ({ product }: CardProps) => {
       categoria = 'Limpieza';
     } else if (product.categoriaId === 7) {
       categoria = 'Vinos';
-    };
+    };*/
 
   return (
     <View style={[styles.card]}>

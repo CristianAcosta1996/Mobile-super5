@@ -20,6 +20,7 @@ export const MapaDirection = (props: any) => {
   const [dir, setDir] = useState("");
   const [ciud, setCiud] = useState("");
   const [dept, setDept] = useState("");
+  const [aclar, setAclar] = useState("");
   const [long, setLong] = useState<Number | undefined>();
   const [lat, setLat] = useState<Number | undefined>();
 
@@ -34,7 +35,9 @@ export const MapaDirection = (props: any) => {
       setAddresses([...addresses, selectedAddress]);
       setSelectedAddress("");
       console.log('antes del alta');
+      console.log(aclar);
       handleCreate();
+      setAclar("");
       //setEditMapMode(!editMapMode);
     }
   };
@@ -64,7 +67,7 @@ export const MapaDirection = (props: any) => {
       departamento: dept,
       longitud: long,
       latitud: lat,
-      aclaracion: null,
+      aclaracion: aclar,
     }).then(
       (resp: any) => {
         console.log(resp);
@@ -109,11 +112,11 @@ export const MapaDirection = (props: any) => {
       );
       const data = await response.json();
 
-      // Procesar la respuesta y obtener la dirección
+      
       const direccionlarga = data.display_name;
       console.log('Dirección:', direccionlarga);
       setSelectedAddress(direccionlarga);
-      // Lógica adicional para guardar o utilizar la dirección obtenida
+     
       const city = data.address.city || data.address.town || data.address.village || "";
       const state = data.address.state || "";
       const { lat, lon } = data;
@@ -168,9 +171,9 @@ export const MapaDirection = (props: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Direcciones</Text>
+        <Text style={styles.title}>Mis direcciones</Text>
         <TouchableOpacity onPress={handleToggleEditMode}>
-          <Feather name={editMode ? "check" : "edit"} size={24} color="black" />
+          <Feather name={editMode ? "check" : "edit" } size={24} color="black" />
         </TouchableOpacity>
       </View>
       <View style={styles.fieldContainer}>
@@ -219,17 +222,24 @@ export const MapaDirection = (props: any) => {
             </View>
           ))
         ) : (
-          <Text>No hay direcciones</Text>
+          <Text>No tienes direcciones ingresadas</Text>
         )}
         {editMode &&(
           <View style={styles.field}>
-             {!editInputMode &&   <Feather name="plus-circle" size={20} color="black" />}
              {!editInputMode &&   
              <TextInput
               style={styles.input}
               value={selectedAddress}
               onChangeText={handleAddressChange}
-              placeholder="Agregar dirección"
+              editable={false}
+              placeholder="Dirección"
+            />}
+              {!editInputMode &&
+             <TextInput
+              style={styles.input}
+              value={aclar}
+              onChangeText={setAclar}
+              placeholder="Aclaracion (op)"
             />}
             {!editInputMode &&
             <TouchableOpacity onPress={handleAddAddress}>

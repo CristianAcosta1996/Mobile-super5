@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import ModalSucursal, { ModalSucursalProps } from "../../../components/ModalSucursal";
-import ModalCategorias, { ModalCatProps } from "../../../components/ModalCategorias";
+import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
+import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
 interface Product {
     id: string,
     nombre: string,
@@ -69,6 +69,13 @@ export const useHome = () => {
     console.log('si');
     };
 return{
-    //...
+    handlePressSucursal,
+    filteredProducts,
+    handleFilterIconPress,
+    modalCatProps,
+    modalSucursalProps,
+    selectedNameSuc,
+    searchQuery,
+    setSearchQuery,
 };
 };

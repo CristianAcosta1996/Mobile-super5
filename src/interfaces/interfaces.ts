@@ -19,7 +19,9 @@ export interface Token {
     departamento: string;
     longitud: string;
     latitud: string;
+    aclaracion: string
   }
+  
 
   export interface Categorias {
     id: number;

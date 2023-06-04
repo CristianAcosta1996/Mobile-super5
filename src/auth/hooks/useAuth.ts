@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import {
   startEmailAndPasswordLogin,
-  startGoogleSignIn,
   startLogout,
   //startRegistrarUsuario
 } from "../../store/auth/thunks";
 import { useMemo } from "react";
+import { useLoginMutation } from "../../store/super5/super5Api";
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -13,16 +13,27 @@ export const useAuth = () => {
   const { status } = useAppSelector((state: { auth: any; }) => state.auth);
   const isAuthenticating = useMemo(() => status === "checking", [status]);
 
+  const [
+    startLogin,
+    { isLoading: isAuthenticatingLogin, status: statusLogin },
+  ] = useLoginMutation();
+
+  /*const [
+    startRegistrarUsuario,
+    { isLoading: isAuthenticatingRegistro, status: statusRegistro },
+  ] = useSignupMutation();*/
+
   const handleLogout = () => {
     dispatch(startLogout());
   };
 
-  const handleLogin = (email: string, password: string) => {
-    dispatch(startEmailAndPasswordLogin(email, password));
-  };
-
-  const handleGoogleLogin = () => {
-    dispatch(startGoogleSignIn());
+  const handleLogin = async (email: string, password: string) => {
+    const resp: any = await startLogin({
+      usuarioOCorreo: email,
+      contrasenia: password,
+    });
+    const token: string = resp.data.token;
+    dispatch(startEmailAndPasswordLogin(token));
   };
 /*
   const handleRegistrarUsuario = (
@@ -53,8 +64,8 @@ export const useAuth = () => {
     //handleRegistrarUsuario,
     handleLogin,
     handleLogout,
-    handleGoogleLogin,
     isAuthenticating,
-    status,
+    statusLogin,
   };
 };
+

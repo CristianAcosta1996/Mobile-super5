@@ -79,10 +79,6 @@ interface ListarCategoriasProps{
 }
 
 /*----------------------------------*/
-interface LoginProps {
-  usuarioOCorreo: string;
-  contrasenia: string;
-}
 
 interface SignupProps {
   nombre: string;
@@ -96,14 +92,6 @@ interface SignupProps {
   usuario: string;
 }
 
-interface AddressProps {
-  direccion: string;
-  ciudad: string;
-  departamento: string;
-  longitud: string;
-  latitud: string;
-  aclaracion: string;
-}
 
 interface ModificarCompradorProps {
   nombre: string;
@@ -170,7 +158,7 @@ export const super5Api = createApi({
     obtenerProds: builder.query<ObtenerProdsProps[], string>({ //sucursalSelected
       query: (id) => `producto/obtenerPorSucursal/${id}`,
     }), 
-
+/*----------------*/
     generarCompraPaypal: builder.mutation<CompraDTO, CompraDTO>({
       query: (body) => ({
         url: "paypal/crear",

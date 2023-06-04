@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useListarCategoriasMutation } from "../store/super5/super5Api";
+import { useListarCategoriasMutation } from "../../../store/super5/super5Api";
 import { ActivityIndicator, useTheme} from 'react-native-paper';
-import { Categorias } from '../interfaces/interfaces';
-import { Producto } from '../interfaces/interfaces';
+import { Categorias } from '../../../interfaces/interfaces';
+import { Producto } from '../../../interfaces/interfaces';
 import { Feather } from '@expo/vector-icons';
 import theme from 'react-native-elements/dist/config/theme';
 
@@ -48,22 +48,7 @@ const ModalCategorias = ({
     setModalVisible(false);
     setVisible(false);
   };
-
-  /*const handleSelected = (name: string) => {
-    if (data) {
-      const selectedCategoria = data.find(categoria => categoria.nombre === name);
   
-      if (selectedCategoria) {
-        const categoriaNumber = selectedCategoria.id;
-        setSelectedCategory(categoriaNumber);
-        
-        setModalVisible(false);
-        setVisible(false);
-        console.log('categoria: '+ categoriaNumber + 'categoriaNumber nombre: ' +name);
-      }
-      
-    }
-  };*/
   const handleSelected = (name: string) => {
     if (data) {
       const selectedCategoria = data.find(categoria => categoria.nombre === name);

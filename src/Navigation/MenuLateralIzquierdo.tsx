@@ -84,7 +84,7 @@ const ContenidoDrawer = (props: any) => {
 
 const PrimeraSeccion = (props: any) => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(AuthContext);
-
+  //setIsLoggedIn(false);
   const handleLogout = () => {
     setIsLoggedIn(false);
   };

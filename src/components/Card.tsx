@@ -49,24 +49,6 @@ export const Card = ({ product }: CardProps) => {
   }, [data]);
   
 
-    /*let categoria = '';
-   
-    if (product.categoriaId === 1) {
-      categoria = 'Refrescos';
-    } else if (product.categoriaId === 2) {
-      categoria = 'Papeleria';
-    } else if (product.categoriaId === 3) {
-      categoria = 'Congelados';
-    } else if (product.categoriaId === 4) {
-      categoria = 'Perfumeria';
-    } else if (product.categoriaId === 5) {
-      categoria = 'Almacen';
-    } else if (product.categoriaId === 6) {
-      categoria = 'Limpieza';
-    } else if (product.categoriaId === 7) {
-      categoria = 'Vinos';
-    };*/
-
   return (
     <View style={[styles.card]}>
       <LongPressGestureHandler

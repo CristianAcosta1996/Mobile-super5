@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useObtenerSucursalesMutation } from "../store/super5/super5Api";
+import { useObtenerSucursalesMutation } from "../../../store/super5/super5Api";
 import { ActivityIndicator, useTheme} from 'react-native-paper';
 
 export interface ModalSucursalProps {

@@ -95,7 +95,7 @@ export const ProfileScreen = () => {
     
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>User Profile</Text>
+        <Text style={styles.title}>Mi perfil</Text>
         <TouchableOpacity onPress={handleToggleEditMode}>
           <Feather name={editMode ? "check" : "edit"} size={24} color="black" />
         </TouchableOpacity>

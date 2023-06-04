@@ -3,7 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-import { useAltaDirMutation } from '.././store/super5/super5Api';
+import { useAltaDirMutation } from '../../../store/super5/super5Api';
 import { ActivityIndicator } from "react-native-paper";
 import theme from "react-native-elements/dist/config/theme";
 
@@ -57,9 +57,6 @@ export const MapaDirection = (props: any) => {
     //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
   };
 
-  
-
-
   const handleCreate = () => {
     startCreate({ 
       direccion : dir,
@@ -94,7 +91,6 @@ export const MapaDirection = (props: any) => {
     setSelectedAddress("");
     //setEditMapMode(editMapMode);
   };
-
   
   const handleToggleEditMode = () => {
     console.log('2');
@@ -112,7 +108,6 @@ export const MapaDirection = (props: any) => {
       );
       const data = await response.json();
 
-      
       const direccionlarga = data.display_name;
       console.log('Dirección:', direccionlarga);
       setSelectedAddress(direccionlarga);
@@ -136,13 +131,11 @@ export const MapaDirection = (props: any) => {
     }
   };
 
- 
-
-
   const [draggableMarkerCoord, setDraggableMarkerCoord] = useState({
     longitude: -56.1645,
     latitude: -34.9011
   });
+
   const [region, setRegion] = useState({
     latitude: -34.9011,
     longitude: -56.1645,
@@ -262,8 +255,6 @@ export const MapaDirection = (props: any) => {
         />
       </MapView>
       </View>}
-
-      
     </View>
   );
 };

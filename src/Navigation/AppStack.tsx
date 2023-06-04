@@ -1,8 +1,8 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { HomeScreen } from "../screens/HomeScreen";
+import { HomeScreen } from "../screens/Home/screen/HomeScreen";
 import { AppBarSuper5 } from "../components/AppBarSuper5";
 import { CarritoScreen } from "../carrito/screens/CarritoScreen";
-import { ProfileScreen } from "../screens/ProfileScreen";
+import { ProfileScreen } from "../screens/PerfilUsuario/screens/ProfileScreen";
 import LoginScreen from "../auth/screens/LoginScreen";
 import AltaUserScreen from "../auth/screens/AltaUserScreen";
 import PasswordScreen from "../screens/PasswordScreen";

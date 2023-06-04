@@ -9,15 +9,16 @@ import { IconButton, useTheme, Modal, ActivityIndicator, Portal } from 'react-na
 import { useLoginMutation } from "../../store/super5/super5Api";
 
 import jwtDecode from 'jwt-decode';
-import ModalSucursal from '../../components/ModalSucursal';
-import { HomeScreen } from '../../screens/HomeScreen';
+import ModalSucursal from '../../screens/Home/components/ModalSucursal';
+import { HomeScreen } from '../../screens/Home/screen/HomeScreen';
 import { AuthContext } from '../../AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export const LoginScreen = (props: any) => {
 
 
 
-  const [email, setEmail] = React.useState("");
+  const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [startLogin, { isLoading, isSuccess, data }] = useLoginMutation();
   const theme = useTheme();
@@ -28,17 +29,23 @@ export const LoginScreen = (props: any) => {
   const containerStyle = {backgroundColor: 'white', padding: 20};
   const [dcode, setDcode] = React.useState("");
   const { setIsLoggedIn } = React.useContext(AuthContext);
-  const handleLogin = () => {
-    startLogin({ usuarioOCorreo: email, contrasenia: password }).then(
+  /*const handleLogin = () => {
+    startLogin({ usuarioOCorreo: username, contrasenia: password }).then(
       (resp: any) => {
         console.log(resp.data.token);
         const dcode: any = jwtDecode(resp.data.token);
         console.log(dcode.nombre);
         setDcode(dcode);
-        setIsLoggedIn(true); // Establece el estado de inicio de sesión como true
+        setIsLoggedIn(true); 
+       // Establece el estado de inicio de sesión como true
       }
     );
-  };
+  };*/
+
+  const { handleLogin } = useAuth();
+  //const navigate = useNavigate();
+
+  
   
 
 
@@ -70,8 +77,8 @@ export const LoginScreen = (props: any) => {
           color='#7e57c2'
         />
       }
-    value={email}
-    onChangeText={(email) => setEmail(email)}
+    value={username}
+    onChangeText={(username) => setUsername(username)}
     />
     <Input
       style={styles.input}
@@ -104,7 +111,7 @@ export const LoginScreen = (props: any) => {
 
       <View>
     <View style={styles.buttonContainer}>
-    <TouchableOpacity style={styles.button}  onPress={() => { handleLogin() }} >
+    <TouchableOpacity style={styles.button}  onPress={() => { handleLogin(username, password) }} >
         <Text style={styles.buttonText}>Iniciar sesion</Text>
       </TouchableOpacity>
 

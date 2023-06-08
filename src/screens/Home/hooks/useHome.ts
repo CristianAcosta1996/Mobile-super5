@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
 import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
+import { useAppSelector } from "../../../hooks/storeHooks";
 interface Product {
     id: string,
     nombre: string,
@@ -24,7 +25,7 @@ export const useHome = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isCatVisible, setIsCatVisible] = useState(false);
     const [visibleSuc, setVisibleSuc] = useState(false);
-
+    
     const modalSucursalProps: ModalSucursalProps = {
     selectedName: selectedName,
     setSelectedName: setSelectedName,
@@ -66,7 +67,6 @@ export const useHome = () => {
 
     const handlePressSucursal = () => {
     setVisibleSuc(true);
-    console.log('si');
     };
 return{
     handlePressSucursal,
@@ -79,3 +79,4 @@ return{
     setSearchQuery,
 };
 };
+

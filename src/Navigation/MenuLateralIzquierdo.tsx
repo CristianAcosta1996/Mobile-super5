@@ -9,7 +9,8 @@ import { Button, Divider, Text } from "react-native-paper";
 
 import { AppStack } from "./AppStack";
 import { CustomDivider, CustomDividerProps } from "../components/CustomDivider";
-import { AuthContext } from "../AuthContext";
+import { useAuth } from "../auth/hooks/useAuth";
+import { useAppSelector } from "../hooks/hooks";
 
 const DrawerRoot = createDrawerNavigator();
 
@@ -33,6 +34,20 @@ export const MenuLateralIzquierdo = () => {
 };
 
 const ContenidoDrawer = (props: any) => {
+  const {
+    isAuthenticatingLogin,
+    statusLogin,
+    isAuthenticatingRegistro,
+    statusRegistro,
+    isErrorLogin,
+    errorLogin,
+    isSuccessLogin,
+    isErrorSignup,
+    errorSignup,
+    isSuccessSignup,
+    dataLogin,
+    dataSignup,
+   } = useAuth();
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
@@ -83,23 +98,19 @@ const ContenidoDrawer = (props: any) => {
 };
 
 const PrimeraSeccion = (props: any) => {
-  const { isLoggedIn, setIsLoggedIn } = React.useContext(AuthContext);
-  //setIsLoggedIn(false);
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+const { status } = useAppSelector(state => state.auth);
   return(
     <View>
     <Image
       source={require("../../assets/imagenSinFondo.png")}
       style={styles.brandLogo}
     />
-    {isLoggedIn ? ( // Verificar si el usuario ha iniciado sesión
+    {status === "authenticated" ? ( // Verificar si el usuario ha iniciado sesión
       <Button
         mode="contained"
         style={{ width: 250, marginVertical: 25 }}
         onPress={() => {
-          setIsLoggedIn(false); // Establecer isLoggedIn en false para cerrar sesión
+           //setIsLoggedIn(false); 
         }}
       >
         Cerrar Sesión

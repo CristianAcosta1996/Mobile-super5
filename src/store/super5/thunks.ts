@@ -56,6 +56,7 @@ export const realizarCompraPaypal = ({
   compra: CompraDTO;
 }): ThunkAction<void, RootState, unknown, AnyAction> => {
   return async (dispatch) => {
+    console.log("llegueeeee")
     dispatch(realizarCompraPaypalSlice(compra));
     guardarcompraPaypal(compra);
     window.location.replace(compra.urlPaypal || "");

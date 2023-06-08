@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 
 export interface AuthContextProps {
   isLoggedIn: boolean;
@@ -10,3 +10,4 @@ export const AuthContext = React.createContext<AuthContextProps>({
   isLoggedIn: false,
   setIsLoggedIn: () => {},
 });
+*/

@@ -3,11 +3,14 @@ import { Appbar } from "react-native-paper";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { Image, View } from "react-native";
 import { AntDesign } from '@expo/vector-icons'; 
-import { AuthContext } from '.././AuthContext';
+import { useAuth } from "../auth/hooks/useAuth";
+import { useAppSelector } from "../hooks/hooks";
+
 export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
+  const { status } = useAppSelector(state => state.auth);
   const titulo = getHeaderTitle(options, route.name);
-  const { isLoggedIn, setIsLoggedIn } = React.useContext(AuthContext);
-  setIsLoggedIn(true);
+  //const { isLoggedIn, setIsLoggedIn } = React.useContext(AuthContext);
+  //setIsLoggedIn(true);
   return (
     <Appbar.Header>
       {titulo === "Home" && (
@@ -50,7 +53,8 @@ export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
           size={24} 
           color="black" 
           onPress={() => {
-            navigation.navigate(isLoggedIn?"Profile" : "Login");
+            navigation.navigate(status === "authenticated" ? "Profile" : "Login");
+            //navigation.navigate("Profile");
           }}
           visible={false}
         />

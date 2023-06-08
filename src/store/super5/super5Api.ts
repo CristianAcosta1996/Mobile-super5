@@ -99,6 +99,10 @@ interface ModificarCompradorProps {
   telefono: string;
 }
 
+type AuthResponse = {
+  token: string;
+};
+
 
 
 export const super5Api = createApi({
@@ -117,12 +121,23 @@ export const super5Api = createApi({
   }),
   
   endpoints: (builder) => ({
-    login: builder.mutation<Token, LoginProps>({
+    login: builder.mutation<string, LoginProps>({
       query: (body) => ({
-        url: "/auth/login",
+        url: "auth/login",
         method: "POST",
         body,
       }),
+      transformResponse: (response: AuthResponse, meta, arg) => {
+        return response.token;
+      },
+    }),
+    signup: builder.mutation<string, SignupProps>({
+      query: (body) => ({
+        url: "cliente/crear",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (resp: AuthResponse, meta) => resp.token,
     }),
 
     alta: builder.mutation<Token, AltaProps>({
@@ -197,4 +212,5 @@ export const {
   useGenerarPagoMutation,
   useModificarCompradorMutation,
   useListarCategoriasMutation,
+  useSignupMutation,
 } = super5Api;

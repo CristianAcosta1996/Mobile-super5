@@ -7,11 +7,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';
 import { IconButton, useTheme, Modal, ActivityIndicator, Portal } from 'react-native-paper';
 import { useLoginMutation } from "../../store/super5/super5Api";
-
-import jwtDecode from 'jwt-decode';
-import ModalSucursal from '../../screens/Home/components/ModalSucursal';
 import { HomeScreen } from '../../screens/Home/screen/HomeScreen';
-import { AuthContext } from '../../AuthContext';
+//import { AuthContext } from '../../AuthContext';
 import { useAuth } from '../hooks/useAuth';
 
 export const LoginScreen = (props: any) => {
@@ -20,45 +17,24 @@ export const LoginScreen = (props: any) => {
 
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [startLogin, { isLoading, isSuccess, data }] = useLoginMutation();
+ // const [startLogin, { isLoading, isSuccess, data }] = useLoginMutation();
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
-  const [visible, setVisible] = React.useState(false);
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-  const containerStyle = {backgroundColor: 'white', padding: 20};
-  const [dcode, setDcode] = React.useState("");
-  const { setIsLoggedIn } = React.useContext(AuthContext);
-  /*const handleLogin = () => {
-    startLogin({ usuarioOCorreo: username, contrasenia: password }).then(
-      (resp: any) => {
-        console.log(resp.data.token);
-        const dcode: any = jwtDecode(resp.data.token);
-        console.log(dcode.nombre);
-        setDcode(dcode);
-        setIsLoggedIn(true); 
-       // Establece el estado de inicio de sesión como true
-      }
-    );
-  };*/
+
+  const {
+    isAuthenticatingLogin,
+
+   } = useAuth();
+   
 
   const { handleLogin } = useAuth();
-  //const navigate = useNavigate();
-
   
-  
-
-
-  if (isLoading)
+  if (isAuthenticatingLogin)
     return (
       <View style={styles.container}>
         <ActivityIndicator animating={true} color={theme.colors.primary} />
       </View>
     );
- if (isSuccess)
-    return (
-    <HomeScreen />
-   );
 
 
 

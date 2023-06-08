@@ -20,7 +20,7 @@ interface CarritoItem {
 export const CarritoScreen = () => {
   const theme = useTheme();
   const {carrito} = useAppSelector(state => state.super5);
-  const {precioTotalCarrito, limpiarElCarrito} = useCarrito();  
+  const {precioTotalCarrito, limpiarElCarrito, handlePagarCompra } = useCarrito();  
 
   const renderCarritoItems = () => {
     return carrito.map((item) => (
@@ -60,7 +60,10 @@ export const CarritoScreen = () => {
           }}
           bold
         />
-        <Button mode="contained" icon="cash-register">
+        <Button 
+            mode="contained" 
+            icon="cash-register"
+            onPress={handlePagarCompra}>
           Finalizar Compra
         </Button>
       </View>

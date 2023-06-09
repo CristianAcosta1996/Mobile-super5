@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useObtenerSucursalesMutation } from "../../../store/super5/super5Api";
 import { ActivityIndicator, useTheme} from 'react-native-paper';
+import { guardarSucursal } from '../../../utils/localstorage';
+import { useAppDispatch } from '../../../hooks/hooks';
+import { startAgregarSucursal } from '../../../store/super5/thunks';
 
 export interface ModalSucursalProps {
   selectedName: string;
@@ -16,7 +19,7 @@ export const ModalSucursal = ({ selectedName, setSelectedName , setSelectedNameS
   const [modalVisible, setModalVisible] = useState(true);
   
   const [names, setNames] = useState<string[]>([]);
-
+  const dispatch = useAppDispatch();
 
 
   const [obtenerSucursales, { data, isLoading, isError }] = useObtenerSucursalesMutation();
@@ -44,11 +47,12 @@ export const ModalSucursal = ({ selectedName, setSelectedName , setSelectedNameS
       const selectedSucursal = data.find(sucursal => sucursal.nombre === name);
   
       if (selectedSucursal) {
-        const sucursalNumber = selectedSucursal.id.toString();
+        const sucursalNumber = selectedSucursal.id;
         setSelectedName(sucursalNumber);
         setSelectedNameSuc(name);
         setModalVisible(false);
         setVisible(false);
+        dispatch(startAgregarSucursal(selectedSucursal));
         console.log('sucursalNumber: '+ sucursalNumber + 'sucursal nombre: ' +name);
       }
       
@@ -82,6 +86,7 @@ export const ModalSucursal = ({ selectedName, setSelectedName , setSelectedNameS
         onRequestClose={() => {}}
       >
         <SafeAreaView style={styles.modalContainer}>
+
           <View style={styles.modalContent}>
             <Text>Seleccione una sucursal :D</Text>
             <FlatList

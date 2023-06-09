@@ -62,13 +62,18 @@ export const useCarrito = () => {
     carrito.forEach(({ producto, cantidad }) => {
       arregloCompra.push({ producto_id: +producto.id, cantidad });
     });
+    console.log(arregloCompra);
     const compra: CompraDTO = {
       carrito: arregloCompra,
       formaEntrega: "SUCURSAL",
       sucursal_id: +sucursal.id,
     };
+    console.log('sucursal: ', sucursal.id);
+    console.log(compra);
     startCompraPaypal(compra).then((resp: any) => {
-      dispatch(realizarCompraPaypal(resp));
+      console.log('compra dentro de startCompraPaypal: ', compra);
+      console.log('respuesta: ', resp.data);
+      dispatch(realizarCompraPaypal({compra: resp.data}));
     });
   };
 

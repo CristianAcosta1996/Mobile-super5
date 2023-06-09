@@ -156,7 +156,7 @@ export const super5Api = createApi({
       }),
     }),
 
-    obtenerSucursales: builder.mutation<ObtenerSucursalesProps[], void>({
+    obtenerSucursales: builder.mutation<Sucursal[], void>({
       query: (data) => ({
         url: "/sucursal/obtener",
         method: "GET",

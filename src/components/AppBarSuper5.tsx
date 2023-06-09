@@ -9,8 +9,6 @@ import { useAppSelector } from "../hooks/hooks";
 export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
   const { status } = useAppSelector(state => state.auth);
   const titulo = getHeaderTitle(options, route.name);
-  //const { isLoggedIn, setIsLoggedIn } = React.useContext(AuthContext);
-  //setIsLoggedIn(true);
   return (
     <Appbar.Header>
       {titulo === "Home" && (

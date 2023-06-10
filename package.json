@@ -57,5 +57,9 @@
     "@types/react-native-vector-icons": "^6.4.13",
     "typescript": "^4.9.4"
   },
-  "private": true
+  "private": true,
+  "description": "mobile de super 5",
+  "repository": "git@github.com:CristianAcosta1996/mobile-super5.git",
+  "author": "matteoFagundez <matteoFagundez@gmail.com>",
+  "license": "MIT"
 }

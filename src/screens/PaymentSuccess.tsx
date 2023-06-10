@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const PaymentSuccessScreen = () => {
+export const PaymentSuccessScreen = () => {
   return (
     <View >
       <Text >¡Pago exitoso!</Text>

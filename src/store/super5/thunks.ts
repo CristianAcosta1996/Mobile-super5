@@ -53,7 +53,7 @@ export const limpiarCarrito = (): ThunkAction<
     limpiarCarritoStorage();
   };
 };
-
+/*
 export const realizarCompraPaypal = ({
   compra,
 }: {
@@ -80,9 +80,10 @@ export const realizarCompraPaypal = ({
       console.log('La URL de PayPal no está definida');
     }
   };
-};
-/*--------------------*/
-/*
+};*/
+
+
+
 export const realizarCompraPaypal = ({
   compra,
 }: {
@@ -115,9 +116,9 @@ export const realizarCompraPaypal = ({
         const navigation: any = useNavigation();
         
         // Verificar si el enlace es el enlace de redirección específico
-        if (url === 'super5://payment-success') {
-          // Redirigir al usuario a la pantalla de éxito de pago
-          navigation.navigate('PaymentSuccess');
+        if (url.startsWith("super5://")) {
+          // Redirigir al usuario a la pantalla de éxito de pago // PaymentSuccessScreen
+          navigation.navigate("PaymentSuccessScreen");
         }
       };
 
@@ -130,7 +131,7 @@ export const realizarCompraPaypal = ({
       };*/
 
       // Redirigir a la pantalla de inicio después de la compra en PayPal
-      /*
+      
       const navigateToHome = async () => {
         const navigation: any = useNavigation();
         const storedCompra = await AsyncStorage.getItem('compraPaypal');
@@ -151,8 +152,6 @@ export const realizarCompraPaypal = ({
     }
   };
 };
-*/
-/*---------------------*/
 
 export const startAgregarSucursal = (
   sucursal: Sucursal

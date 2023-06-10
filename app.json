@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "super5:support@expo.dev",
+    "scheme": "super5://",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

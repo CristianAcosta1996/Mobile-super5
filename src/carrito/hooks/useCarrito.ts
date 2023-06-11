@@ -14,8 +14,10 @@ import {
 import { CompraDTO } from "../../interfaces/interfaces";
 
 import { useGenerarCompraPaypalMutation } from "../../store/super5/super5Api";
+import { useNavigation } from "@react-navigation/native";
 
 export const useCarrito = () => {
+  const navigation: any = useNavigation();
   const [open, setOpen] = useState(false);
   const [precioTotalCarrito, setPrecioTotalCarrito] = useState<number>(0);
   const dispatch = useAppDispatch();
@@ -74,6 +76,7 @@ export const useCarrito = () => {
       console.log('compra dentro de startCompraPaypal: ', compra);
       console.log('respuesta: ', resp.data);
       dispatch(realizarCompraPaypal({compra: resp.data}));
+      navigation.navigate("Payment");
     });
   };
 

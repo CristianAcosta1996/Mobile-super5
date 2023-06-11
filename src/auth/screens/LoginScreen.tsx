@@ -12,21 +12,16 @@ import { HomeScreen } from '../../screens/Home/screen/HomeScreen';
 import { useAuth } from '../hooks/useAuth';
 
 export const LoginScreen = (props: any) => {
-
-
-
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
  // const [startLogin, { isLoading, isSuccess, data }] = useLoginMutation();
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
-
   const {
     isAuthenticatingLogin,
 
    } = useAuth();
    
-
   const { handleLogin } = useAuth();
   
   if (isAuthenticatingLogin)

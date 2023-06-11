@@ -53,36 +53,6 @@ export const limpiarCarrito = (): ThunkAction<
     limpiarCarritoStorage();
   };
 };
-/*
-export const realizarCompraPaypal = ({
-  compra,
-}: {
-  compra: CompraDTO;
-}): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return async (dispatch) => {
-    console.log('llegueeeee');
-    console.log('antes del dispatch', compra);
-    dispatch(realizarCompraPaypalSlice(compra));
-    console.log('antes del dispatch', compra);
-    //await WebBrowser.openBrowserAsync('https://www.google.com.uy/');
-    if (compra.urlPaypal) {
-      try {
-        await AsyncStorage.setItem('compraPaypal', JSON.stringify(compra));
-        console.log('Compra guardada');
-      } catch (error) {
-        console.log('Error al guardar la compra ', error);
-      }
-      
-      
-      // Abrir la URL de PayPal en el navegador web 
-      await WebBrowser.openBrowserAsync(compra.urlPaypal); // compra.urlPaypal
-    } else {
-      console.log('La URL de PayPal no está definida');
-    }
-  };
-};*/
-
-
 
 export const realizarCompraPaypal = ({
   compra,
@@ -98,55 +68,12 @@ export const realizarCompraPaypal = ({
     if (compra.urlPaypal) {
       try {
         await AsyncStorage.setItem('compraPaypal', JSON.stringify(compra));
+        //Guardar url paypal
+        await AsyncStorage.setItem('urlPaypal', JSON.stringify(compra.urlPaypal));
         console.log('Compra guardada');
       } catch (error) {
         console.log('Error al guardar la compra ', error);
       }
-
-      // Abrir la URL de PayPal en el navegador web
-      try {
-        await Linking.openURL(compra.urlPaypal);
-      } catch (error) {
-        console.log('Error al abrir la URL de PayPal', error);
-      }
-
-      // Configurar el manejador de enlaces profundos
-      const handleDeepLink = (event: { url: string }) => {
-        const { url } = event;
-        const navigation: any = useNavigation();
-        
-        // Verificar si el enlace es el enlace de redirección específico
-        if (url.startsWith("super5://")) {
-          // Redirigir al usuario a la pantalla de éxito de pago // PaymentSuccessScreen
-          navigation.navigate("PaymentSuccessScreen");
-        }
-      };
-
-      // Agregar el manejador de enlaces profundos
-      Linking.addEventListener('url', handleDeepLink);
-
-      /* //Retornar una función de limpieza para eliminar el manejador cuando el componente se desmonte
-      const unsubscribe = () => {
-        Linking.removeEventListener('url', handleDeepLink);
-      };*/
-
-      // Redirigir a la pantalla de inicio después de la compra en PayPal
-      
-      const navigateToHome = async () => {
-        const navigation: any = useNavigation();
-        const storedCompra = await AsyncStorage.getItem('compraPaypal');
-        if (storedCompra) {
-          const parsedCompra = JSON.parse(storedCompra);
-          if (parsedCompra === compra) {
-            
-            navigation.navigate('Home');
-            //unsubscribe();
-          }
-        }
-      };
-      const navigation: any = useNavigation();
-      // Agregar el manejador para redirigir a la pantalla de inicio
-      navigation.addListener('focus', navigateToHome);
     } else {
       console.log('La URL de PayPal no está definida');
     }

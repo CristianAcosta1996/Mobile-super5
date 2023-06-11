@@ -41,15 +41,20 @@ export const PaymentScreen = () => {
           style={styles.webview}
           source={{ uri: url }}
           onError={handleWebViewError}
-          onNavigationStateChange={(navState) => {
-            // Verificar si la URL ha cambiado a la URL de destino después del pago en PayPal
-           console.log(navState.url);
-            if (navState.url.includes("compra/finalizar-compra")) {
-              
-            console.log("go to finalizar compra >>>>>>>>>>>>>")
-              // Navegar a la pantalla deseada
+          onShouldStartLoadWithRequest={(event) => {
+            const { url: newUrl } = event;
+            
+            if (newUrl.includes("compra/finalizar-compra")) {
+              console.log("go to finalizar compra >>>>>>>>>>>>>");
+              // Realizar la acción deseada
               navigation.navigate('FinalizacionCompra');
+    
+              // Regresar 'false' para evitar la carga de la URL de destino
+              return false;
             }
+    
+            // Regresar 'true' para permitir la carga de la URL
+            return true;
           }}
         />
       ) : (

@@ -4,6 +4,7 @@ import { LongPressGestureHandler, State } from 'react-native-gesture-handler';
 import { useCarrito } from '../carrito/hooks/useCarrito';
 import { Producto } from '../interfaces/interfaces';
 import { useListarCategoriasMutation } from "../store/super5/super5Api";
+import { FontAwesome } from '@expo/vector-icons';
 
 interface CardProps {
   product: Producto;
@@ -70,7 +71,24 @@ export const Card = ({ product }: CardProps) => {
 
        </View>
         <Text style={[styles.title, zoomed && styles.hiddenText]}>{product.nombre}</Text>
-        <Text style={styles.price}>$ {product.precio}</Text>
+        
+        {product.aplicaDescuento && (
+          <>
+            <Text style={[styles.price, { textDecorationLine: 'line-through', opacity: 0.4 }]}>
+              $ {product.precio}
+            </Text>
+
+            <Text style={styles.price}>
+              <FontAwesome name="tag" size={16} color="red" style={styles.discountIcon} /> 
+              $ {product.precioDescuento}
+            </Text>
+          </>
+        )}
+
+        {!product.aplicaDescuento && (
+          <Text style={styles.price}>$ {product.precio}</Text>
+        )}
+
         <Text style={styles.descripcion}>{product.descripcion}</Text>
       </View>
       <View style={styles.quantityContainer}>
@@ -105,6 +123,9 @@ const styles = StyleSheet.create({
     elevation: 10,
     width: '48%',
     marginBottom: 16,
+  },
+  discountIcon: {
+    marginRight: 5,
   },
   image: {
     width: '100%',

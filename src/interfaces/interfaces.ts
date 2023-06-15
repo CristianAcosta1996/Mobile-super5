@@ -42,7 +42,7 @@ export interface Token {
     categoriaId: number;
     stock: number;
     precioDescuento: number | null;
-    aplicaDescuento: number | null;
+    aplicaDescuento: boolean;
     descripcion: string;
   }
   export interface CarritoItem {

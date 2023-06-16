@@ -9,6 +9,7 @@ import {
   startLogout,
 } from "../../store/auth/thunks";
 import { useNavigation } from "@react-navigation/native";
+import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -71,7 +72,8 @@ export const useAuth = () => {
     email: string,
     nombre: string,
     apellido: string,
-    phone: string
+    phone: string,
+    birthDate: Date,
   ) => {
     startRegistrarUsuario({
       nombre,
@@ -83,6 +85,7 @@ export const useAuth = () => {
       bloqueado: 0,
       eliminado: 0,
       rol: 1,
+      fechaNacimiento: birthDate.getTime(),
     })
       .unwrap()
       .then((resp) => {
@@ -90,6 +93,7 @@ export const useAuth = () => {
           const token: string = resp;
           dispatch(startEmailAndPasswordLogin(token));
         }, 3000);
+        if (resp) alert(`Usuario creado con exito!`)
       })
       .catch((error) => {
         console.error(error);

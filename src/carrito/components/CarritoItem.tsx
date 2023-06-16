@@ -35,9 +35,15 @@ export const CarritoItem = ({ product }: { product: CarritoItemType }) => {
         <Text numberOfLines={1} variant="bodyMedium">
           {product.producto.nombre}
         </Text>
-        <Text style={{ marginTop: 15 }} variant="labelLarge">
-          ${product.producto.precio}
-        </Text>
+        {product.producto.aplicaDescuento && (
+            <Text>
+              $ {product.producto.precioDescuento}
+            </Text>
+        )}
+
+        {!product.producto.aplicaDescuento && (
+          <Text >$ {product.producto.precio}</Text>
+        )}
       </View>
       <View
         style={[

@@ -54,10 +54,15 @@ export const useCarrito = () => {
   const calcularPrecioTotalCarrito = (): number => {
     let contador = 0;
     carrito.forEach((carritoItem) => {
-      contador += carritoItem.producto.precio * carritoItem.cantidad;
+      const precio = carritoItem.producto.aplicaDescuento
+        ? carritoItem.producto.precioDescuento ?? 0
+        : carritoItem.producto.precio ?? 0;
+      contador += precio * carritoItem.cantidad;
     });
     return contador;
   };
+  
+  
 
   const handlePagarCompra = (): void => {
     let arregloCompra: CarritoDto[] = [];

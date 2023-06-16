@@ -6,6 +6,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { useAltaDirMutation } from '../../../store/super5/super5Api';
 import { ActivityIndicator } from "react-native-paper";
 import theme from "react-native-elements/dist/config/theme";
+import PopupMessage from "../../../components/PopupMessage";
 
 export const MapaDirection = (props: any) => {
   const [startCreate, { isLoading, isSuccess, data }] = useAltaDirMutation();
@@ -58,6 +59,7 @@ export const MapaDirection = (props: any) => {
   };
 
   const handleCreate = () => {
+    console.log(long);
     startCreate({ 
       direccion : dir,
       ciudad: ciud,
@@ -67,6 +69,9 @@ export const MapaDirection = (props: any) => {
       aclaracion: aclar,
     }).then(
       (resp: any) => {
+        if (resp){
+          alert(`Direccion agregada con exito!`);    
+      }
         console.log(resp);
       }
     );
@@ -119,7 +124,7 @@ export const MapaDirection = (props: any) => {
         setDir(direccionlarga);
         setCiud(city);
         setDept(state);
-        setLong(long);
+        setLong(lon);
         setLat(lat);
       console.log('Dirección:', direccionlarga);
       console.log('Ciudad:', city);

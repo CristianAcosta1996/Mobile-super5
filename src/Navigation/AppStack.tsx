@@ -24,7 +24,7 @@ export const AppStack = () => {
       <Stack.Screen name="AltaUser" component={AltaUserScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} /> 
       <Stack.Screen name="Carrito" component={CarritoScreen} />
-      <Stack.Screen name="FinalizacionCompra" component={FinalizacionCompraScreen} />  
+      <Stack.Screen name="FinalizacionCompra" component={FinalizacionCompraScreen} />
       <Stack.Screen
         name="Shopping-Cart"
         component={CarritoScreen}

@@ -4,12 +4,12 @@ import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IconButton, useTheme, Modal, ActivityIndicator, Portal } from 'react-native-paper';
-import { useLoginMutation } from "../../store/super5/super5Api";
-import { HomeScreen } from '../../screens/Home/screen/HomeScreen';
+
 //import { AuthContext } from '../../AuthContext';
 import { useAuth } from '../hooks/useAuth';
+import PopupMessage from '../../components/PopupMessage';
 
 export const LoginScreen = (props: any) => {
   const [username, setUsername] = React.useState("");
@@ -19,11 +19,19 @@ export const LoginScreen = (props: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const {
     isAuthenticatingLogin,
-
+    handleLogin,
+    isSuccessLogin,
+    dataLogin,
    } = useAuth();
    
-  const { handleLogin } = useAuth();
+  //const { handleLogin } = useAuth();
   
+  if (isSuccessLogin)
+  return (
+    <>
+      <PopupMessage text="¡Bienvenido!" iconName="thumb-up" />
+    </>
+  );
   if (isAuthenticatingLogin)
     return (
       <View style={styles.container}>
@@ -92,7 +100,7 @@ export const LoginScreen = (props: any) => {
 
     </View>
     <View>
-    <TouchableOpacity >
+    <TouchableOpacity>
           <FontAwesome name="google" size={20}/>
           <Text>Login with Google</Text>
         </TouchableOpacity>

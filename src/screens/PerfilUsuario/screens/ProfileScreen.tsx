@@ -1,23 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import MapView from 'react-native-maps';
 import { MapaDirection } from '../components/MapaDirection';
-import { SafeAreaView } from "react-native-safe-area-context";
-
-
+import { useGetUserDataQuery } from "../../../store/super5/super5Api";
+import moment from 'moment';
+import { useModificarComprador } from "../hooks/useModificarComprador";
 
 export const ProfileScreen = () => {
-  const [name, setName] = useState("El nombre");
-  const [lastName, setLastName] = useState("el apellido");
-  const [birthDate, setBirthDate] = useState("01/01/1990");
-  const [phone, setPhone] = useState("1234567890");
-  const [address, setAddress] = useState("");
-  const [addresses, setAddresses] = useState<string[]>([]);
+  const { data: userData } = useGetUserDataQuery();
+
+console.log(userData);
+console.log(userData?.fechaNacimiento?.toString());
+  const [name, setName] = useState(userData?.nombre);
+  const [lastName, setLastName] = useState(userData?.apellido);
+  const formattedBirthDate = moment(userData?.fechaNacimiento).format('DD/MM/YYYY');
+  console.log(formattedBirthDate);
+  const [birthDate, setBirthDate] = useState(formattedBirthDate);
+  const [phone, setPhone] = useState(userData?.telefono);
+  const [email, setEmail] = useState(userData?.correo);
+
+  
   const [editMode, setEditMode] = useState(false);
   const [editMapMode, setEditMapMode] = useState(false);
-  const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null);
-
+  
+  const { handleModificarComprador } = useModificarComprador();
+  
   const handleNameChange = (text: string) => {
     setName(text);
   };
@@ -34,69 +42,43 @@ export const ProfileScreen = () => {
     setPhone(text);
   };
 
-  const handleAddressChange = (text: string) => {
-    setAddress(text);
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
   };
 
-  const handleAddAddress = () => {
-    if(address.trim() === ""){
-      console.log('yes');
-      setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
-    }
-    if (address.trim() !== "") {
-      setAddresses([...addresses, address]);
-      setAddress("");
-      setEditMapMode(!editMapMode);
-    }    
-    
-  };
-
-  const handleDeleteAddress = (index: number) => {
-    const updatedAddresses = [...addresses];
-    updatedAddresses.splice(index, 1);
-    setAddresses(updatedAddresses);
-    setSelectedAddressIndex(null);
-  };
-
-  const handleEditAddress = (index: number) => {
-    setSelectedAddressIndex(index);
-    setAddress(addresses[index]);
-    setEditMapMode(!editMapMode ? !editMapMode : editMapMode); 
-  };
-
-  const handleSaveAddress = () => {
-    if (selectedAddressIndex !== null && address.trim() !== "") {
-      const updatedAddresses = [...addresses];
-      updatedAddresses[selectedAddressIndex] = address;
-      setAddresses(updatedAddresses);
-      setSelectedAddressIndex(null);
-       
-      setAddress("");
-      
-    }
-    setEditMapMode(editMapMode && !editMapMode);
-  };
-
-  const handleCancelEditAddress = () => {
-    setSelectedAddressIndex(null);
-    setEditMapMode(editMapMode); 
-    setAddress("");
-    setEditMapMode(editMapMode && !editMapMode);
-  };
 
   const handleToggleEditMode = () => {
     setEditMode(!editMode);
-    setSelectedAddressIndex(null);
-    setAddress("");
     setEditMapMode(!editMapMode ? editMapMode: !editMapMode); 
+    console.log('En modo edicion');
   };
+
+  const handleSave = async () => {
+    setEditMode(!editMode);
+    if (name && lastName && phone && birthDate) {
+      const parsedBirthDate = new Date(birthDate);
+      await handleModificarComprador(name, lastName, phone, parsedBirthDate);
+      console.log('Dentro del save!///////////////////////////');
+  
+      // Volver a obtener los datos del usuario después de guardar
+      //const { data: updatedUserData } = useGetUserDataQuery();
+      //if (userData) {
+        setName(name);
+        setLastName(lastName);
+        const formattedBirthDate = moment(userData?.fechaNacimiento).format('DD/MM/YYYY');
+        setBirthDate(birthDate);
+        setPhone(phone);
+      //}
+    }
+  };
+  
 
   return (
     
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Mi perfil</Text>
-        <TouchableOpacity onPress={handleToggleEditMode}>
+        <TouchableOpacity onPress={editMode ?  handleSave : handleToggleEditMode}>
           <Feather name={editMode ? "check" : "edit"} size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -137,6 +119,7 @@ export const ProfileScreen = () => {
             <Text style={styles.text}>{birthDate}</Text>
           )}
         </View>
+        
         <View style={styles.field}>
           <Feather name="phone" size={20} color="black" />
           {editMode ? (
@@ -149,51 +132,20 @@ export const ProfileScreen = () => {
             <Text style={styles.text}>{phone}</Text>
           )}
         </View>
-        {addresses.length > 0 && (
-          <View style={styles.field}>
-            <Feather name="map-pin" size={20} color="black" />
-            <Text style={styles.label}>Direcciones</Text>
-          </View>
-        )}
-        {addresses.map((address, index) => (
-          <View style={styles.field} key={index}>
-            <Feather name="map-pin" size={20} color="black" />
-            {selectedAddressIndex === index && editMode ? (
-              <>
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  value={address}
-                  onChangeText={handleAddressChange}
-                />
-                <TouchableOpacity onPress={handleSaveAddress}>
-                  <Feather name="check" size={20} color="black" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleCancelEditAddress}>
-                  <Feather name="x" size={20} color="black" />
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <Text style={styles.text}>{address}</Text>
-                {editMode && (
-                  <View style={{ flexDirection: "row", marginLeft: 'auto' }}>
-                    <TouchableOpacity onPress={() => handleEditAddress(index)}>
-                      <Feather name="edit" size={20} color="black" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{ marginLeft: 20 }}
-                      onPress={() => handleDeleteAddress(index)}
-                    >
-                      <Feather name="trash" size={20} color="black" />
-                    </TouchableOpacity>
-                            
-                  </View>
-                )}
-                      
-              </>
-            )}
-          </View>
-        ))}
+        <View style={styles.field}>
+          <Feather name="mail" size={20} color="black" />
+          {editMode ? (
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={handleEmailChange}
+              editable={false}
+            />
+          ) : (
+            <Text style={styles.text}>{email}</Text>
+          )}
+        </View>
+
 
       </View>
       <MapaDirection/>

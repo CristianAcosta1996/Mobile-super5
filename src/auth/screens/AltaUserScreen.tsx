@@ -6,62 +6,51 @@ import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import { useAltaMutation } from '../../store/super5/super5Api';
 import LoginScreen from './LoginScreen';
+import PopupMessage from '../../components/PopupMessage';
+import Gif from 'react-native-gif';
 
-export const AltaUserScreen = (props: any) => {
+const AltaUserScreen = () => {
   const today = moment();
   const theme = useTheme();
   const [visible, setVisible] = React.useState(false);
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
-  const containerStyle = {backgroundColor: 'white', padding: 20};
+  const containerStyle = { backgroundColor: 'white', padding: 20 };
 
-  const [nombre, setNombre] =  React.useState("");
-  const [apellido, setApellido] =  React.useState("");
-  const [user, setUser] =  React.useState("");
-  const [password, setPassword] =  React.useState("");
-  const [passwordConfirm, setPasswordConfirm] =  React.useState("");
-  const [email, setEmail] =  React.useState("");
-  const [telefono, setTelefono] =  React.useState("");
+  const initialState = {
+    nombre: "",
+    apellido: "",
+    user: "",
+    password: "",
+    passwordConfirm: "",
+    email: "",
+    telefono: "",
+    date: new Date(),
+  };
+
+  const [formValues, setFormValues] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
-  const [date, setFecha] =  React.useState("");
 
   const [startCreate, { isLoading, isSuccess, data }] = useAltaMutation();
-  
+
   const handleCreate = () => {
-    startCreate({ 
-      nombre: nombre,
-      apellido: apellido,
-      correo: email,
-      contrasenia: password, 
-      telefono: telefono,
-      usuario: user,
+    startCreate({
+      nombre: formValues.nombre,
+      apellido: formValues.apellido,
+      correo: formValues.email,
+      contrasenia: formValues.password,
+      telefono: formValues.telefono,
+      usuario: formValues.user,
+      fechaNacimiento: formValues.date.getTime()
     }).then(
       (resp: any) => {
         console.log(resp);
+        setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
       }
     );
   };
-  if (isLoading)
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator animating={true} color={theme.colors.primary} />
-      </View>
-    );
-  if (isSuccess)
-    return (
-      <LoginScreen/>
-    /*
-      <Portal>
-        <Modal visible={true} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-          <Text>Bienvenido!</Text>
-        </Modal>
-      </Portal>
-    */
-   );
-
-
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -72,36 +61,57 @@ export const AltaUserScreen = (props: any) => {
   };
 
   const handleCalendarSelect = (selectedDate: any) => {
-    const formattedDate = moment(selectedDate.dateString).format('DD/MM/YYYY');
-    setFecha(formattedDate);
+    const formattedDate = moment(selectedDate.dateString).toDate(); // Convertir la cadena de texto a un objeto Date
+    setFormValues({ ...formValues, date: formattedDate });
     setOpen(false);
   };
+
+  if (isLoading)
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-                  <View style={styles.container}>
-                    
+      <View style={styles.container}>
+        <ActivityIndicator animating={true} color={theme.colors.primary} />
+        <Gif
+            source={require('../../../assets/loading.gif')}
+            style={{ width: 200, height: 200 }}
+            resizeMode="cover"
+        />
+      </View>
+    );
+
+  if (isSuccess)
+    return (
+      <>
+        <PopupMessage text="¡Usuario registrado con éxito!" iconName="check" />
+        <LoginScreen />
+      </>
+    );
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.container}>
+
         <Input
           label="Nombre"
-          value={nombre}
-          onChangeText={setNombre}
+          value={formValues.nombre}
+          onChangeText={(value: string) => setFormValues({ ...formValues, nombre: value })}
           style={styles.input}
         />
         <Input
           label="Usuario"
-          value={user}
-          onChangeText={setUser}
+          value={formValues.user}
+          onChangeText={(value: string) => setFormValues({ ...formValues, user: value })}
           style={styles.input}
         />
         <Input
           label="Apellido"
-          value={apellido}
-          onChangeText={setApellido}
+          value={formValues.apellido}
+          onChangeText={(value: string) => setFormValues({ ...formValues, apellido: value })}
           style={styles.input}
         />
         <Input
           label="Contraseña"
-          value={password}
-          onChangeText={setPassword}
+          value={formValues.password}
+          onChangeText={(value: string) => setFormValues({ ...formValues, password: value })}
           style={styles.input}
           secureTextEntry={!showPassword}
           rightIcon={
@@ -113,21 +123,21 @@ export const AltaUserScreen = (props: any) => {
         />
         <Input
           label="Confirmar contraseña"
-          value={passwordConfirm}
-          onChangeText={setPasswordConfirm}
+          value={formValues.passwordConfirm}
+          onChangeText={(value: string) => setFormValues({ ...formValues, passwordConfirm: value })}
           style={styles.input}
           secureTextEntry={!showPassword}
         />
         <Input
           label="E-email"
-          value={email}
-          onChangeText={setEmail}
+          value={formValues.email}
+          onChangeText={(value: string) => setFormValues({ ...formValues, email: value })}
           style={styles.input}
         />
         <Input
           label="Teléfono"
-          value={telefono}
-          onChangeText={setTelefono}
+          value={formValues.telefono}
+          onChangeText={(value: string) => setFormValues({ ...formValues, telefono: value })}
           style={styles.input}
           keyboardType="phone-pad"
         />
@@ -135,15 +145,16 @@ export const AltaUserScreen = (props: any) => {
           <Calendar
             onDayPress={handleCalendarSelect}
             style={styles.calendar}
-            maxDate={today.format('YYYY-MM-DD')}
+            maxDate={today.format('DD-MM-YYYY')}
             hideExtraDays
-            markedDates={date ? { [date]: { selected: true, selectedColor: '#7e57c2' } } : {}}
+            markedDates={formValues.date ? { [moment(formValues.date).format('YYYY-MM-DD')]: { selected: true, selectedColor: '#7e57c2' } } : {}}
           />
+
         )}
         <Input
           label="Fecha de nacimiento"
           style={styles.input}
-          value={date}
+          value={moment(formValues.date).format('DD-MM-YYYY')}
           editable={false}
           rightIcon={
             <IconButton
@@ -152,14 +163,15 @@ export const AltaUserScreen = (props: any) => {
             />
           }
         />
+
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => { handleCreate() }}>
+          <TouchableOpacity style={styles.button} onPress={handleCreate}>
             <Text style={styles.buttonText}>Registrarse</Text>
           </TouchableOpacity>
         </View>
       </View>
-        </ScrollView>
-    );
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({

@@ -6,6 +6,7 @@ import {
   Token,
 } from "../../interfaces/interfaces";
 import { RootState } from "../store";
+import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
 
 const apiUrl: string = "http://192.168.1.159:8080/api";
 
@@ -32,6 +33,7 @@ interface AltaProps {
   contrasenia: string;
   telefono: string;
   usuario: string;
+  fechaNacimiento: Timestamp;
 }
 interface AltaDireccionProps {
 direccion : string,
@@ -40,6 +42,18 @@ departamento: string,
 longitud:  Number | undefined,
 latitud: Number | undefined,
 aclaracion: string
+}
+
+interface UserDataProps {
+  nombre: string;
+  apellido: string;
+  correo: string;
+  telefono: string;
+  fechaNacimiento: Date;
+  rol: 0 | 1;
+  eliminado: 0 | 1;
+  bloqueado: 0 | 1;
+  usuario: string;
 }
 
 interface sucursalSelected {
@@ -90,6 +104,7 @@ interface SignupProps {
   eliminado: 0 | 1;
   bloqueado: 0 | 1;
   usuario: string;
+  fechaNacimiento: Timestamp;
 }
 
 
@@ -97,6 +112,7 @@ interface ModificarCompradorProps {
   nombre: string;
   apellido: string;
   telefono: string;
+  fechaNacimiento_t: Timestamp,
 }
 
 type AuthResponse = {
@@ -189,6 +205,12 @@ export const super5Api = createApi({
         body,
       }),
     }),
+    
+    getUserData: builder.query<UserDataProps, void>({
+      query: () => "usuario/obtenerUsuario",
+      //providesTags: ["User"],
+    }),
+
 
     modificarComprador: builder.mutation<Token, ModificarCompradorProps>({
       query: (body) => ({
@@ -201,7 +223,6 @@ export const super5Api = createApi({
 
 });
 
-
 export const { 
   useLoginMutation, 
   useAltaMutation, 
@@ -213,4 +234,5 @@ export const {
   useModificarCompradorMutation,
   useListarCategoriasMutation,
   useSignupMutation,
+  useGetUserDataQuery,
 } = super5Api;

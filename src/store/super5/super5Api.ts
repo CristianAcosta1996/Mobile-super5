@@ -4,6 +4,7 @@ import {
   Producto,
   Sucursal,
   Token,
+  Direccion,
 } from "../../interfaces/interfaces";
 import { RootState } from "../store";
 import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
@@ -54,6 +55,7 @@ interface UserDataProps {
   eliminado: 0 | 1;
   bloqueado: 0 | 1;
   usuario: string;
+  direcciones: Direccion[];
 }
 
 interface sucursalSelected {
@@ -135,6 +137,15 @@ export const super5Api = createApi({
       return headers;
     },
   }),
+  tagTypes: [
+    "VentasPagadas",
+    "VentasConfirmadas",
+    "UserData",
+    "AtenderReclamo",
+    "Producto",
+    "Sucursal",
+    "Direccion",
+  ],
   
   endpoints: (builder) => ({
     login: builder.mutation<string, LoginProps>({
@@ -177,6 +188,11 @@ export const super5Api = createApi({
         url: "/sucursal/obtener",
         method: "GET",
       }),
+    }),
+    
+    getDirecciones: builder.query<Direccion[], void>({
+      query: () => "direccion/listar",
+      providesTags: ["Direccion"],
     }),
 
     listarCategorias: builder.mutation<ListarCategoriasProps[], void>({
@@ -235,4 +251,5 @@ export const {
   useListarCategoriasMutation,
   useSignupMutation,
   useGetUserDataQuery,
+  useGetDireccionesQuery,
 } = super5Api;

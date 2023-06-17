@@ -6,7 +6,7 @@ import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
 import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
 import { Feather } from "@expo/vector-icons";
 import { useHome } from "../hooks/useHome";
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 export const HomeScreen = () => {
   const {
     handlePressSucursal,
@@ -24,9 +24,12 @@ export const HomeScreen = () => {
       <ModalSucursal 
        {...modalSucursalProps}
       />
-      <TouchableOpacity onPress={() => handlePressSucursal()}>
-            <Text>Sucursal: {selectedNameSuc}</Text>
-      </TouchableOpacity>
+    <TouchableOpacity onPress={() => handlePressSucursal()}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Icon name="store" size={20} color="#000" />
+        <Text style={{ marginLeft: 8 }}>Estas comprando en sucursal: {selectedNameSuc}</Text>
+      </View>
+    </TouchableOpacity>
       <View style={styles.searchBarContainer}>
           <Feather name="search" size={24} color="gray" style={styles.searchIcon} />
           <TextInput

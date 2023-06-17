@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import MapView from 'react-native-maps';
-import { MapaDirection } from '../components/MapaDirection';
+import { MapaDirection } from './MapaDirectionScreen';
 import { useGetUserDataQuery } from "../../../store/super5/super5Api";
 import moment from 'moment';
 import { useModificarComprador } from "../hooks/useModificarComprador";

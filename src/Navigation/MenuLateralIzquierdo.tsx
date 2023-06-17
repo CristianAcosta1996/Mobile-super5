@@ -1,5 +1,5 @@
-import React from "react";
-import { StyleSheet, View, Image, StyleProp, ViewStyle } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Image, StyleProp, ViewStyle, Alert } from "react-native";
 
 import {
   DrawerContentScrollView,
@@ -10,7 +10,11 @@ import { Button, Divider, Text } from "react-native-paper";
 import { AppStack } from "./AppStack";
 import { CustomDivider, CustomDividerProps } from "../components/CustomDivider";
 import { useAuth } from "../auth/hooks/useAuth";
-import { useAppSelector } from "../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import { startLogout } from "../store/auth/thunks";
+import { useNavigation } from "@react-navigation/native";
+import ModalDirecciones from "../screens/PerfilUsuario/components/ModalDirecciones";
+
 
 const DrawerRoot = createDrawerNavigator();
 
@@ -34,6 +38,8 @@ export const MenuLateralIzquierdo = () => {
 };
 
 const ContenidoDrawer = (props: any) => {
+  
+
   const {
     isAuthenticatingLogin,
     statusLogin,
@@ -48,9 +54,19 @@ const ContenidoDrawer = (props: any) => {
     dataLogin,
     dataSignup,
    } = useAuth();
+   const [modalVisible, setModalVisible] = useState(false);
+const [selectedDireccion, setSelectedDireccion] = useState('');
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
+      {modalVisible && (
+  <ModalDirecciones
+    selectedDireccion={selectedDireccion}
+    setSelectedDireccion={setSelectedDireccion}
+    visible={true}
+    setVisible={setModalVisible}
+  />
+)}
         <PrimeraSeccion props = {props}/>
         <CustomDivider
           style={customDividerProps.style}
@@ -60,6 +76,9 @@ const ContenidoDrawer = (props: any) => {
           icon="view-list"
           style={{ width: 250, marginVertical: 25 }}
           mode="contained-tonal"
+          onPress={() => {
+            setModalVisible(true);
+          }}
         >
           Categorias
         </Button>
@@ -98,6 +117,21 @@ const ContenidoDrawer = (props: any) => {
 };
 
 const PrimeraSeccion = (props: any) => {
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    Alert.alert(
+      'Confirmación',
+      '¿Estás seguro de que deseas cerrar sesión?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cerrar sesión', onPress: handleLogoutConfirm, style: 'destructive' }
+      ]
+    );
+  };
+  const handleLogoutConfirm = () => {
+    dispatch(startLogout());
+    Alert.alert('Cierre de sesión', 'Has cerrado sesión correctamente. Vuelva Pronto :D');
+  };
 const { status } = useAppSelector(state => state.auth);
   return(
     <View>
@@ -110,7 +144,7 @@ const { status } = useAppSelector(state => state.auth);
         mode="contained"
         style={{ width: 250, marginVertical: 25 }}
         onPress={() => {
-           //setIsLoggedIn(false); 
+          handleLogout();
         }}
       >
         Cerrar Sesión
@@ -152,50 +186,75 @@ const commonBtnProperties: BtnPropertiesProps = {
     justifyContent: "flex-start",
     gap: 8,
   },
-  handleOnPress: () => console.log("click"),
-};
+  handleOnPress: () => {},
+}
 
-const buttons: BtnPropertiesProps[] = [
-  {
-    ...commonBtnProperties,
-    icon: "shopping",
-    title: "Mis Pedidos",
-  },
-  {
-    ...commonBtnProperties,
-    icon: "cards-heart",
-    title: "Mis Favoritos",
-  },
-  {
-    ...commonBtnProperties,
-    icon: "headset",
-    title: "Ayuda",
-  },
-  {
-    ...commonBtnProperties,
-    icon: "information",
-    title: "Terminos y condiciones",
-  },
-];
+
 
 const SegundaSeccion = () => {
+  const { status } = useAppSelector(state => state.auth);
+  const navigation: any = useNavigation();
+  const buttons: BtnPropertiesProps[] = [
+    {
+      ...commonBtnProperties,
+      icon: "shopping",
+      title: "Mis Pedidos",
+      handleOnPress: ()=>{navigation.navigate('')} // Ver screen de pedidos
+    },
+    {
+      ...commonBtnProperties,
+      icon: "map-search-outline",
+      title: "Mis Direcciones",
+      handleOnPress: ()=>{navigation.navigate('Direcciones')}
+    },
+    {
+      ...commonBtnProperties,
+      icon: "headset",
+      title: "Ayuda",
+    },
+    {
+      ...commonBtnProperties,
+      icon: "information",
+      title: "Terminos y condiciones",
+    },
+  ];
   return (
     <View>
-      {buttons.map((btn, index) => {
-        return (
+      {status === "authenticated" && (
+        <>
           <Button
-            key={index}
-            icon={btn.icon}
-            style={btn.style}
+            icon={buttons[0].icon}
+            style={buttons[0].style}
             mode="text"
-            contentStyle={btn.contentStyle}
-            onPress={btn.handleOnPress}
+            contentStyle={buttons[0].contentStyle}
+            onPress={buttons[0].handleOnPress}
           >
-            {btn.title}
+            {buttons[0].title}
           </Button>
-          
-        );
-      })}
+          <Button
+            icon={buttons[1].icon}
+            style={buttons[1].style}
+            mode="text"
+            contentStyle={buttons[1].contentStyle}
+            onPress={buttons[1].handleOnPress}
+          >
+            {buttons[1].title}
+          </Button>
+        </>
+      )}
+
+      {buttons.slice(2).map((btn, index) => (
+        <Button
+          key={index}
+          icon={btn.icon}
+          style={btn.style}
+          mode="text"
+          contentStyle={btn.contentStyle}
+          onPress={btn.handleOnPress}
+        >
+          {btn.title}
+        </Button>
+      ))}
     </View>
   );
 };

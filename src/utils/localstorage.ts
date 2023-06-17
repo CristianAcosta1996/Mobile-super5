@@ -81,6 +81,10 @@ export const getToken = () => {
   }
 };
 
+export const limpiarToken = () => {
+  AsyncStorage.removeItem('token');
+};
+
 export const setToken = (token: string) => {
   try {
     AsyncStorage.setItem('token', JSON.stringify(token), (error) => {

@@ -9,6 +9,7 @@ import PasswordScreen from "../screens/PasswordScreen";
 import { Directions } from "react-native-gesture-handler";
 import PaymentScreen from "../screens/PaymentScreen";
 import FinalizacionCompraScreen from "../screens/FinalizacionCompraScreen";
+import MapaDirection from "../screens/PerfilUsuario/screens/MapaDirectionScreen";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ export const AppStack = () => {
       <Stack.Screen name="Payment" component={PaymentScreen} /> 
       <Stack.Screen name="Carrito" component={CarritoScreen} />
       <Stack.Screen name="FinalizacionCompra" component={FinalizacionCompraScreen} />
+      <Stack.Screen name="Direcciones" component={MapaDirection} />
       <Stack.Screen
         name="Shopping-Cart"
         component={CarritoScreen}

@@ -1,14 +1,16 @@
 // v2.66
 import { Feather } from "@expo/vector-icons";
-import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
+import { DataTable } from 'react-native-paper';
 import { useAltaDirMutation } from '../../../store/super5/super5Api';
-import { ActivityIndicator } from "react-native-paper";
-import theme from "react-native-elements/dist/config/theme";
-import PopupMessage from "../../../components/PopupMessage";
+import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
+import { Direccion } from "../../../interfaces/interfaces";
 
 export const MapaDirection = (props: any) => {
+  
+
   const [startCreate, { isLoading, isSuccess, data }] = useAltaDirMutation();
   const [address, setAddress] = useState("");
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -29,7 +31,7 @@ export const MapaDirection = (props: any) => {
     setSelectedAddress(text);
   };
 
-  const handleAddAddress = () => {
+  /*const handleAddAddress = () => {
     if (selectedAddress.trim() === "") {
       //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
     } else {
@@ -41,13 +43,14 @@ export const MapaDirection = (props: any) => {
       setAclar("");
       //setEditMapMode(!editMapMode);
     }
-  };
+  };*/
 
   const handleDeleteAddress = (index: number) => {
-    const updatedAddresses = [...addresses];
-    updatedAddresses.splice(index, 1);
-    setAddresses(updatedAddresses);
-    setSelectedAddressIndex(null);
+    console.log("Eliminando...............")
+    //const updatedAddresses = [...addresses];
+    //updatedAddresses.splice(index, 1);
+    //setAddresses(updatedAddresses);
+    //setSelectedAddressIndex(null);
   };
 
   const handleEditAddress = (index: number) => {
@@ -60,23 +63,26 @@ export const MapaDirection = (props: any) => {
 
   const handleCreate = () => {
     console.log(long);
-    startCreate({ 
-      direccion : dir,
+    startCreate({
+      direccion: dir,
       ciudad: ciud,
       departamento: dept,
       longitud: long,
       latitud: lat,
       aclaracion: aclar,
-    }).then(
-      (resp: any) => {
-        if (resp){
-          alert(`Direccion agregada con exito!`);    
-      }
+    })
+      .then((resp: any) => {
+        if (resp) {
+          alert(`Dirección agregada con éxito!`);
+          refetchDirecciones(); // Actualizar los datos después de agregar una nueva dirección
+        }
         console.log(resp);
-      }
-    );
-    console.log('xxxxxxx')
+      })
+      .catch((error: any) => {
+        console.log('Error al agregar la dirección:', error);
+      });
   };
+  
   const handleSaveAddress = () => {
     if (selectedAddressIndex !== null && selectedAddress.trim() !== "") {
       const updatedAddresses = [...addresses];
@@ -88,13 +94,11 @@ export const MapaDirection = (props: any) => {
     }
     handleCreate();
     setEditInputMode(!editInputMode? editInputMode : !editInputMode);
-    //setEditMapMode(editMapMode && !editMapMode);
   };
 
   const handleCancelEditAddress = () => {
     setSelectedAddressIndex(null);
     setSelectedAddress("");
-    //setEditMapMode(editMapMode);
   };
   
   const handleToggleEditMode = () => {
@@ -160,12 +164,41 @@ export const MapaDirection = (props: any) => {
     getReverseGeocoding(newRegion.latitude, newRegion.longitude);
   };
 
-  const handleSetAddress = (latitude: number, longitude: number) => {
-    setDraggableMarkerCoord({ longitude, latitude });
-    console.log("Dirección establecida:", draggableMarkerCoord);
-    getReverseGeocoding(latitude, longitude);
+  //const { data: direcciones } = useGetDireccionesQuery();
+
+  const useFetchDirecciones = () => {
+    const { data: direcciones, refetch } = useGetDireccionesQuery();
+  
+    return {
+      direcciones,
+      refetchDirecciones: refetch,
+    };
   };
 
+  const { direcciones, refetchDirecciones } = useFetchDirecciones();
+  
+  const handleAddAddress = async () => {
+    if (selectedAddress.trim() === "") {
+      //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
+    } else {
+      setAddresses([...addresses, selectedAddress]);
+      setSelectedAddress("");
+      console.log('antes del alta');
+      console.log(aclar);
+      await handleCreate();
+      setAclar("");
+  
+      // Vuelve a obtener las direcciones después de agregar una nueva dirección
+      refetchDirecciones();
+      //setEditMapMode(!editMapMode);
+    }
+  };
+  
+  if (!direcciones) {
+    // Si direcciones es undefined, muestra algún mensaje de carga o manejo de estado
+    return null;
+  }console.log(direcciones);
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -174,15 +207,17 @@ export const MapaDirection = (props: any) => {
           <Feather name={editMode ? "check" : "edit" } size={24} color="black" />
         </TouchableOpacity>
       </View>
-      <View style={styles.fieldContainer}>
-        {addresses.length > 0 && (
+      
+      <SafeAreaView style={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={styles.fieldContainer}>
+        {direcciones.length > 0 && (
           <View style={styles.field}>
             <Feather name="map-pin" size={20} color="black" />
             <Text style={styles.label}>Direcciones</Text>
           </View>
         )}
-        {addresses.length > 0 ? (
-          addresses.map((address, index) => (
+        {direcciones.length > 0 ? (
+          direcciones.map((direcciones, index) => (
             <View style={styles.field} key={index}>
               <Feather name="map-pin" size={20} color="black" />
               {selectedAddressIndex === index && editMode ? (
@@ -201,7 +236,7 @@ export const MapaDirection = (props: any) => {
                 </>
               ) : (
                 <>
-                  <Text style={styles.text}>{address}</Text>
+                  <Text style={styles.text}>{direcciones.direccion}</Text>
                   {editMode && (
                     <View style={{ flexDirection: "row", marginLeft: 'auto' }}>
                       <TouchableOpacity onPress={() => handleEditAddress(index)}>
@@ -246,7 +281,8 @@ export const MapaDirection = (props: any) => {
             }
           </View>
         )}
-      </View>
+              </ScrollView>
+      </SafeAreaView>
       {editMapMode && <View style={{ flex: 1 }}>
       <MapView
         style={styles.map}
@@ -268,6 +304,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  scrollContainer: {
+    flex: 1,
   },
   containerModal: {
     flex: 1,

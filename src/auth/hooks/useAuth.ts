@@ -10,6 +10,8 @@ import {
 } from "../../store/auth/thunks";
 import { useNavigation } from "@react-navigation/native";
 import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
+import { ToastAndroid } from "react-native";
+import { Snackbar } from "react-native-paper";
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -94,6 +96,7 @@ export const useAuth = () => {
           dispatch(startEmailAndPasswordLogin(token));
         }, 3000);
         if (resp) alert(`Usuario creado con exito!`)
+        
       })
       .catch((error) => {
         console.error(error);

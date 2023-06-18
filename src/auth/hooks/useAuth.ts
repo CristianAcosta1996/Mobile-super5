@@ -60,7 +60,7 @@ export const useAuth = () => {
         }, 3000);
       })
       .catch((error) => {
-        console.error(error);
+        alert('Usuario y/o contraseña incorrecta.');
       });
   };
 

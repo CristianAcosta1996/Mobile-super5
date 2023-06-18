@@ -7,7 +7,7 @@ import { useAppDispatch } from '../../../hooks/hooks';
 import { startAgregarSucursal } from '../../../store/super5/thunks';
 
 export interface ModalSucursalProps {
-  selectedName: string;
+  selectedName: string; // Sucursal Number
   setSelectedName: (name: string) => void;
   setSelectedNameSuc: (name: string) => void;
   visible: boolean;

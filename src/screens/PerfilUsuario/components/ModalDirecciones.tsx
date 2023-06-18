@@ -3,41 +3,53 @@ import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet, SafeAreaView
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
 import { ActivityIndicator, useTheme } from 'react-native-paper';
 import { useAppDispatch } from '../../../hooks/hooks';
+import { Direccion } from '../../../interfaces/interfaces';
 
 export interface ModalDireccionesProps {
   selectedDireccion: string;
   setSelectedDireccion: (direccion: string) => void;
+  selectedDireccionId: string;
+  setSelectedDireccionId: (direccion: string) => void;
   visible: boolean;
   setVisible: (visible: boolean) => void;
 }
 
-export const ModalDirecciones = ({ selectedDireccion, setSelectedDireccion, visible, setVisible }: ModalDireccionesProps) => {
+export const ModalDirecciones = ({ selectedDireccion, 
+  setSelectedDireccion, 
+  visible, 
+  setVisible, 
+  setSelectedDireccionId, 
+  selectedDireccionId 
+}: ModalDireccionesProps) => {
   const theme = useTheme();
-  const [direcciones, setDirecciones] = useState<string[]>([]);
+  const [direcciones, setDirecciones] = useState<Direccion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { data: direccionesData } = useGetDireccionesQuery();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (direccionesData) {
-      const direccionesArray = direccionesData.map((direccion) => direccion.direccion);
-      setDirecciones(direccionesArray);
+      setDirecciones(direccionesData);
       setIsLoading(false);
     }
   }, [direccionesData]);
+  
 
-  const handleDireccionSelection = (direccion: string) => {
-    setSelectedDireccion(direccion);
+  const handleDireccionSelection = (direccion: Direccion) => {
+    setSelectedDireccion(direccion.direccion);
+    setSelectedDireccionId(direccion.id);
     setVisible(false);
   };
   
-  const renderItem = ({ item }: { item: string }) => {
+  
+  const renderItem = ({ item }: { item: Direccion }) => {
     return (
       <TouchableOpacity onPress={() => handleDireccionSelection(item)}>
-        <Text style={styles.item}>{item}</Text>
+        <Text style={styles.item}>{item.direccion}</Text>
       </TouchableOpacity>
     );
   };
+  
 
   if (isLoading) {
     return (

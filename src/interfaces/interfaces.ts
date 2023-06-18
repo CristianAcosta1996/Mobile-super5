@@ -56,7 +56,7 @@ export interface Token {
   }
   
   export interface CompraDTO {
-    formaEntrega: "DOMICILIO" | "SUCURSAL";
+    formaEntrega: string;//"DOMICILIO" | "SUCURSAL";
     direccion_id?: number;
     sucursal_id: number;
     carrito: CarritoDto[];

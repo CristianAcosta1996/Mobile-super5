@@ -22,6 +22,12 @@ export const useCarrito = () => {
   const [precioTotalCarrito, setPrecioTotalCarrito] = useState<number>(0);
   const dispatch = useAppDispatch();
 
+
+  const [cupon, setCupon] = useState('');
+  const [cuponAplicado, setCuponAplicado] = useState(false);
+  const [direccionId, setDireccionId] = useState('');
+  const [modoEnvio, setModoEnvio] = useState('');
+
   const { carrito } = useAppSelector((state) => state.super5);
   const [startCompraPaypal, { data }] = useGenerarCompraPaypalMutation();
   const { sucursal } = useAppSelector((state) => state.super5);
@@ -53,12 +59,12 @@ export const useCarrito = () => {
 
   const calcularPrecioTotalCarrito = (): number => {
     let contador = 0;
-    carrito.forEach((carritoItem) => {
-      const precio = carritoItem.producto.aplicaDescuento
-        ? carritoItem.producto.precioDescuento ?? 0
-        : carritoItem.producto.precio ?? 0;
-      contador += precio * carritoItem.cantidad;
+    carrito.forEach(({ producto: { precio, precioDescuento }, cantidad }) => {
+      contador += !precioDescuento
+        ? precio * cantidad
+        : precioDescuento * cantidad;
     });
+    
     return contador;
   };
   
@@ -66,17 +72,18 @@ export const useCarrito = () => {
 
   const handlePagarCompra = (): void => {
     let arregloCompra: CarritoDto[] = [];
-    carrito.forEach(({ producto, cantidad }) => {
-      arregloCompra.push({ producto_id: +producto.id, cantidad });
-    });
-    console.log(arregloCompra);
+    const carritoDto = carrito.map(({ producto, cantidad }) => ({
+      producto_id: +producto.id,
+      cantidad,
+    }));
+    console.log(carritoDto);
     const compra: CompraDTO = {
-      carrito: arregloCompra,
-      formaEntrega: "SUCURSAL",
+      carrito: carritoDto,
+      direccion_id: modoEnvio === "DOMICILIO" ? Number(direccionId) : undefined,
+      formaEntrega: modoEnvio,
       sucursal_id: +sucursal.id,
     };
     console.log('sucursal: ', sucursal.id);
-    console.log(compra);
     startCompraPaypal(compra).then((resp: any) => {
       console.log('compra dentro de startCompraPaypal: ', compra);
       console.log('respuesta: ', resp.data);
@@ -94,5 +101,13 @@ export const useCarrito = () => {
     calcularPrecioTotalCarrito,
     precioTotalCarrito,
     handlePagarCompra,
+    cupon,
+    setCupon,
+    cuponAplicado,
+    setCuponAplicado,
+    direccionId,
+    setDireccionId,
+    modoEnvio,
+    setModoEnvio
   };
 };

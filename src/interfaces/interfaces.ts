@@ -73,3 +73,13 @@ export interface Token {
     promocion_id?: number;
     urlPaypal?: string;
   }
+  export interface ReclamoDTO {
+    id?: number;
+    tipo: string;
+    estado: "ATENDIDO" | "CREADO";
+    comentario: string;
+    comentarioSucursal?: string;
+    venta: {
+      id: number;
+    };
+  }

@@ -199,7 +199,7 @@ const SegundaSeccion = () => {
       ...commonBtnProperties,
       icon: "shopping",
       title: "Mis Pedidos",
-      handleOnPress: ()=>{navigation.navigate('')} // Ver screen de pedidos
+      handleOnPress: ()=>{navigation.navigate('Pedidos')} // Ver screen de pedidos
     },
     {
       ...commonBtnProperties,

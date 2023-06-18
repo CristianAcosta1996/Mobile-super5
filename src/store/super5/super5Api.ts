@@ -5,6 +5,7 @@ import {
   Sucursal,
   Token,
   Direccion,
+  ReclamoDTO,
 } from "../../interfaces/interfaces";
 import { RootState } from "../store";
 import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
@@ -221,12 +222,23 @@ export const super5Api = createApi({
         body,
       }),
     }),
+
+    getCompras: builder.query<any[], void>({
+      query: () => "venta/listar",
+    }),
     
     getUserData: builder.query<UserDataProps, void>({
       query: () => "usuario/obtenerUsuario",
       //providesTags: ["User"],
     }),
-
+    crearReclamo: builder.mutation<Token, ReclamoDTO>({
+      query: (body) => ({
+        url: "reclamo/crear",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["UserData"],
+    }),
 
     modificarComprador: builder.mutation<Token, ModificarCompradorProps>({
       query: (body) => ({
@@ -252,4 +264,6 @@ export const {
   useSignupMutation,
   useGetUserDataQuery,
   useGetDireccionesQuery,
+  useGetComprasQuery,
+  useCrearReclamoMutation,
 } = super5Api;

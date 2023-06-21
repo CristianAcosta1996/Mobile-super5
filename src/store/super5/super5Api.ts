@@ -146,6 +146,7 @@ export const super5Api = createApi({
     "Producto",
     "Sucursal",
     "Direccion",
+    "Compras",
   ],
   
   endpoints: (builder) => ({
@@ -240,12 +241,22 @@ export const super5Api = createApi({
       invalidatesTags: ["UserData"],
     }),
 
+    cancelarCompra: builder.mutation<CompraDTO, CompraDTO>({
+      query: (body) => ({
+        url: "venta/cancelar",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Compras"],
+    }),
+
     modificarComprador: builder.mutation<Token, ModificarCompradorProps>({
       query: (body) => ({
         url: "cliente/modificarComprador",
         method: "POST",
         body,
       }),
+      invalidatesTags: ["UserData"],
     }),
   }),
 
@@ -266,4 +277,5 @@ export const {
   useGetDireccionesQuery,
   useGetComprasQuery,
   useCrearReclamoMutation,
+  useCancelarCompraMutation
 } = super5Api;

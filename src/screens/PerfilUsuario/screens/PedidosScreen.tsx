@@ -1,10 +1,10 @@
 // v2.66
 import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView, Alert } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
 import { DataTable } from 'react-native-paper';
-import { useAltaDirMutation, useGetComprasQuery } from '../../../store/super5/super5Api';
+import { useCancelarCompraMutation, useGetComprasQuery } from '../../../store/super5/super5Api';
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
 import { CarritoItem, CompraDTO, Direccion, Producto } from "../../../interfaces/interfaces";
 import ModalReclamos from '../components/ModalReclamos';
@@ -22,14 +22,21 @@ export const PedidosScreeen = (props: any) => {
     setModalVisible(true); // Establecer el estado de la visibilidad del modal
     setIdCompra(id_compra); // Establecer el estado del id_compra
   };
+  const [startCancelarCompra] = useCancelarCompraMutation();
+
   const { data: compras } = useGetComprasQuery();
   
   if (!compras) {
-    // Si direcciones es undefined, muestra algún mensaje de carga o manejo de estado
     return null;
   }console.log(compras);
   
-
+  const handleCancelarCompra = (compra: CompraDTO) => {
+    startCancelarCompra(compra)
+      .unwrap()
+      .then(() => Alert.alert("Compra cancelada con éxito"))
+      .catch(() => Alert.alert("Solo puede cancelar compras en estado PAGO"));
+  }
+  
 
 
   return (
@@ -47,11 +54,18 @@ export const PedidosScreeen = (props: any) => {
                     <Text style={styles.tableHeader}>Compra #{index + 1}</Text>
                     
                     <TouchableOpacity
-                        onPress={() => handleReclamo(compra.id)} // Reemplaza 'handleReclamo' con la función correspondiente
-                        
+                        onPress={() => handleReclamo(compra.id)} 
                     >
-                        <Feather name="alert-circle" size={24} color="black" />
+                        <Feather name="alert-triangle" size={24} color="black" />
                     </TouchableOpacity>
+                  {compra.estado === "PAGO" && 
+                    <TouchableOpacity
+                    onPress={() => handleCancelarCompra(compra)} 
+                    >
+                      <Feather name="x-circle" size={24} color="red" />
+                    </TouchableOpacity>  
+                  }
+                  
                 </View>
                 
                 <View style={styles.tableRow}>

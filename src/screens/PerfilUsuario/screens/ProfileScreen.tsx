@@ -63,11 +63,11 @@ console.log(userData?.fechaNacimiento?.toString());
       // Volver a obtener los datos del usuario después de guardar
       //const { data: updatedUserData } = useGetUserDataQuery();
       //if (userData) {
-        setName(name);
-        setLastName(lastName);
-        const formattedBirthDate = moment(userData?.fechaNacimiento).format('DD/MM/YYYY');
-        setBirthDate(birthDate);
-        setPhone(phone);
+        //setName(name);
+        //setLastName(lastName);
+        //const formattedBirthDate = moment(userData?.fechaNacimiento).format('DD/MM/YYYY');
+        //setBirthDate(birthDate);
+        //setPhone(phone);
       //}
     }
   };

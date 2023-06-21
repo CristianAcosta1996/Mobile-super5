@@ -21,7 +21,7 @@ export const useModificarComprador = () => {
         });
         if (resp){
             alert(`Datos actualizados con exito!`);    
-            navigation.navigate("Home"); 
+            //navigation.navigate("Home"); 
         } 
         
     };

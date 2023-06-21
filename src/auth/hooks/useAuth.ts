@@ -45,6 +45,7 @@ export const useAuth = () => {
   };
 
   const handleLogin = async (email: string, password: string) => {
+    console.log(email, password);
     startLogin({
       usuarioOCorreo: email,
       contrasenia: password,

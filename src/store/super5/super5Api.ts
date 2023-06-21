@@ -118,6 +118,16 @@ interface ModificarCompradorProps {
   fechaNacimiento_t: Timestamp,
 }
 
+interface RecuperarContrasenaProps {
+  correo: string;
+}
+
+interface ModificarContrasenaProps {
+  guid: string;
+  contrasena: string;
+  contrasenaRepeticion: string;
+}
+
 type AuthResponse = {
   token: string;
 };
@@ -167,6 +177,23 @@ export const super5Api = createApi({
         body,
       }),
       transformResponse: (resp: AuthResponse, meta) => resp.token,
+    }),
+    recuperarContrasena: builder.mutation<string, RecuperarContrasenaProps>({
+      query: (body) => ({
+        url: "auth/generarRecuperacionContrasenaMobile",
+        method: "POST",
+        body,
+        responseHandler: (response) => response.text(),
+      })
+     
+    }),
+    modificarContrasena: builder.mutation<any, ModificarContrasenaProps>({
+      query: (body) => ({
+        url: "auth/modificarContrasena",
+        method: "POST",
+        body,
+        responseHandler: (response) => response.text(),
+      })
     }),
 
     alta: builder.mutation<Token, AltaProps>({
@@ -258,6 +285,8 @@ export const super5Api = createApi({
       }),
       invalidatesTags: ["UserData"],
     }),
+
+    
   }),
 
 });
@@ -277,5 +306,7 @@ export const {
   useGetDireccionesQuery,
   useGetComprasQuery,
   useCrearReclamoMutation,
-  useCancelarCompraMutation
+  useCancelarCompraMutation,
+  useRecuperarContrasenaMutation,
+  useModificarContrasenaMutation
 } = super5Api;

@@ -27,10 +27,12 @@ console.log(userData?.fechaNacimiento?.toString());
   const { handleModificarComprador } = useModificarComprador();
   
   const handleNameChange = (text: string) => {
+    console.log(text);
     setName(text);
   };
 
   const handleLastNameChange = (text: string) => {
+    console.log(text);
     setLastName(text);
   };
 

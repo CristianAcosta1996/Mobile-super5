@@ -73,6 +73,20 @@ export interface Token {
     promocion_id?: number;
     urlPaypal?: string;
   }
+
+  export interface UserDataProps {
+    nombre: string;
+    apellido: string;
+    correo: string;
+    telefono: string;
+    fechaNacimiento: Date;
+    rol: 0 | 1;
+    eliminado: 0 | 1;
+    bloqueado: 0 | 1;
+    usuario: string;
+    direcciones: Direccion[];
+  }
+
   export interface ReclamoDTO {
     id?: number;
     tipo: string;

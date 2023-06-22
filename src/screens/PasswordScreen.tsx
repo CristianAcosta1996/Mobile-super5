@@ -40,7 +40,7 @@ export const PasswordScreen = (props: any) => {
     const handleModificarContrasena = async () => {
         setVisibleContinuar(true);
         startModificarContrasena({
-          guid:"d27306ce-5fbb-4512-afdd-d64fe2d097e7",
+          guid:codigo,
           contrasena:password,
           contrasenaRepeticion:password
         })

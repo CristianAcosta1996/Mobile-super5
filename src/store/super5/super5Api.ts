@@ -35,7 +35,7 @@ interface AltaProps {
   contrasenia: string;
   telefono: string;
   usuario: string;
-  fechaNacimiento: Timestamp;
+  fechaNacimiento: Date | null;
 }
 interface AltaDireccionProps {
 direccion : string,
@@ -253,11 +253,12 @@ export const super5Api = createApi({
 
     getCompras: builder.query<any[], void>({
       query: () => "venta/listar",
+      providesTags: ["Compras"],
     }),
     
     getUserData: builder.query<UserDataProps, void>({
       query: () => "usuario/obtenerUsuario",
-      //providesTags: ["User"],
+      providesTags: ["UserData"],
     }),
     crearReclamo: builder.mutation<Token, ReclamoDTO>({
       query: (body) => ({

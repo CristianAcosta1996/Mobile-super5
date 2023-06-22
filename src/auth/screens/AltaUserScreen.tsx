@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { Input } from 'react-native-elements';
-import { Modal, IconButton, useTheme, Portal } from 'react-native-paper';
-import { Calendar } from 'react-native-calendars';
-import moment from 'moment';
+import { IconButton, useTheme, Portal } from 'react-native-paper';
 import { useAltaMutation } from '../../store/super5/super5Api';
 import LoginScreen from './LoginScreen';
 import PopupMessage from '../../components/PopupMessage';
 import Gif from 'react-native-gif';
+import RNPickerSelect from 'react-native-picker-select';
+import { format } from 'date-fns';
+import { Feather } from '@expo/vector-icons';
 
 const AltaUserScreen = () => {
-  const today = moment();
-  const theme = useTheme();
-  const [visible, setVisible] = React.useState(false);
+  interface FormValues {
+    nombre: string;
+    apellido: string;
+    user: string;
+    password: string;
+    passwordConfirm: string;
+    email: string;
+    telefono: string;
+    date: Date | null;
+  }
 
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-  const containerStyle = { backgroundColor: 'white', padding: 20 };
-
-  const initialState = {
+  const initialState: FormValues = {
     nombre: "",
     apellido: "",
     user: "",
@@ -26,14 +30,76 @@ const AltaUserScreen = () => {
     passwordConfirm: "",
     email: "",
     telefono: "",
-    date: new Date(),
+    date: null,
   };
+
+  const theme = useTheme();
+  const [visible, setVisible] = React.useState(false);
+
+    // Items para Dias
+    const dayItems = [];
+    for (let i = 1; i <= 31; i++) {
+      dayItems.push({ label: i.toString(), value: i.toString() });
+    }
+  
+    // Items para Meses
+    /*const monthItems = [];
+    for (let i = 1; i <= 12; i++) {
+      monthItems.push({ label: i.toString(), value: i.toString() });
+    }*/
+    const monthItems = [
+      { label: 'Enero', value: '1' },
+      { label: 'Febrero', value: '2' },
+      { label: 'Marzo', value: '3' },
+      { label: 'Abril', value: '4' },
+      { label: 'Mayo', value: '5' },
+      { label: 'Junio', value: '6' },
+      { label: 'Julio', value: '7' },
+      { label: 'Agosto', value: '8' },
+      { label: 'Setiembre', value: '9' },
+      { label: 'Octubre', value: '10' },
+      { label: 'Noviembre', value: '11' },
+      { label: 'Diciembre', value: '12' },
+    ];
+  
+    //  Items para Años con un rango de 95 hasta la actualidad 
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 95;
+  
+    const yearItems = Array.from({ length: 96 }, (_, index) => {
+      const year = startYear + index;
+      return { label: year.toString(), value: year.toString() };
+    });
+  
 
   const [formValues, setFormValues] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const [day, setDay] = useState<number>(0);
+  const [month, setMonth] = useState<number>(0);
+  const [year, setYear] = useState<number>(0);
+
+  const handleDayChange = (value: any) => {
+    setDay(value);
+  };
+
+  const handleMonthChange = (value: any) => {
+    setMonth(value);
+  };
+
+  const handleYearChange = (value: any) => {
+    setYear(value);
+  };
+
+  const selectedDate = day && month && year ? new Date(year, month - 1, day) : null;
+  const formattedDate = selectedDate ? format(selectedDate, 'dd/MM/yyyy') : '';
+
+  const [dateVisible, setDateVisible] = useState(false);
+
   const [startCreate, { isLoading, isSuccess, data }] = useAltaMutation();
+
+
 
   const handleCreate = () => {
     startCreate({
@@ -43,27 +109,17 @@ const AltaUserScreen = () => {
       contrasenia: formValues.password,
       telefono: formValues.telefono,
       usuario: formValues.user,
-      fechaNacimiento: formValues.date.getTime()
-    }).then(
-      (resp: any) => {
-        console.log(resp);
-        setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
-      }
-    );
+      fechaNacimiento: selectedDate instanceof Date ? selectedDate : null,
+    }).then((resp: any) => {
+      console.log(resp);
+      setDateVisible(true);
+      setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
+    });
   };
+  
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
-  };
-
-  const handleToggleCalendar = () => {
-    setOpen(!open);
-  };
-
-  const handleCalendarSelect = (selectedDate: any) => {
-    const formattedDate = moment(selectedDate.dateString).toDate(); // Convertir la cadena de texto a un objeto Date
-    setFormValues({ ...formValues, date: formattedDate });
-    setOpen(false);
   };
 
   if (isLoading)
@@ -108,6 +164,7 @@ const AltaUserScreen = () => {
           onChangeText={(value: string) => setFormValues({ ...formValues, apellido: value })}
           style={styles.input}
         />
+
         <Input
           label="Contraseña"
           value={formValues.password}
@@ -122,13 +179,6 @@ const AltaUserScreen = () => {
           }
         />
         <Input
-          label="Confirmar contraseña"
-          value={formValues.passwordConfirm}
-          onChangeText={(value: string) => setFormValues({ ...formValues, passwordConfirm: value })}
-          style={styles.input}
-          secureTextEntry={!showPassword}
-        />
-        <Input
           label="E-email"
           value={formValues.email}
           onChangeText={(value: string) => setFormValues({ ...formValues, email: value })}
@@ -141,36 +191,68 @@ const AltaUserScreen = () => {
           style={styles.input}
           keyboardType="phone-pad"
         />
-        {open && (
-          <Calendar
-            onDayPress={handleCalendarSelect}
-            style={styles.calendar}
-            maxDate={today.format('DD-MM-YYYY')}
-            hideExtraDays
-            markedDates={formValues.date ? { [moment(formValues.date).format('YYYY-MM-DD')]: { selected: true, selectedColor: '#7e57c2' } } : {}}
+        {!dateVisible &&
+          <TouchableOpacity onPress={() => setDateVisible(true)} style={styles.calendarButton}>
+            <Text style={styles.calendarButtonText}>Fecha de nacimiento</Text>
+            <Feather name="calendar" size={20} color="lightblue" style={styles.calendarIcon} />
+          </TouchableOpacity>
+        }
+      </View>
+
+      {dateVisible &&
+        <View>
+          <RNPickerSelect
+            placeholder={{ label: 'Día', value: '' }}
+            onValueChange={handleDayChange}
+            value={day}
+            items={dayItems}
           />
 
-        )}
-        <Input
-          label="Fecha de nacimiento"
-          style={styles.input}
-          value={moment(formValues.date).format('DD-MM-YYYY')}
-          editable={false}
-          rightIcon={
-            <IconButton
-              icon="calendar"
-              onPress={handleToggleCalendar}
-            />
-          }
-        />
+          <RNPickerSelect
+            placeholder={{ label: 'Mes', value: '' }}
+            onValueChange={handleMonthChange}
+            value={month}
+            items={monthItems}
+          />
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleCreate}>
-            <Text style={styles.buttonText}>Registrarse</Text>
-          </TouchableOpacity>
+          <RNPickerSelect
+            placeholder={{ label: 'Año', value: '' }}
+            onValueChange={handleYearChange}
+            value={year}
+            items={yearItems}
+          />
+
+          {selectedDate && (
+            <>
+              <Text>Fecha seleccionada: {selectedDate.toDateString()}</Text>
+              <Text>Fecha seleccionada: {formattedDate}</Text>
+
+              <Input
+                label="Fecha seleccionada"
+                value={formattedDate}
+                onChangeText={(value: string) => {
+                  const selectedDate = new Date(value);
+                  setFormValues({
+                    ...formValues,
+                    date: isNaN(selectedDate.getTime()) ? null : selectedDate,
+                  });
+                }}
+                style={styles.input}
+                editable={false}
+              />
+            </>
+          )}
         </View>
+      }
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleCreate}>
+          <Text style={styles.buttonText}>Registrarse</Text>
+        </TouchableOpacity>
       </View>
+
     </ScrollView>
+
   );
 };
 
@@ -179,17 +261,25 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        justifyContent: 'center',
-        paddingHorizontal: 30,
-        backgroundColor: '#f2f2f2',
-        padding: 16,
+      justifyContent: 'center',
+      backgroundColor: '#f2f2f2',
+      padding: 16,
     },
     buttonContainer: {
         marginBottom: 10,
 
     },
+    dateContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    label: {
+      marginRight: 12,
+      width: 70, 
+      textAlign: 'right',
+    },
     button: {
-
         backgroundColor: '#7e57c2',
         paddingVertical: 10,
         paddingHorizontal: 20,
@@ -202,9 +292,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
     },
     icon: {
         marginRight: 12,
@@ -213,19 +303,16 @@ const styles = StyleSheet.create({
         marginBottom: -8,
     },
     calendarButton: {
-        marginBottom: 20,
-        borderWidth: 1,
-        borderColor: '#7e57c2',
-        borderRadius: 5,
-        paddingVertical: 10,
-        paddingHorizontal: 12,
-      },
-      calendarButtonText: {
-        color: '#7e57c2',
-        fontSize: 16,
-      },
-      calendar: {
-        marginBottom: 20,
-      },
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    calendarButtonText: {
+      color: 'gray',
+      fontWeight: 'bold',
+    },
+    calendarIcon: {
+      color: 'gray',
+      marginLeft: 5,
+    },
 });
 export default AltaUserScreen;

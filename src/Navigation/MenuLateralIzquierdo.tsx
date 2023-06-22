@@ -18,7 +18,7 @@ import ModalDirecciones from "../screens/PerfilUsuario/components/ModalDireccion
 
 const DrawerRoot = createDrawerNavigator();
 
-const customDividerProps: CustomDividerProps = {
+export const customDividerProps: CustomDividerProps = {
   style: {
     width: 250,
   },

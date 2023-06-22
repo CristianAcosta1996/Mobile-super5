@@ -44,23 +44,22 @@ export const useAuth = () => {
     dispatch(startLogout());
   };
 
-  const handleLogin = async (email: string, password: string) => {
-    console.log(email, password);
+  const handleLogin = async (username: string, password: string) => {
+    console.log(username, password);
     startLogin({
-      usuarioOCorreo: email,
+      usuarioOCorreo: username,
       contrasenia: password,
-    })
-      .unwrap()
-      .then((resp) => {
-        console.log(resp);
+    }).unwrap()
+      .then((resp: any) => {
+        console.log("respuesta: ",resp);
         setTimeout(() => {
-          
           const token: string = resp;
           dispatch(startEmailAndPasswordLogin(token));
           navigation.navigate("Home");
         }, 3000);
       })
       .catch((error) => {
+        console.log("respuesta: eror ++>>> ",error);
         alert('Usuario y/o contraseña incorrecta.');
       });
   };

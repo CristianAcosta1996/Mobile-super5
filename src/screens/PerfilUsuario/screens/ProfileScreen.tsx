@@ -59,6 +59,9 @@ export const ProfileScreen = () => {
   const [editDateMode, setEditDateMode] = useState(false);
   const [formValues, setFormValues] = useState(initialState);
 
+  const [currentDateVisible, setCurrentDateVisible] = useState(true);
+
+
   const [phone, setPhone] = useState(userData?.telefono);
   const [email, setEmail] = useState(userData?.correo);
   const [fechaNac, setFechaNac] = useState((userData?.fechaNacimiento?.toString().slice(0, -19)));
@@ -115,6 +118,8 @@ export const ProfileScreen = () => {
 
   const handleSave = async () => {
     setEditMode(!editMode);
+    setEditDateMode(false);
+    setCurrentDateVisible(true);
     if (name && lastName && phone && selectedDate) {
       
       await handleModificarComprador(name, lastName, phone, selectedDate);
@@ -123,6 +128,8 @@ export const ProfileScreen = () => {
   };
   const handleCancel = async () => {
     setEditMode(!editMode);
+    setCurrentDateVisible(true);
+    setEditDateMode(false);
   };
 
   const handleCancelEditDate = async () => {
@@ -131,11 +138,16 @@ export const ProfileScreen = () => {
   };
   const handleSaveDate = async () => {
     // Guardar la nueva fecha
-    setDateVisible(false);
+    setCurrentDateVisible(false);
+    setDateVisible(true);
+    setEditDateMode(false);
   };
   
   const handleToggleEditModeDate = () => {
+    console.log("dentroooo")
+    setCurrentDateVisible(false);
     setDateVisible(true);
+    setEditDateMode(false);
   };
 //
   return (
@@ -209,11 +221,13 @@ export const ProfileScreen = () => {
           <Feather name="calendar" size={20} color="black" />
           {editMode ? (
             <>
-              {!editDateMode &&
+              {!editDateMode && currentDateVisible &&
                 <Text style={styles.text}>
-                  {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
+                  ss{nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
                 </Text>
               }
+              {!currentDateVisible &&
+              
               <TextInput
                 style={styles.input}
                 value={formattedDate}
@@ -226,14 +240,18 @@ export const ProfileScreen = () => {
                 }}
                 editable={false}
               />
+              }
+
+
           
+          {editDateMode &&
               <TouchableOpacity onPress={() => setEditDateMode(false)}>
                 <Feather name="x-square" size={24} color="black" />
               </TouchableOpacity>
-                
+          }
 
               <Text>     </Text>
-              <TouchableOpacity onPress={editDateMode ? () => setEditDateMode(false) : () => setEditDateMode(true)}>
+              <TouchableOpacity onPress={editDateMode ? () => handleSaveDate() : () => setEditDateMode(true)}>
                 <Feather name={editDateMode ? "check" : "edit"} size={24} color="black" />
               </TouchableOpacity>
               
@@ -241,9 +259,14 @@ export const ProfileScreen = () => {
             </>
 
           ) : (
-            <Text style={styles.text}>
-              {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
-            </Text>
+            currentDateVisible && (
+              <Text style={styles.text}>
+               current {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
+              </Text>
+            )
+                
+            
+            
           )}
         </View>
         {editDateMode &&
@@ -268,10 +291,10 @@ export const ProfileScreen = () => {
                     value={year}
                     items={yearItems}
                   />
-
+              {/*
               <Text>Fecha seleccionada: {selectedDate?.toDateString()}</Text>
               <Text>Fecha formateada: {formattedDate}</Text>
-
+              */}
               <Input
                 label="Fecha seleccionada"
                 value={formattedDate}

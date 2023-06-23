@@ -9,46 +9,77 @@ import { useModificarComprador } from "../hooks/useModificarComprador";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 import { UserDataProps } from "../../../interfaces/interfaces";
 import dayjs, { Dayjs } from 'dayjs';
-
-
+import { useAuth } from "../../../auth/hooks/useAuth";
+import RNPickerSelect from 'react-native-picker-select';
+import { Input } from 'react-native-elements';
 export const ProfileScreen = () => {
   const { data: userData } = useGetUserDataQuery();
 
-  const theme = useTheme();
-  /*if (isLoading) {
-    <View style={styles.container}>
-      <ActivityIndicator animating={true} color={theme.colors.primary} />
-    </View>
-  }*/
+  const {
+    dayItems,
+    monthItems,
+    yearItems,
+    handleDayChange,
+    handleMonthChange,
+    handleYearChange,
+    formattedDate,
+    selectedDate,
+    dateVisible,
+    setDateVisible,
+    day,
+    month,
+    year,
+  } = useAuth();
+
+  interface FormValues {
+    nombre: string;
+    apellido: string;
+    email: string;
+    telefono: string;
+    date: Date | null;
+  }
+
+  const initialState: FormValues = {
+    nombre: "",
+    apellido: "",
+    email: "",
+    telefono: "",
+    date: null,
+  };
 
   console.log(userData);
-  console.log(userData?.fechaNacimiento?.toString());
+  console.log("la fecha",userData?.fechaNacimiento?.toString());
 
   const [name, setName] = useState(userData?.nombre);
   const [lastName, setLastName] = useState(userData?.apellido);
-  const formattedBirthDate = moment(userData?.fechaNacimiento).format('DD/MM/YYYY');
-  console.log(formattedBirthDate);
-  
-  const [phone, setPhone] = useState(userData?.telefono);
-  const [email, setEmail] = useState(userData?.correo);
-  const [fechaNac, setFechaNac] = useState((userData?.fechaNacimiento?.toString().slice(0, -19)));
-  const [birthDate, setBirthDate] = useState(formattedBirthDate);
-  const [nacimiento, setNacimiento] = useState<Dayjs | null>(dayjs(fechaNac));
-  useEffect(() => {
-    if (userData) {
-        setName(userData.nombre);
-        setLastName(userData.apellido);
-        setPhone(userData.telefono);
-        setEmail(userData.correo);
-       // setFechaNac((userData?.fechaNacimiento?.toString().slice(0, -19)));
-        //setBirthDate(dayjs(fechaNac))
-    }
 
-}, [userData, fechaNac]);
   
   const [editMode, setEditMode] = useState(false);
   const [editMapMode, setEditMapMode] = useState(false);
+  const [editDateMode, setEditDateMode] = useState(false);
+  const [formValues, setFormValues] = useState(initialState);
+
+  const [phone, setPhone] = useState(userData?.telefono);
+  const [email, setEmail] = useState(userData?.correo);
+  const [fechaNac, setFechaNac] = useState((userData?.fechaNacimiento?.toString().slice(0, -19)));
+  //const [birthDate, setBirthDate] = useState(formattedBirthDate);
+  const [nacimiento, setNacimiento] = useState<Dayjs | null>(dayjs(fechaNac));
   
+
+
+
+  useEffect(() => {
+    if (userData) {
+      setName(userData.nombre);
+      setLastName(userData.apellido);
+      setPhone(userData.telefono);
+      setEmail(userData.correo);
+      setNacimiento(dayjs(userData.fechaNacimiento));
+    }
+  }, [userData]);
+  
+ 
+
   const { handleModificarComprador } = useModificarComprador();
   
   const handleNameChange = (text: string) => {
@@ -62,7 +93,7 @@ export const ProfileScreen = () => {
   };
 
   const handleBirthDateChange = (text: string) => {
-    setBirthDate(text);
+    setNacimiento(dayjs(text));
   };
 
   const handlePhoneChange = (text: string) => {
@@ -84,17 +115,29 @@ export const ProfileScreen = () => {
 
   const handleSave = async () => {
     setEditMode(!editMode);
-    if (name && lastName && phone && birthDate) {
-      const parsedBirthDate = new Date(birthDate);
-      await handleModificarComprador(name, lastName, phone, parsedBirthDate);
+    if (name && lastName && phone && selectedDate) {
+      
+      await handleModificarComprador(name, lastName, phone, selectedDate);
       console.log('Dentro del save!///////////////////////////');
     }
   };
   const handleCancel = async () => {
     setEditMode(!editMode);
   };
-  
 
+  const handleCancelEditDate = async () => {
+    // Cancelar la edicion de la fecha
+    setDateVisible(false);
+  };
+  const handleSaveDate = async () => {
+    // Guardar la nueva fecha
+    setDateVisible(false);
+  };
+  
+  const handleToggleEditModeDate = () => {
+    setDateVisible(true);
+  };
+//
   return (
     
     <View style={styles.container}>
@@ -137,19 +180,6 @@ export const ProfileScreen = () => {
           )}
         </View>
         <View style={styles.field}>
-          <Feather name="calendar" size={20} color="black" />
-          {editMode ? (
-            <TextInput
-              style={styles.input}
-              value={birthDate}
-              onChangeText={handleBirthDateChange}
-            />
-          ) : (
-            <Text style={styles.text}>{birthDate}</Text>
-          )}
-        </View>
-        
-        <View style={styles.field}>
           <Feather name="phone" size={20} color="black" />
           {editMode ? (
             <TextInput
@@ -174,6 +204,90 @@ export const ProfileScreen = () => {
             <Text style={styles.text}>{email}</Text>
           )}
         </View>
+        
+        <View style={styles.field}>
+          <Feather name="calendar" size={20} color="black" />
+          {editMode ? (
+            <>
+              {!editDateMode &&
+                <Text style={styles.text}>
+                  {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
+                </Text>
+              }
+              <TextInput
+                style={styles.input}
+                value={formattedDate}
+                onChangeText={(value: string) => {
+                  const selectedDate = new Date(value);
+                    setFormValues({
+                    ...formValues,
+                    date: isNaN(selectedDate.getTime()) ? null : selectedDate,
+                  });
+                }}
+                editable={false}
+              />
+          
+              <TouchableOpacity onPress={() => setEditDateMode(false)}>
+                <Feather name="x-square" size={24} color="black" />
+              </TouchableOpacity>
+                
+
+              <Text>     </Text>
+              <TouchableOpacity onPress={editDateMode ? () => setEditDateMode(false) : () => setEditDateMode(true)}>
+                <Feather name={editDateMode ? "check" : "edit"} size={24} color="black" />
+              </TouchableOpacity>
+              
+           
+            </>
+
+          ) : (
+            <Text style={styles.text}>
+              {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
+            </Text>
+          )}
+        </View>
+        {editDateMode &&
+                <View>
+                  <RNPickerSelect
+                    placeholder={{ label: 'Día', value: '' }}
+                    onValueChange={handleDayChange}
+                    value={day}
+                    items={dayItems}
+                  />
+
+                  <RNPickerSelect
+                    placeholder={{ label: 'Mes', value: '' }}
+                    onValueChange={handleMonthChange}
+                    value={month}
+                    items={monthItems}
+                  />
+
+                  <RNPickerSelect
+                    placeholder={{ label: 'Año', value: '' }}
+                    onValueChange={handleYearChange}
+                    value={year}
+                    items={yearItems}
+                  />
+
+              <Text>Fecha seleccionada: {selectedDate?.toDateString()}</Text>
+              <Text>Fecha formateada: {formattedDate}</Text>
+
+              <Input
+                label="Fecha seleccionada"
+                value={formattedDate}
+                onChangeText={(value: string) => {
+                  const selectedDate = new Date(value);
+                  setFormValues({
+                    ...formValues,
+                    date: isNaN(selectedDate.getTime()) ? null : selectedDate,
+                  });
+                }}
+                style={styles.input}
+                editable={false}
+              />
+                </View>
+              }
+        
       
 
       </View>

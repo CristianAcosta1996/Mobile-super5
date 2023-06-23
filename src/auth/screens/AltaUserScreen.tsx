@@ -9,6 +9,7 @@ import Gif from 'react-native-gif';
 import RNPickerSelect from 'react-native-picker-select';
 import { format } from 'date-fns';
 import { Feather } from '@expo/vector-icons';
+import { useAuth } from '../hooks/useAuth';
 
 const AltaUserScreen = () => {
   interface FormValues {
@@ -33,69 +34,17 @@ const AltaUserScreen = () => {
     date: null,
   };
 
+
   const theme = useTheme();
   const [visible, setVisible] = React.useState(false);
 
-    // Items para Dias
-    const dayItems = [];
-    for (let i = 1; i <= 31; i++) {
-      dayItems.push({ label: i.toString(), value: i.toString() });
-    }
-  
-    // Items para Meses
-    /*const monthItems = [];
-    for (let i = 1; i <= 12; i++) {
-      monthItems.push({ label: i.toString(), value: i.toString() });
-    }*/
-    const monthItems = [
-      { label: 'Enero', value: '1' },
-      { label: 'Febrero', value: '2' },
-      { label: 'Marzo', value: '3' },
-      { label: 'Abril', value: '4' },
-      { label: 'Mayo', value: '5' },
-      { label: 'Junio', value: '6' },
-      { label: 'Julio', value: '7' },
-      { label: 'Agosto', value: '8' },
-      { label: 'Setiembre', value: '9' },
-      { label: 'Octubre', value: '10' },
-      { label: 'Noviembre', value: '11' },
-      { label: 'Diciembre', value: '12' },
-    ];
-  
-    //  Items para Años con un rango de 95 hasta la actualidad 
-    const currentYear = new Date().getFullYear();
-    const startYear = currentYear - 95;
-  
-    const yearItems = Array.from({ length: 96 }, (_, index) => {
-      const year = startYear + index;
-      return { label: year.toString(), value: year.toString() };
-    });
+    
   
 
   const [formValues, setFormValues] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const [day, setDay] = useState<number>(0);
-  const [month, setMonth] = useState<number>(0);
-  const [year, setYear] = useState<number>(0);
-
-  const handleDayChange = (value: any) => {
-    setDay(value);
-  };
-
-  const handleMonthChange = (value: any) => {
-    setMonth(value);
-  };
-
-  const handleYearChange = (value: any) => {
-    setYear(value);
-  };
-
-  const selectedDate = day && month && year ? new Date(year, month - 1, day) : null;
-  const formattedDate = selectedDate ? format(selectedDate, 'dd/MM/yyyy') : '';
-
-  const [dateVisible, setDateVisible] = useState(false);
 
   const [startCreate, { isLoading, isSuccess, data }] = useAltaMutation();
 
@@ -117,7 +66,21 @@ const AltaUserScreen = () => {
     });
   };
   
-
+  const {
+    dayItems,
+    monthItems,
+    yearItems,
+    handleDayChange,
+    handleMonthChange,
+    handleYearChange,
+    formattedDate,
+    selectedDate,
+    dateVisible,
+    setDateVisible,
+    day,
+    month,
+    year,
+   } = useAuth();
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };

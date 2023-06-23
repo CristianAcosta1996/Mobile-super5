@@ -12,12 +12,11 @@ export const useModificarComprador = () => {
         telefono: string,
         fechaNacimiento: Date,
     ) => {
-        const fechaNacimiento_t = fechaNacimiento.getTime();
         const resp = await startModificarComprador({
             nombre,
             apellido,
             telefono,
-            fechaNacimiento_t,
+            fechaNacimiento,
         });
         if (resp){
             alert(`Datos actualizados con exito!`);    

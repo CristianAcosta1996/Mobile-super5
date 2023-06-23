@@ -12,7 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
 import { ToastAndroid } from "react-native";
 import { Snackbar } from "react-native-paper";
-
+import { format } from 'date-fns';
+import { useState } from "react";
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const navigation: any = useNavigation();
@@ -68,6 +69,64 @@ export const useAuth = () => {
     dispatch(startGoogleSignIn());
   };
 
+
+  // Items para Dias
+  const dayItems = [];
+  for (let i = 1; i <= 31; i++) {
+    dayItems.push({ label: i.toString(), value: i.toString() });
+  }
+
+  // Items para Meses
+  /*const monthItems = [];
+  for (let i = 1; i <= 12; i++) {
+    monthItems.push({ label: i.toString(), value: i.toString() });
+  }*/
+  const monthItems = [
+    { label: 'Enero', value: '1' },
+    { label: 'Febrero', value: '2' },
+    { label: 'Marzo', value: '3' },
+    { label: 'Abril', value: '4' },
+    { label: 'Mayo', value: '5' },
+    { label: 'Junio', value: '6' },
+    { label: 'Julio', value: '7' },
+    { label: 'Agosto', value: '8' },
+    { label: 'Setiembre', value: '9' },
+    { label: 'Octubre', value: '10' },
+    { label: 'Noviembre', value: '11' },
+    { label: 'Diciembre', value: '12' },
+  ];
+
+  //  Items para Años con un rango de 95 hasta la actualidad 
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - 95;
+
+  const yearItems = Array.from({ length: 96 }, (_, index) => {
+    const year = startYear + index;
+    return { label: year.toString(), value: year.toString() };
+  });
+
+
+  const [day, setDay] = useState<number>(0);
+  const [month, setMonth] = useState<number>(0);
+  const [year, setYear] = useState<number>(0);
+
+  const handleDayChange = (value: any) => {
+    setDay(value);
+  };
+
+  const handleMonthChange = (value: any) => {
+    setMonth(value);
+  };
+
+  const handleYearChange = (value: any) => {
+    setYear(value);
+  };
+
+  const selectedDate = day && month && year ? new Date(year, month - 1, day) : null;
+  const formattedDate = selectedDate ? format(selectedDate, 'dd/MM/yyyy') : '';
+
+  const [dateVisible, setDateVisible] = useState(false);
+
   const handleRegistrarUsuario = async (
     username: string,
     password: string,
@@ -119,5 +178,18 @@ export const useAuth = () => {
     isSuccessSignup,
     dataLogin,
     dataSignup,
+    dayItems,
+    monthItems,
+    yearItems,
+    handleDayChange,
+    handleMonthChange,
+    handleYearChange,
+    formattedDate,
+    selectedDate,
+    dateVisible,
+    setDateVisible,
+    day,
+    month,
+    year,
   };
 };

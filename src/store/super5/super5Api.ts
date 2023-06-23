@@ -107,7 +107,7 @@ interface SignupProps {
   eliminado: 0 | 1;
   bloqueado: 0 | 1;
   usuario: string;
-  fechaNacimiento: Timestamp;
+  fechaNacimiento: Date | null;
 }
 
 
@@ -115,7 +115,7 @@ interface ModificarCompradorProps {
   nombre: string;
   apellido: string;
   telefono: string;
-  fechaNacimiento_t: Timestamp,
+  fechaNacimiento: Date,
 }
 
 interface RecuperarContrasenaProps {

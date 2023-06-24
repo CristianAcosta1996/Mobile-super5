@@ -8,9 +8,7 @@ import { useCancelarCompraMutation, useGetComprasQuery } from '../../../store/su
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
 import { CarritoItem, CompraDTO, Direccion, Producto } from "../../../interfaces/interfaces";
 import ModalReclamos from '../components/ModalReclamos';
-import moment from "moment";
-import * as Notifications from 'expo-notifications';
-import * as Device from "expo-device";
+
 
 
 export const PedidosScreeen = (props: any) => {
@@ -72,93 +70,7 @@ export const PedidosScreeen = (props: any) => {
   }
   
    
-/*
-  useEffect(() => {
-    // Función para verificar el estado de la compra y enviar notificación si es "Confirmado"
-    const checkCompraEstadoAndSendNotification = (compra: CompraDTO) => {
-      if (compra.estado === "CONFIRMADO") {
-        if (expoPushToken) {
-          sendPushNotification(expoPushToken);
-        } else {
-          console.log("Expo push token is not available.");
-        }
-      }
-    };
 
-    // Temporizador para consultar el estado de la compra cada cierto tiempo
-    const timer = setInterval(() => {
-      if (compras) {
-        compras.forEach((compra: CompraDTO) => {
-          checkCompraEstadoAndSendNotification(compra);
-        });
-      }
-    }, 5000); // Consultar cada 5 segundos (ajusta el tiempo según tus necesidades)
-
-    return () => {
-      clearInterval(timer); // Limpiar el temporizador al desmontar el componente
-    };
-  }, [compras, expoPushToken]);
-
-  useEffect(() => {
-    // Registrar el dispositivo para recibir notificaciones
-    registerForPushNotificationsAsync().then((expoPushToken) => {
-      console.log(expoPushToken);
-    });
-  }, []);
-
-  // Función para enviar la notificación push
-  async function sendPushNotification(expoPushToken: string) {
-    const message = {
-      to: expoPushToken,
-      sound: "default",
-      title: "Compra en super 5",
-      body: "Hola esto es una notificación de la compra",
-      data: { someData: "goes here" },
-    };
-
-    await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Accept-encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
-  }
-
-  async function registerForPushNotificationsAsync() {
-    let token: string | null = null;
-    if (Device.isDevice) {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
-        return;
-      }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
-      setExpoPushToken(token);
-    } else {
-      alert("Must use physical device for Push Notifications");
-    }
-
-    if (Platform.OS === "android") {
-      Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
-
-    return token;
-  }
-*/ 
 
 
 return (

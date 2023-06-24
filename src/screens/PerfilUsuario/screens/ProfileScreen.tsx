@@ -120,7 +120,7 @@ export const ProfileScreen = () => {
     setEditMode(!editMode);
     setEditDateMode(false);
     setCurrentDateVisible(true);
-    if (name && lastName && phone && selectedDate) {
+    if (name && lastName && selectedDate && phone) {
       
       await handleModificarComprador(name, lastName, phone, selectedDate);
       console.log('Dentro del save!///////////////////////////');
@@ -223,7 +223,7 @@ export const ProfileScreen = () => {
             <>
               {!editDateMode && currentDateVisible &&
                 <Text style={styles.text}>
-                  ss{nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
+                  {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
                 </Text>
               }
               {!currentDateVisible &&
@@ -261,7 +261,7 @@ export const ProfileScreen = () => {
           ) : (
             currentDateVisible && (
               <Text style={styles.text}>
-               current {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
+               {nacimiento ? nacimiento.format('DD/MM/YYYY') : ''}
               </Text>
             )
                 

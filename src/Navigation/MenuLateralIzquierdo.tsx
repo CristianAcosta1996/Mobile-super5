@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Image, StyleProp, ViewStyle, Alert } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, View, Image, StyleProp, ViewStyle, Alert, Platform } from "react-native";
 
 import {
   DrawerContentScrollView,
@@ -16,6 +16,13 @@ import { useNavigation } from "@react-navigation/native";
 import ModalDirecciones from "../screens/PerfilUsuario/components/ModalDirecciones";
 
 
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import { CompraDTO } from "../interfaces/interfaces";
+import { useGetComprasQuery } from "../store/super5/super5Api";
+import { useNotifications } from "../hooks/useNotifications";
+
+
 const DrawerRoot = createDrawerNavigator();
 
 export const customDividerProps: CustomDividerProps = {
@@ -25,7 +32,72 @@ export const customDividerProps: CustomDividerProps = {
   bold: true,
 };
 
+
+
+
 export const MenuLateralIzquierdo = () => {
+  const { data: compras } = useGetComprasQuery();
+  const { registerForPushNotificationsAsync, sendNotificationCompraConfirmada } = useNotifications();
+  const [expoPushToken, setExpoPushToken] = useState<string>('');
+  const [notification, setNotification] = useState<Notifications.Notification | null>(null);
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
+  
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token || ''));
+  
+    notificationListener.current = Notifications.addNotificationReceivedListener((receivedNotification) => {
+      setNotification(receivedNotification);
+    });
+  
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log(response);
+    });
+  
+    // Enviar una notificación cada 10 segundos
+  // Variable para almacenar los estados anteriores de las compras
+  let estadosAnteriores: { [index: number]: string } = {};
+  
+  const interval = setInterval(() => {
+    console.log('ENTRE AL INTERVALO');
+  if (expoPushToken) {
+    if (compras) {
+      compras.map((compra: CompraDTO, index:number) => {
+        // Verificar si el estado actual es diferente al estado anterior
+        if (compra.estado !== estadosAnteriores[index]) {
+          const estadoActual = compra.estado ?? ''; // Utilizar cadena vacía como valor predeterminado si es undefined
+  
+          if (estadoActual === 'CONFIRMADO') {
+            // El estado de la compra ha cambiado a "CONFIRMADO", realizar acciones
+            console.log('La compra', index, 'está confirmada:', compra);
+            sendNotificationCompraConfirmada(expoPushToken);
+          }else{
+            console.log('no compra');
+          }
+          
+          // Actualizar el estado anterior con el estado actual
+          estadosAnteriores[index] = estadoActual;
+        }
+      });
+    }
+    
+  }
+  }, 10000);
+  
+  
+  
+  
+    return () => {
+      clearInterval(interval);
+      if (notificationListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      }
+      if (responseListener.current) {
+        Notifications.removeNotificationSubscription(responseListener.current);
+      }
+    };
+  }, [expoPushToken]);
+
   return (
     <DrawerRoot.Navigator
       screenOptions={{ headerShown: false }}
@@ -60,13 +132,17 @@ const [selectedDireccion, setSelectedDireccion] = useState('');
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
       {modalVisible && (
-  <ModalDirecciones
-    selectedDireccion={selectedDireccion}
-    setSelectedDireccion={setSelectedDireccion}
-    visible={true}
-    setVisible={setModalVisible}
-  />
-)}
+        <ModalDirecciones
+            selectedDireccion={selectedDireccion}
+            setSelectedDireccion={setSelectedDireccion}
+            visible={true}
+            setVisible={setModalVisible} 
+            selectedDireccionId={""} 
+            setSelectedDireccionId={function (direccion: string): void {
+              throw new Error("Function not implemented here.");
+            } }  
+        />
+      )}
         <PrimeraSeccion props = {props}/>
         <CustomDivider
           style={customDividerProps.style}

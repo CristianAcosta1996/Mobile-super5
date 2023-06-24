@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Button, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from '../../../components/Card';
 import ImageSwiper from "../../../components/ImageSwiper";
 import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
@@ -7,7 +7,9 @@ import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
 import { Feather } from "@expo/vector-icons";
 import { useHome } from "../hooks/useHome";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useTheme } from "react-native-paper";
 export const HomeScreen = () => {
+  const theme = useTheme();
   const {
     handlePressSucursal,
     filteredProducts,
@@ -21,6 +23,7 @@ export const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView>
       <ModalSucursal 
        {...modalSucursalProps}
       />
@@ -41,17 +44,25 @@ export const HomeScreen = () => {
           <TouchableOpacity onPress={handleFilterIconPress}>
             <Feather name="filter" size={24} color="gray" style={styles.filterIcon} /> 
           </TouchableOpacity>
-        </View>
-      <ScrollView>
-        
-        <ImageSwiper/>
-        <FlatList
+      </View>
+      
+      
+      
+      
+      <FlatList
           data={filteredProducts}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
           renderItem={({ item }) => <Card product={item} />}
-        />
-      </ScrollView>
+          ListHeaderComponent={<ImageSwiper/>}
+          ListFooterComponent={<ActivityIndicator animating={true} color={theme.colors.primary} />}
+      />
+      
+        
+        
+      
+        
+      </SafeAreaView>
       <ModalCategorias 
        {...modalCatProps}
       />

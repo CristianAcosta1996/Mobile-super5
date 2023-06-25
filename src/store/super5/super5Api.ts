@@ -287,6 +287,11 @@ export const super5Api = createApi({
       invalidatesTags: ["UserData"],
     }),
 
+    getReclamos: builder.query<ReclamoDTO[], void>({
+      query: () => "reclamo/listar",
+      providesTags: ["AtenderReclamo"],
+    }),
+
     
   }),
 
@@ -309,5 +314,6 @@ export const {
   useCrearReclamoMutation,
   useCancelarCompraMutation,
   useRecuperarContrasenaMutation,
-  useModificarContrasenaMutation
+  useModificarContrasenaMutation,
+  useGetReclamosQuery
 } = super5Api;

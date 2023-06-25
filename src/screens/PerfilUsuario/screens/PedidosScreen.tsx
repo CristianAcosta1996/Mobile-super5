@@ -1,15 +1,26 @@
-// v2.66
 import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView, Alert, Platform } from "react-native";
-import MapView, { Marker } from 'react-native-maps';
-import { ActivityIndicator, DataTable, useTheme } from 'react-native-paper';
-import { useCancelarCompraMutation, useGetComprasQuery } from '../../../store/super5/super5Api';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  Modal,
+  ScrollView,
+  SafeAreaView,
+  Alert,
+  Platform,
+} from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import { ActivityIndicator, DataTable, useTheme } from "react-native-paper";
+import {
+  useCancelarCompraMutation,
+  useGetComprasQuery,
+} from "../../../store/super5/super5Api";
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
 import { CarritoItem, CompraDTO, Direccion, Producto } from "../../../interfaces/interfaces";
-import ModalReclamos from '../components/ModalReclamos';
-
-
+import ModalReclamos from "../components/ModalReclamos";
 
 export const PedidosScreeen = (props: any) => {
   const [editMode, setEditMode] = useState(false);
@@ -23,7 +34,7 @@ export const PedidosScreeen = (props: any) => {
   const { data: compras, error, isLoading } = useGetComprasQuery();
   const [startCancelarCompra] = useCancelarCompraMutation();
 
- useEffect(() => {
+  useEffect(() => {
     if (error) {
       Alert.alert("Error al obtener las compras");
     }
@@ -37,95 +48,93 @@ export const PedidosScreeen = (props: any) => {
 
   const handleCancelar = (compra: CompraDTO) => {
     Alert.alert(
-      'Confirmación',
-      '¿Estás seguro de que deseas cancelar la compra?',
+      "Confirmación",
+      "¿Estás seguro de que deseas cancelar la compra?",
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: "Cancelar", style: "cancel" },
         {
-          text: 'Cancelar compra',
+          text: "Cancelar compra",
           onPress: () => handleCancelarCompra(compra), // Corrección aquí
-          style: 'destructive'
-        }
+          style: "destructive",
+        },
       ]
     );
   };
-  
+
   const handleCancelarCompra = (compra: CompraDTO) => {
     startCancelarCompra(compra)
       .unwrap()
       .then(() => Alert.alert("Compra cancelada con éxito"))
       .catch(() => Alert.alert("Solo puede cancelar compras en estado PAGO"));
   };
-  
 
   if (isLoading) {
-    <View style={styles.container}>
-      <Text>Cargando compras...</Text>;
-      <ActivityIndicator animating={true} color={theme.colors.primary} />
-    </View>
+    return (
+      <View style={styles.container}>
+        <Text>Cargando compras...</Text>
+        <ActivityIndicator animating={true} color={theme.colors.primary} />
+      </View>
+    );
   }
 
   if (!compras) {
     return <Text>No tienes compras realizadas</Text>;
   }
-  
-   
 
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Mis Compras</Text>
+      </View>
 
+      <SafeAreaView style={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={styles.fieldContainer}>
+          {compras.length > 0 ? (
+            compras.map((compra: CompraDTO, index) => (
+              <View key={index} style={styles.compraContainer}>
+                <View style={styles.field}>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableHeader}>Compra #{index + 1}</Text>
 
-return (
-  <View style={styles.container}>
-    <View style={styles.header}>
-      <Text style={styles.title}>Mis Compras</Text>
+                    <TouchableOpacity onPress={() => handleReclamo(compra.id)}>
+                      <Feather name="alert-triangle" size={24} color="black" />
+                    </TouchableOpacity>
+
+                    {compra.estado === "PAGO" && (
+                      <TouchableOpacity onPress={() => handleCancelar(compra)}>
+                        <Feather name="x-circle" size={24} color="red" />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableLabel}>Forma de entrega:</Text>
+                    <Text style={styles.tableValue}>{compra.formaEntrega}</Text>
+                  </View>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableLabel}>Estado:</Text>
+                    <Text style={styles.tableValue}>{compra.estado}</Text>
+                  </View>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableLabel}>Precio:</Text>
+                    <Text style={styles.tableValue}>{compra.precio}</Text>
+                  </View>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableLabel}>Fecha de compra:</Text>
+                    <Text style={styles.tableValue}>{compra.fechaCompra?.toString()}</Text>
+                  </View>
+                </View>
+              </View>
+            ))
+          ) : (
+            <Text>No tienes compras realizadas</Text>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+
+      {modalVisible && <ModalReclamos visible={modalVisible} setVisible={setModalVisible} idCompra={idCompra} />}
     </View>
-    
-    <SafeAreaView style={styles.scrollContainer}>
-      <ScrollView contentContainerStyle={styles.fieldContainer}>
-        {compras.length > 0 ? (
-          compras.map((compra: CompraDTO, index) => (
-            <View style={styles.field} key={index}>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableHeader}>Compra #{index + 1}</Text>
-                
-                <TouchableOpacity onPress={() => handleReclamo(compra.id)}>
-                  <Feather name="alert-triangle" size={24} color="black" />
-                </TouchableOpacity>
-                
-                {compra.estado === "PAGO" && (
-                  <TouchableOpacity onPress={() => handleCancelar(compra)}>
-                    <Feather name="x-circle" size={24} color="red" />
-                  </TouchableOpacity>
-                )}
-              </View>
-              
-              <View style={styles.tableRow}>
-                <Text style={styles.tableLabel}>Forma de entrega:</Text>
-                <Text style={styles.tableValue}>{compra.formaEntrega}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableLabel}>Estado:</Text>
-                <Text style={styles.tableValue}>{compra.estado}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableLabel}>Precio:</Text>
-                <Text style={styles.tableValue}>{compra.precio}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableLabel}>Fecha de compra:</Text>
-                <Text style={styles.tableValue}>{compra.fechaCompra?.toString()}</Text>
-              </View>
-            </View>
-          ))
-        ) : (
-          <Text>No tienes compras realizadas</Text>
-        )}
-      </ScrollView>
-    </SafeAreaView>
-    
-    {modalVisible && <ModalReclamos visible={modalVisible} setVisible={setModalVisible} idCompra={idCompra} />}
-  </View>
-);
-
+  );
 };
 
 const styles = StyleSheet.create({
@@ -136,26 +145,49 @@ const styles = StyleSheet.create({
 
   scrollContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   fieldContainer: {
     padding: 20,
   },
   field: {
     marginBottom: 20,
+    backgroundColor: "#fff",
+    borderRadius: 4,
+    padding: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+  },
+  compraContainer: {
+    marginBottom: 20,
+    elevation: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
   },
   tableHeader: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
+    color: "blue", 
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 5,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   tableLabel: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginRight: 10,
   },
   tableValue: {
@@ -166,7 +198,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   modalContent: {
     backgroundColor: "white",
     padding: 20,
@@ -177,7 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 1)",
   },
   header: {
     flexDirection: "row",
@@ -228,5 +259,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
 
 export default PedidosScreeen;

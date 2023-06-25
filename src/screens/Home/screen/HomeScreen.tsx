@@ -8,6 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { useHome } from "../hooks/useHome";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from "react-native-paper";
+import { Producto } from "../../../interfaces/interfaces";
 export const HomeScreen = () => {
   const theme = useTheme();
   const {
@@ -45,23 +46,16 @@ export const HomeScreen = () => {
             <Feather name="filter" size={24} color="gray" style={styles.filterIcon} /> 
           </TouchableOpacity>
       </View>
-      
-      
-      
-      
       <FlatList
           data={filteredProducts}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-          renderItem={({ item }) => <Card product={item} />}
+          renderItem={({ item }) => <Card product={item as unknown as Producto} />}
           ListHeaderComponent={<ImageSwiper/>}
-          ListFooterComponent={<ActivityIndicator animating={true} color={theme.colors.primary} />}
+          ListFooterComponent={filteredProducts.length > 0 ?  (
+            <ActivityIndicator animating={true} color={theme.colors.primary} />
+          ) : null}  
       />
-      
-        
-        
-      
-        
       </SafeAreaView>
       <ModalCategorias 
        {...modalCatProps}

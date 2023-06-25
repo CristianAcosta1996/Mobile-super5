@@ -11,6 +11,7 @@ import PaymentScreen from "../screens/PaymentScreen";
 import FinalizacionCompraScreen from "../screens/FinalizacionCompraScreen";
 import MapaDirection from "../screens/PerfilUsuario/screens/MapaDirectionScreen";
 import PedidosScreeen from "../screens/PerfilUsuario/screens/PedidosScreen";
+import ReclamosScreeen from "../screens/PerfilUsuario/screens/ReclamosScreen";
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,8 @@ export const AppStack = () => {
       <Stack.Screen name="FinalizacionCompra" component={FinalizacionCompraScreen} />
       <Stack.Screen name="Direcciones" component={MapaDirection} />
       <Stack.Screen name="Pedidos" component={PedidosScreeen} />
+      <Stack.Screen name="Reclamos" component={ReclamosScreeen} />
+
       
       <Stack.Screen
         name="Shopping-Cart"

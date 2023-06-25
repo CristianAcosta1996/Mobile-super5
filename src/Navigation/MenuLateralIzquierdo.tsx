@@ -168,7 +168,7 @@ const [selectedDireccion, setSelectedDireccion] = useState('');
         >
           Busqueda
         </Button>
-
+          
         <CustomDivider
           style={customDividerProps.style}
           bold={customDividerProps.bold}
@@ -285,6 +285,12 @@ const SegundaSeccion = () => {
     },
     {
       ...commonBtnProperties,
+      icon: "shopping",
+      title: "Mis Reclamos",
+      handleOnPress: ()=>{navigation.navigate('Reclamos')} 
+    },
+    {
+      ...commonBtnProperties,
       icon: "headset",
       title: "Ayuda",
     },
@@ -316,10 +322,19 @@ const SegundaSeccion = () => {
           >
             {buttons[1].title}
           </Button>
+          <Button
+            icon={buttons[2].icon}
+            style={buttons[2].style}
+            mode="text"
+            contentStyle={buttons[2].contentStyle}
+            onPress={buttons[2].handleOnPress}
+          >
+            {buttons[2].title}
+          </Button>
         </>
       )}
 
-      {buttons.slice(2).map((btn, index) => (
+      {buttons.slice(3).map((btn, index) => (
         <Button
           key={index}
           icon={btn.icon}

@@ -7,10 +7,11 @@ import { DataTable } from 'react-native-paper';
 import { useAltaDirMutation } from '../../../store/super5/super5Api';
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
 import { Direccion } from "../../../interfaces/interfaces";
+import { useEliminarDireccion } from "../hooks/useEliminarDireccion";
 
 export const MapaDirection = (props: any) => {
   
-
+  const { handleEliminarDireccion } = useEliminarDireccion();
   const [startCreate, { isLoading, isSuccess, data }] = useAltaDirMutation();
   const [address, setAddress] = useState("");
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -45,13 +46,11 @@ export const MapaDirection = (props: any) => {
     }
   };*/
 
-  const handleDeleteAddress = (index: number) => {
-    console.log("Eliminando...............")
-    //const updatedAddresses = [...addresses];
-    //updatedAddresses.splice(index, 1);
-    //setAddresses(updatedAddresses);
-    //setSelectedAddressIndex(null);
-  };
+  
+   
+    
+    
+  
 
   const handleEditAddress = (index: number) => {
     console.log('este');
@@ -177,6 +176,30 @@ export const MapaDirection = (props: any) => {
 
   const { direcciones, refetchDirecciones } = useFetchDirecciones();
   
+  const handleDeleteAddress = (index: number) => {
+    if (direcciones && direcciones.length > index) {
+      console.log("Eliminando...............");
+      const direccion = direcciones[index]; // Obtener la dirección correspondiente al índice
+      console.log("Eliminando este id: ",index);
+      handleEliminarDireccion(
+        direccion.id,
+        direccion.direccion,
+        direccion.ciudad,
+        direccion.departamento,
+        direccion.longitud,
+        direccion.latitud,
+        direccion.aclaracion,
+        true
+      );
+    }
+  };
+  
+ //const updatedAddresses = [...addresses];
+ //updatedAddresses.splice(index, 1);
+ //setAddresses(updatedAddresses);
+ //setSelectedAddressIndex(null);
+
+
   const handleAddAddress = async () => {
     if (selectedAddress.trim() === "") {
       //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);

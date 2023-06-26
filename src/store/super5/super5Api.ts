@@ -73,7 +73,7 @@ interface ObtenerSucursalesProps {
       departamento: string,
       longitud: string,
       latitud: string,
-      aclaracion: null
+      aclaracion: string
   }
 }
 
@@ -292,6 +292,14 @@ export const super5Api = createApi({
       providesTags: ["AtenderReclamo"],
     }),
 
+    eliminarDireccion: builder.mutation<Direccion, any>({
+      query: (body) => ({
+        url: "direccion/eliminar",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Direccion"],
+    }),
     
   }),
 
@@ -315,5 +323,6 @@ export const {
   useCancelarCompraMutation,
   useRecuperarContrasenaMutation,
   useModificarContrasenaMutation,
-  useGetReclamosQuery
+  useGetReclamosQuery,
+  useEliminarDireccionMutation
 } = super5Api;

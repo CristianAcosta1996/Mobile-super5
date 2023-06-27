@@ -1,12 +1,10 @@
 // v2.66
 import { Feather } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView, Alert } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-import { DataTable } from 'react-native-paper';
 import { useAltaDirMutation } from '../../../store/super5/super5Api';
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
-import { Direccion } from "../../../interfaces/interfaces";
 import { useEliminarDireccion } from "../hooks/useEliminarDireccion";
 
 export const MapaDirection = (props: any) => {
@@ -32,32 +30,15 @@ export const MapaDirection = (props: any) => {
     setSelectedAddress(text);
   };
 
-  /*const handleAddAddress = () => {
-    if (selectedAddress.trim() === "") {
-      //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
-    } else {
-      setAddresses([...addresses, selectedAddress]);
-      setSelectedAddress("");
-      console.log('antes del alta');
-      console.log(aclar);
-      handleCreate();
-      setAclar("");
-      //setEditMapMode(!editMapMode);
-    }
-  };*/
-
-  
-   
-    
-    
   
 
   const handleEditAddress = (index: number) => {
-    console.log('este');
+    alert('Esta funcion no se ha implementado aun');
+    /*
     setEditInputMode(editInputMode? editInputMode : !editInputMode);
     setSelectedAddressIndex(index);
     setSelectedAddress(addresses[index]);
-    //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
+    */
   };
 
   const handleCreate = () => {
@@ -83,7 +64,8 @@ export const MapaDirection = (props: any) => {
   };
   
   const handleSaveAddress = () => {
-    if (selectedAddressIndex !== null && selectedAddress.trim() !== "") {
+   
+    /*if (selectedAddressIndex !== null && selectedAddress.trim() !== "") {
       const updatedAddresses = [...addresses];
       updatedAddresses[selectedAddressIndex] = selectedAddress.trim();
       setAddresses(updatedAddresses);
@@ -91,8 +73,9 @@ export const MapaDirection = (props: any) => {
       setSelectedAddress("");
       
     }
-    handleCreate();
+    
     setEditInputMode(!editInputMode? editInputMode : !editInputMode);
+    */
   };
 
   const handleCancelEditAddress = () => {
@@ -163,7 +146,6 @@ export const MapaDirection = (props: any) => {
     getReverseGeocoding(newRegion.latitude, newRegion.longitude);
   };
 
-  //const { data: direcciones } = useGetDireccionesQuery();
 
   const useFetchDirecciones = () => {
     const { data: direcciones, refetch } = useGetDireccionesQuery();
@@ -181,29 +163,32 @@ export const MapaDirection = (props: any) => {
       console.log("Eliminando...............");
       const direccion = direcciones[index]; // Obtener la dirección correspondiente al índice
       console.log("Eliminando este id: ",index);
-      handleEliminarDireccion(
-        direccion.id,
-        direccion.direccion,
-        direccion.ciudad,
-        direccion.departamento,
-        direccion.longitud,
-        direccion.latitud,
-        direccion.aclaracion,
-        true
+      console.log("Eliminando este id: ",index);
+      Alert.alert(
+        'Confirmación',
+        '¿Estás seguro de que deseas eliminar esta dirección?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Eliminar', onPress: () => handleEliminarDireccion(
+            direccion.id,
+            direccion.direccion,
+            direccion.ciudad,
+            direccion.departamento,
+            direccion.longitud,
+            direccion.latitud,
+            direccion.aclaracion,
+            true
+          ), style: 'destructive' }
+        ]
       );
+
     }
   };
-  
- //const updatedAddresses = [...addresses];
- //updatedAddresses.splice(index, 1);
- //setAddresses(updatedAddresses);
- //setSelectedAddressIndex(null);
+
 
 
   const handleAddAddress = async () => {
-    if (selectedAddress.trim() === "") {
-      //setEditMapMode(!editMapMode ? !editMapMode : editMapMode);
-    } else {
+    if (selectedAddress.trim() !== "") {
       setAddresses([...addresses, selectedAddress]);
       setSelectedAddress("");
       console.log('antes del alta');
@@ -211,9 +196,7 @@ export const MapaDirection = (props: any) => {
       await handleCreate();
       setAclar("");
   
-      // Vuelve a obtener las direcciones después de agregar una nueva dirección
       refetchDirecciones();
-      //setEditMapMode(!editMapMode);
     }
   };
   
@@ -306,19 +289,22 @@ export const MapaDirection = (props: any) => {
         )}
               </ScrollView>
       </SafeAreaView>
-      {editMapMode && <View style={{ flex: 1 }}>
-      <MapView
-        style={styles.map}
-        region={region}
-        onRegionChangeComplete={onRegionChangeComplete}
-      >
-        <Marker
-          coordinate={draggableMarkerCoord}
-          draggable
-          onDragEnd={onMarkerDragEnd}
-        />
-      </MapView>
-      </View>}
+      {editMapMode && (
+        <View style={{ flex: 1 }}>
+          <MapView
+            style={styles.map}
+            region={region}
+            onRegionChangeComplete={onRegionChangeComplete}
+          >
+            <Marker
+              coordinate={draggableMarkerCoord}
+              draggable
+              onDragEnd={onMarkerDragEnd}
+            />
+          </MapView>
+        </View>
+      )}
+
     </View>
   );
 };

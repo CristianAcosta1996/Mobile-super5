@@ -1,9 +1,12 @@
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { Text, View, Button, Platform } from 'react-native';
+import { Text, View, Button, Platform, Alert } from 'react-native';
 import { useGetComprasQuery } from '../store/super5/super5Api';
+import { useState } from 'react';
 export const useNotifications = () => {
     const { data: compras } = useGetComprasQuery();
+    const [expoPushToken, setExpoPushToken] = useState<string>('');
+    const [permitirNot, setPermitirNot] = useState(false);
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
           shouldShowAlert: true,
@@ -81,5 +84,31 @@ export const useNotifications = () => {
       
         return token;
       }
-    return { registerForPushNotificationsAsync, sendNotificationCompraConfirmada }
+      
+      const askForNotificationPermission = () => {
+        Alert.alert(
+          "Permisos de notificación",
+          "¿Deseas recibir notificaciones?",
+          [
+            {
+              text: "No",
+              onPress: () => {
+                // El usuario no desea recibir notificaciones
+                setPermitirNot(false);
+                console.log("No quiere recibir notificaciones")
+              },
+              style: "cancel",
+              
+            },
+            {
+              text: "Sí",
+              onPress: () => {
+                setPermitirNot(true);
+                registerForPushNotificationsAsync().then((token) => setExpoPushToken(token || ''));
+              },
+            },
+          ]
+        );
+      };
+    return { permitirNot, expoPushToken, setExpoPushToken, askForNotificationPermission, registerForPushNotificationsAsync, sendNotificationCompraConfirmada }
 }

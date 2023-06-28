@@ -79,7 +79,7 @@ export const Card = ({ product }: CardProps) => {
             </Text>
 
             <Text style={styles.price}>
-              <FontAwesome name="tag" size={16} color="red" style={styles.discountIcon} /> 
+              <FontAwesome name="tags" size={16} color="red" style={styles.discountIcon} /> 
               $ {product.precioDescuento}
             </Text>
           </>
@@ -101,8 +101,11 @@ export const Card = ({ product }: CardProps) => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
-        <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
-      </TouchableOpacity>
+      <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
+      <View style={styles.cartIcon}>
+        <FontAwesome name="shopping-cart" size={16} color="white"/>
+      </View>
+    </TouchableOpacity>
     </View>
   );
 };
@@ -177,15 +180,21 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   addToCartButton: {
-    backgroundColor: '#C141AA',
+    backgroundColor: '#FF0056',
     borderRadius: 8,
-    padding: 8,
     alignItems: 'center',
+    flexDirection: 'row',
+    padding: 10,
+    justifyContent: 'center',
   },
   addToCartButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#fff',
+    marginRight: 5,
+  },
+  cartIcon: {
+    marginLeft: 5,
   },
   hiddenText: {
     opacity: 0,

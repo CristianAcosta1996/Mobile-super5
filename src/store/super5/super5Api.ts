@@ -234,6 +234,10 @@ export const super5Api = createApi({
     obtenerProds: builder.query<ObtenerProdsProps[], string>({ //sucursalSelected
       query: (id) => `producto/obtenerPorSucursal/${id}`,
     }), 
+    getProductos: builder.query<Producto[], string>({
+      query: (id) => `producto/obtenerPorSucursal/${id}`,
+      providesTags: ["Producto"],
+    }),
 /*----------------*/
     generarCompraPaypal: builder.mutation<CompraDTO, CompraDTO>({
       query: (body) => ({
@@ -324,5 +328,6 @@ export const {
   useRecuperarContrasenaMutation,
   useModificarContrasenaMutation,
   useGetReclamosQuery,
-  useEliminarDireccionMutation
+  useEliminarDireccionMutation,
+  useGetProductosQuery
 } = super5Api;

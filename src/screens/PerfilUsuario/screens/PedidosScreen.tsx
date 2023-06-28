@@ -12,37 +12,72 @@ import {
   Alert,
   Platform,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
 import { ActivityIndicator, DataTable, useTheme } from "react-native-paper";
 import {
   useCancelarCompraMutation,
   useGetComprasQuery,
+  useGetProductosQuery,
 } from "../../../store/super5/super5Api";
-import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
-import { CarritoItem, CompraDTO, Direccion, Producto } from "../../../interfaces/interfaces";
+import { CarritoDto, CarritoItem, CompraDTO, Direccion, Producto } from "../../../interfaces/interfaces";
 import ModalReclamos from "../components/ModalReclamos";
+import ModalShoppingCart from "../components/ModalShoppinCart";
+import dayjs from "dayjs";
+import CarritoComprasItem from "../components/CarritoComprasItem";
 
 export const PedidosScreeen = (props: any) => {
-  const [editMode, setEditMode] = useState(false);
-  const [editInputMode, setEditInputMode] = useState(true);
-  const [editMapMode, setEditMapMode] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalCartVisible, setModalCartVisible] = useState(false);
+  const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [idCompra, setIdCompra] = useState<number | undefined>(undefined);
-  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  const [sucursalID, setSucursalID] = useState<number | undefined>(undefined);
   const theme = useTheme();
 
-  const { data: compras, error, isLoading } = useGetComprasQuery();
-  const [startCancelarCompra] = useCancelarCompraMutation();
+  const { data: compras, isLoading } = useGetComprasQuery();
+  
+  
+  
+
+  const [productos, setProductos] = useState<Producto[]>();
 
   useEffect(() => {
-    if (error) {
-      Alert.alert("Error al obtener las compras");
-    }
-  }, [error]);
+    fetch(`http://192.168.1.159:8080/api/producto/obtenerPorSucursal/${sucursalID}`)
+        .then(response => response?.json())
+        .then(data => {
+       
+          setProductos(data);
+        })
+        .catch(error => console.error(error));
+    }, [sucursalID]);
+  /*const getProductosPorCompra = async (sucursalId: number) => {
+    const { data: productos } = await useGetProductosQuery(sucursalId.toString());
+    setProductosPorCompra((prevState) => ({
+      ...prevState,
+      [sucursalId]: productos,
+    }));
+  };*/
+  
+//Funcion actual 
+  const obtenerProductosPorID = (id: number, idSucursal: number) => {
+    setSucursalID(idSucursal);
+    //const { data: productos } = useGetProductosQuery(String(idSucursal));
+    const producto = productos?.find((producto: any) => producto.id === id);
+    return producto;
+  };
+  const [startCancelarCompra] = useCancelarCompraMutation();
 
+
+  /*const renderCarritoItems = () => {
+    return carrito.map((item) => <CarritoComprasItem key={item.producto.id} product={item} />);
+  };*/
   const handleReclamo = (id_compra?: number) => {
     console.log("reclamo");
     setModalVisible(true); // Establecer el estado de la visibilidad del modal
+    setIdCompra(id_compra); // Establecer el estado del id_compra
+  };
+
+  const handleShoppingCart = (id_compra?: number) => {
+    console.log("reclamo", id_compra);
+    setModalCartVisible(true); // Establecer el estado de la visibilidad del modal
     setIdCompra(id_compra); // Establecer el estado del id_compra
   };
 
@@ -111,19 +146,39 @@ export const PedidosScreeen = (props: any) => {
                     <Text style={styles.tableLabel}>Forma de entrega:</Text>
                     <Text style={styles.tableValue}>{compra.formaEntrega}</Text>
                   </View>
+
                   <View style={styles.tableRow}>
                     <Text style={styles.tableLabel}>Estado:</Text>
                     <Text style={styles.tableValue}>{compra.estado}</Text>
                   </View>
+
                   <View style={styles.tableRow}>
                     <Text style={styles.tableLabel}>Precio:</Text>
                     <Text style={styles.tableValue}>{compra.precio}</Text>
                   </View>
+
                   <View style={styles.tableRow}>
                     <Text style={styles.tableLabel}>Fecha de compra:</Text>
-                    <Text style={styles.tableValue}>{compra.fechaCompra?.toString()}</Text>
+                    <Text style={styles.tableValue}>
+                      {compra.fechaCompra && dayjs(compra.fechaCompra).format('DD/MM/YYYY HH:mm')}
+                    </Text>
+                  </View>
+
+                  <View style={styles.tableRow}>
+                    {compra.carrito.map((carritoItem: CarritoDto, carritoIndex: number) => (
+                      <View key={carritoIndex}>
+                        
+                        <Text>Producto: {obtenerProductosPorID(carritoItem.producto_id,compra.sucursal_id)?.nombre}</Text>
+                        <Text>Cantidad: {carritoItem.cantidad}</Text>
+                        {/*<CarritoComprasItem 
+                          product={obtenerProductosPorID(carritoItem.producto_id,compra.sucursal_id)} 
+                          cantidad={carritoItem.cantidad}
+                        />*/}
+                      </View>
+                    ))}
                   </View>
                 </View>
+
               </View>
             ))
           ) : (
@@ -133,6 +188,7 @@ export const PedidosScreeen = (props: any) => {
       </SafeAreaView>
 
       {modalVisible && <ModalReclamos visible={modalVisible} setVisible={setModalVisible} idCompra={idCompra} />}
+      {modalCartVisible && <ModalShoppingCart visible={modalCartVisible} setVisible={setModalCartVisible} idCompra={idCompra} />}      
     </View>
   );
 };
@@ -175,6 +231,7 @@ const styles = StyleSheet.create({
       height: 6,
     },
   },
+  
   tableHeader: {
     fontSize: 18,
     fontWeight: "bold",

@@ -270,8 +270,8 @@ const commonBtnProperties: BtnPropertiesProps = {
 const SegundaSeccion = () => {
   const handleAyuda = () => {
     console.log('helppp');
-    const phoneNumber = "+59897744363"; // ver numero
-    const message = "Hola, ¿me podrian ayudar?"; 
+    const phoneNumber = "+1 555 056 3468"; // ver numero
+    const message = "Hola..."; 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     
     // Abrir enlace en el navegador
@@ -283,9 +283,10 @@ const SegundaSeccion = () => {
         Linking.openURL(`whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`);
       } else {
         // WhatsApp no está instalado en el dispositivo
+        alert('No tienes Whatsapp instalado en el dispositivo');
       }
     }); 
-    };
+  };
   const { status } = useAppSelector(state => state.auth);
   const navigation: any = useNavigation();
   const buttons: BtnPropertiesProps[] = [

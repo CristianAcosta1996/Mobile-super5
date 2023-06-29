@@ -28,12 +28,13 @@ export const ModalShoppingCart = ({ visible, setVisible, idSucursal, compraID, c
   const productosFiltrados2 = compra?.carrito.map((carritoItem: CarritoDto, carritoIndex: number) => ( 
     productos?.filter(producto => producto.id == String(carritoItem.producto_id))
   ) )
+  console.log('Productos filtradosDOS: ',productosFiltrados2);
 
   //Iterar sobre el carrito y filtrar por los id de los productos del carrito
   const productosFiltrados = productos?.filter(producto => producto.id == '1');
   
 
- console.log('Productos filtrados: ',productosFiltrados);
+ //console.log('Productos filtrados: ',productosFiltrados);
   const handleCancel = () => {
     setVisible(false);
   };
@@ -43,44 +44,56 @@ export const ModalShoppingCart = ({ visible, setVisible, idSucursal, compraID, c
       <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={() => {}}>
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalContent}>
-          {productosFiltrados2?.map((product) => (
-            <View key={product?.id} style={styles.card}>
-              <View style={styles.cardImageContainer}>
-                <Image
-                  source={{ uri: product?.imagen }}
-                  style={{ width: '100%', height: '100%' }}
-                />
-              </View>
-              <View style={styles.cardContent}>
-                <Text numberOfLines={1} variant="bodyMedium">
-                  {product?.nombre}
-                </Text>
-                {product?.aplicaDescuento && (
-                  <Text>
-                    $ {product?.precioDescuento}
-                  </Text>
-                )}
-                {!product.aplicaDescuento && (
-                  <Text>$ {product.precio}</Text>
-                )}
-              </View>
-              <View
-                style={[
-                  styles.cantidadContainer,
-                  { backgroundColor: theme.colors.primary },
-                ]}
-              >
-                <Text style={{ color: 'white' }} variant="bodyLarge">
-                  {/*cantidadCompra*/}
-                </Text>
-              </View>
-            </View>
-          ))}
+          {productosFiltrados2?.map((products: Producto[] | undefined, index) => {
+            if (!products) {
+              return null; // Si products es undefined, no se muestra nada
+            }
 
-            <View style={styles.buttonContainer}>
-              <Button onPress={handleCancel} title="Cancelar" color={theme.colors.error} />
-            </View>
-          </View>
+            return products.map((product: Producto) => {
+              const carritoItem = compra?.carrito.find((item) => String(item.producto_id) == String(product.id));
+              
+              return (
+                <View key={product?.id} style={styles.card}>
+                  <View style={styles.cardImageContainer}>
+                    <Image
+                      source={{ uri: product?.imagen }}
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </View>
+                  <View style={styles.cardContent}>
+                    <Text numberOfLines={1} variant="bodyMedium">
+                      {product?.nombre}
+                    </Text>
+                    {product?.aplicaDescuento && (
+                      <Text>
+                        $ {product?.precioDescuento}
+                      </Text>
+                    )}
+                    {!product?.aplicaDescuento && (
+                      <Text>$ {product?.precio}</Text>
+                    )}
+                  </View>
+                  <View
+                    style={[
+                      styles.cantidadContainer,
+                      { backgroundColor: theme.colors.primary },
+                    ]}
+                  >
+                    <Text style={{ color: 'white' }} variant="bodyLarge">
+                      {carritoItem?.cantidad || 0} {/* Mostrar la cantidad del producto en el carrito */}
+                    </Text>
+                  </View>
+                </View>
+              );
+            });
+          })}
+
+
+
+          <TouchableOpacity style={styles.buttonContainer} onPress={handleCancel}>
+            <Text>Cerrar</Text> 
+          </TouchableOpacity>
+        </View>
         </SafeAreaView>
       </Modal>
     </View>

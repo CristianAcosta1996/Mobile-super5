@@ -97,12 +97,12 @@ export const PedidosScreeen = (props: any) => {
       <SafeAreaView style={styles.scrollContainer}>
         <ScrollView contentContainerStyle={styles.fieldContainer}>
           {compras.length > 0 ? (
-            compras.map((compra: CompraDTO, index) => (
+            compras.map((compra: CompraDTO, index: number) => (
               <View key={index} style={styles.compraContainer}>
                 <View style={styles.field}>
                   <View style={styles.tableRow}>
                     <Text style={styles.tableHeader}>Compra #{index + 1}</Text>
-
+                    
                     <TouchableOpacity onPress={() => handleReclamo(compra.id)}>
                       <Feather name="alert-triangle" size={24} color="black" />
                     </TouchableOpacity>
@@ -117,6 +117,11 @@ export const PedidosScreeen = (props: any) => {
                       </TouchableOpacity>
                     )}
                   </View>
+                  
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableLabel}>ID Compra:</Text>
+                    <Text style={styles.tableValue}>{compra.id}</Text>
+                  </View>
 
                   <View style={styles.tableRow}>
                     <Text style={styles.tableLabel}>Forma de entrega:</Text>
@@ -130,7 +135,7 @@ export const PedidosScreeen = (props: any) => {
 
                   <View style={styles.tableRow}>
                     <Text style={styles.tableLabel}>Precio:</Text>
-                    <Text style={styles.tableValue}>{compra.precio}</Text>
+                    <Text style={styles.tableValue}>$ {compra.precio}</Text>
                   </View>
 
                   <View style={styles.tableRow}>
@@ -139,10 +144,8 @@ export const PedidosScreeen = (props: any) => {
                       {compra.fechaCompra && dayjs(compra.fechaCompra).format('DD/MM/YYYY HH:mm')}
                     </Text>
                   </View>
-                  <View style={styles.tableRow}>
-                    <Text style={styles.tableLabel}>id compra:</Text>
-                    <Text style={styles.tableValue}>{compra.id}</Text>
-                  </View>
+                  
+
 
                   <View style={styles.tableRow}>
                     

@@ -20,7 +20,7 @@ import {
 } from "../../../store/super5/super5Api";
 import { CarritoDto, CarritoItem, CompraDTO, Direccion, Producto } from "../../../interfaces/interfaces";
 import ModalReclamos from "../components/ModalReclamos";
-import ModalShoppingCart from "../components/ModalShoppinCart";
+import ModalShoppingCart from "../components/ModalShoppingCart";
 import dayjs from "dayjs";
 import CarritoComprasItem from "../components/CarritoComprasItem";
 
@@ -30,56 +30,27 @@ export const PedidosScreeen = (props: any) => {
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [idCompra, setIdCompra] = useState<number | undefined>(undefined);
   const [sucursalID, setSucursalID] = useState<number | undefined>(undefined);
+  const [compra, setCompra] = useState<CompraDTO | undefined>(undefined);
   const theme = useTheme();
 
   const { data: compras, isLoading } = useGetComprasQuery();
-  
-  
-  
 
-  const [productos, setProductos] = useState<Producto[]>();
-
-  useEffect(() => {
-    fetch(`http://192.168.1.159:8080/api/producto/obtenerPorSucursal/${sucursalID}`)
-        .then(response => response?.json())
-        .then(data => {
-       
-          setProductos(data);
-        })
-        .catch(error => console.error(error));
-    }, [sucursalID]);
-  /*const getProductosPorCompra = async (sucursalId: number) => {
-    const { data: productos } = await useGetProductosQuery(sucursalId.toString());
-    setProductosPorCompra((prevState) => ({
-      ...prevState,
-      [sucursalId]: productos,
-    }));
-  };*/
-  
-//Funcion actual 
-  const obtenerProductosPorID = (id: number, idSucursal: number) => {
-    setSucursalID(idSucursal);
-    //const { data: productos } = useGetProductosQuery(String(idSucursal));
-    const producto = productos?.find((producto: any) => producto.id === id);
-    return producto;
-  };
   const [startCancelarCompra] = useCancelarCompraMutation();
 
-
-  /*const renderCarritoItems = () => {
-    return carrito.map((item) => <CarritoComprasItem key={item.producto.id} product={item} />);
-  };*/
   const handleReclamo = (id_compra?: number) => {
     console.log("reclamo");
     setModalVisible(true); // Establecer el estado de la visibilidad del modal
     setIdCompra(id_compra); // Establecer el estado del id_compra
   };
 
-  const handleShoppingCart = (id_compra?: number) => {
-    console.log("reclamo", id_compra);
-    setModalCartVisible(true); // Establecer el estado de la visibilidad del modal
+  const handleShoppingCart = (id_compra?: number, id_sucursal?: number, compra?: CompraDTO) => {
+    console.log("ver carrito");
+    setModalCartVisible(true);
     setIdCompra(id_compra); // Establecer el estado del id_compra
+    setSucursalID(id_sucursal);
+    setCompra(compra);
   };
+  
 
   const handleCancelar = (compra: CompraDTO) => {
     Alert.alert(
@@ -95,6 +66,7 @@ export const PedidosScreeen = (props: any) => {
       ]
     );
   };
+
 
   const handleCancelarCompra = (compra: CompraDTO) => {
     startCancelarCompra(compra)
@@ -135,6 +107,10 @@ export const PedidosScreeen = (props: any) => {
                       <Feather name="alert-triangle" size={24} color="black" />
                     </TouchableOpacity>
 
+                    <TouchableOpacity onPress={() => handleShoppingCart(compra.id, compra.sucursal_id, compra)}>
+                      <Feather name="shopping-cart" size={24} color="black" />
+                    </TouchableOpacity>
+
                     {compra.estado === "PAGO" && (
                       <TouchableOpacity onPress={() => handleCancelar(compra)}>
                         <Feather name="x-circle" size={24} color="red" />
@@ -163,19 +139,18 @@ export const PedidosScreeen = (props: any) => {
                       {compra.fechaCompra && dayjs(compra.fechaCompra).format('DD/MM/YYYY HH:mm')}
                     </Text>
                   </View>
+                  <View style={styles.tableRow}>
+                    <Text style={styles.tableLabel}>id compra:</Text>
+                    <Text style={styles.tableValue}>{compra.id}</Text>
+                  </View>
 
                   <View style={styles.tableRow}>
-                    {compra.carrito.map((carritoItem: CarritoDto, carritoIndex: number) => (
-                      <View key={carritoIndex}>
+                    
+                     
+                       
+                      
                         
-                        <Text>Producto: {obtenerProductosPorID(carritoItem.producto_id,compra.sucursal_id)?.nombre}</Text>
-                        <Text>Cantidad: {carritoItem.cantidad}</Text>
-                        {/*<CarritoComprasItem 
-                          product={obtenerProductosPorID(carritoItem.producto_id,compra.sucursal_id)} 
-                          cantidad={carritoItem.cantidad}
-                        />*/}
-                      </View>
-                    ))}
+                        
                   </View>
                 </View>
 
@@ -186,9 +161,16 @@ export const PedidosScreeen = (props: any) => {
           )}
         </ScrollView>
       </SafeAreaView>
-
-      {modalVisible && <ModalReclamos visible={modalVisible} setVisible={setModalVisible} idCompra={idCompra} />}
-      {modalCartVisible && <ModalShoppingCart visible={modalCartVisible} setVisible={setModalCartVisible} idCompra={idCompra} />}      
+      {modalCartVisible &&
+                          <ModalShoppingCart
+                            visible={modalCartVisible}
+                            setVisible={setModalCartVisible}
+                            idSucursal={sucursalID}
+                            compraID={idCompra}
+                            compra={compra}
+                          />
+                        }
+      {modalVisible && <ModalReclamos visible={modalVisible} setVisible={setModalVisible} idCompra={idCompra} />}  
     </View>
   );
 };

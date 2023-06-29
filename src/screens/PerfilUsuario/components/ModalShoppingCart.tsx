@@ -44,56 +44,56 @@ export const ModalShoppingCart = ({ visible, setVisible, idSucursal, compraID, c
       <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={() => {}}>
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalContent}>
-          {productosFiltrados2?.map((products: Producto[] | undefined, index) => {
-            if (!products) {
-              return null; // Si products es undefined, no se muestra nada
-            }
+            {productosFiltrados2?.map((products: Producto[] | undefined, index) => {
+              if (!products) {
+                return null; // Si products es undefined, no se muestra nada
+              }
 
-            return products.map((product: Producto) => {
-              const carritoItem = compra?.carrito.find((item) => String(item.producto_id) == String(product.id));
-              
-              return (
-                <View key={product?.id} style={styles.card}>
-                  <View style={styles.cardImageContainer}>
-                    <Image
-                      source={{ uri: product?.imagen }}
-                      style={{ width: '100%', height: '100%' }}
-                    />
-                  </View>
-                  <View style={styles.cardContent}>
-                    <Text numberOfLines={1} variant="bodyMedium">
-                      {product?.nombre}
-                    </Text>
-                    {product?.aplicaDescuento && (
-                      <Text>
-                        $ {product?.precioDescuento}
+              return products.map((product: Producto) => {
+                const carritoItem = compra?.carrito.find((item) => String(item.producto_id) == String(product.id));
+                
+                return (
+                  <View key={product?.id} style={styles.card}>
+                    <View style={styles.cardImageContainer}>
+                      <Image
+                        source={{ uri: product?.imagen }}
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </View>
+                    <View style={styles.cardContent}>
+                      <Text numberOfLines={1} variant="bodyMedium">
+                        {product?.nombre}
                       </Text>
-                    )}
-                    {!product?.aplicaDescuento && (
-                      <Text>$ {product?.precio}</Text>
-                    )}
+                      {product?.aplicaDescuento && (
+                        <Text>
+                          $ {product?.precioDescuento}
+                        </Text>
+                      )}
+                      {!product?.aplicaDescuento && (
+                        <Text>$ {product?.precio}</Text>
+                      )}
+                    </View>
+                    <View
+                      style={[
+                        styles.cantidadContainer,
+                        { backgroundColor: theme.colors.primary },
+                      ]}
+                    >
+                      <Text style={{ color: 'white' }} variant="bodyLarge">
+                        {carritoItem?.cantidad || 0} {/* Mostrar la cantidad del producto en el carrito */}
+                      </Text>
+                    </View>
                   </View>
-                  <View
-                    style={[
-                      styles.cantidadContainer,
-                      { backgroundColor: theme.colors.primary },
-                    ]}
-                  >
-                    <Text style={{ color: 'white' }} variant="bodyLarge">
-                      {carritoItem?.cantidad || 0} {/* Mostrar la cantidad del producto en el carrito */}
-                    </Text>
-                  </View>
-                </View>
-              );
-            });
-          })}
+                );
+              });
+            })}
 
 
 
-          <TouchableOpacity style={styles.buttonContainer} onPress={handleCancel}>
-            <Text>Cerrar</Text> 
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleCancel}>
+              <Text>Cerrar</Text> 
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </Modal>
     </View>

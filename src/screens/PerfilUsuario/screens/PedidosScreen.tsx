@@ -101,9 +101,7 @@ export const PedidosScreeen = (props: any) => {
               <View key={index} style={styles.compraContainer}>
                 <View style={styles.field}>
                   <View style={styles.tableRow}>
-                    <Text style={styles.tableHeader}>Compra #{index + 1}</Text>
-                    
-                    <TouchableOpacity onPress={() => handleReclamo(compra.id)}>
+                  <TouchableOpacity onPress={() => handleReclamo(compra.id)}>
                       <Feather name="alert-triangle" size={24} color="black" />
                     </TouchableOpacity>
 
@@ -116,6 +114,10 @@ export const PedidosScreeen = (props: any) => {
                         <Feather name="x-circle" size={24} color="red" />
                       </TouchableOpacity>
                     )}
+                  
+                  </View>
+                  <View style={styles.tableRow}>
+                  <Text style={styles.tableHeader}>Compra #{index + 1}</Text>
                   </View>
                   
                   <View style={styles.tableRow}>
@@ -204,6 +206,18 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+  },
+    headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    // Otros estilos adicionales
+  },
+  compraHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // Otros estilos adicionales
   },
   compraContainer: {
     marginBottom: 20,

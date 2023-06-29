@@ -71,6 +71,7 @@ export const MenuLateralIzquierdo = () => {
             // El estado de la compra ha cambiado a "CONFIRMADO", realizar acciones
             console.log('La compra', index, 'está confirmada:', compra);
             sendNotificationCompraConfirmada(expoPushToken);
+            
           }else{
             console.log('no compra');
           }

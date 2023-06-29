@@ -7,6 +7,10 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "super5",
+    "permissions": [
+      "CAMERA",
+      "MEDIA_LIBRARY"
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

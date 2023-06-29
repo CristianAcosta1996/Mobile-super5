@@ -1,8 +1,8 @@
 import React from "react";
-import { Appbar } from "react-native-paper";
+import { Appbar, Badge } from "react-native-paper";
 import { getHeaderTitle } from "@react-navigation/elements";
-import { Image, View } from "react-native";
-import { AntDesign } from '@expo/vector-icons'; 
+import { Image, TouchableOpacity, View , Text} from "react-native";
+import { AntDesign, Feather } from '@expo/vector-icons'; 
 import { useAuth } from "../auth/hooks/useAuth";
 import { useAppSelector } from "../hooks/hooks";
 
@@ -48,22 +48,55 @@ export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
       {route.name !== "Search" && (
         <AntDesign 
           name="user" 
-          size={24} 
+          size={30} 
           color="black" 
           onPress={() => {
             navigation.navigate(status === "authenticated" ? "Profile" : "Login");
             //navigation.navigate("Profile");
           }}
           visible={false}
+          style={{ position: 'relative', right: -24, left:-48 }}
         />
       )}
       {titulo !== "Mi Carrito" && (
-        <Appbar.Action
-          icon="cart"
+         <TouchableOpacity
           onPress={() => {
             navigation.navigate("Shopping-Cart");
           }}
-        />
+          style={{ position: 'relative', left: -24, }}
+        >
+          <Feather name="shopping-cart" size={30} color="black" />
+          <Badge
+            size={18}
+            style={{
+              position: 'absolute',
+              top: -6,
+              right: -6,
+              backgroundColor: 'red',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minWidth: 20,
+              height: 20,
+              borderRadius: 10,
+            }}
+          >
+            3
+          </Badge>
+          {/*
+                      <Badge
+              badgeContent={
+                (carrito.length >= 1 &&
+                  carrito
+                    .map((item) => item.cantidad)
+                    .reduce((prev, current) => prev + current)) ||
+                undefined
+              }
+              color="error"
+            >
+              <ShoppingCart fontSize="small" />
+            </Badge>
+             */}
+       </TouchableOpacity>
       )}
     </Appbar.Header>
   );

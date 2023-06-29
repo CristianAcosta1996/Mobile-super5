@@ -1,28 +1,28 @@
-import { Feather } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import Feather from "react-native-vector-icons/Feather";
+
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Text,
-  TextInput,
-  Modal,
   ScrollView,
   SafeAreaView,
   Alert,
-  Platform,
 } from "react-native";
 import { ActivityIndicator, DataTable, useTheme } from "react-native-paper";
 import {
   useCancelarCompraMutation,
   useGetComprasQuery,
-  useGetProductosQuery,
 } from "../../../store/super5/super5Api";
-import { CarritoDto, CarritoItem, CompraDTO, Direccion, Producto } from "../../../interfaces/interfaces";
+import { CompraDTO } from "../../../interfaces/interfaces";
 import ModalReclamos from "../components/ModalReclamos";
 import ModalShoppingCart from "../components/ModalShoppingCart";
 import dayjs from "dayjs";
-import CarritoComprasItem from "../components/CarritoComprasItem";
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
+import * as Notifications from 'expo-notifications';
 
 export const PedidosScreeen = (props: any) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -32,6 +32,7 @@ export const PedidosScreeen = (props: any) => {
   const [sucursalID, setSucursalID] = useState<number | undefined>(undefined);
   const [compra, setCompra] = useState<CompraDTO | undefined>(undefined);
   const theme = useTheme();
+  const [exportingPDF, setExportingPDF] = useState(false);
 
   const { data: compras, isLoading } = useGetComprasQuery();
 
@@ -39,8 +40,8 @@ export const PedidosScreeen = (props: any) => {
 
   const handleReclamo = (id_compra?: number) => {
     console.log("reclamo");
-    setModalVisible(true); // Establecer el estado de la visibilidad del modal
-    setIdCompra(id_compra); // Establecer el estado del id_compra
+    setModalVisible(true); 
+    setIdCompra(id_compra); 
   };
 
   const handleShoppingCart = (id_compra?: number, id_sucursal?: number, compra?: CompraDTO) => {
@@ -49,6 +50,59 @@ export const PedidosScreeen = (props: any) => {
     setIdCompra(id_compra); // Establecer el estado del id_compra
     setSucursalID(id_sucursal);
     setCompra(compra);
+  };
+
+  const handleExportPDF = async (compra?: CompraDTO) => {
+    console.log("Exportar a PDF la compra seleccionada");
+    setExportingPDF(true); // Establecer el estado de exportingPDF a true para mostrar el indicador de carga
+  
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+  
+    if (status === "granted") {
+      try {
+        const html = `
+          <html>
+            <body>
+              <h1>Detalles de la compra</h1>
+              <p>ID Compra: ${compra?.id}</p>
+              <p>Forma de entrega: ${compra?.formaEntrega}</p>
+              <p>Estado: ${compra?.estado}</p>
+              <p>Precio: $${compra?.precio}</p>
+              <p>Fecha de compra: ${dayjs(compra?.fechaCompra).format(
+                "DD/MM/YYYY HH:mm"
+              )}</p>
+            </body>
+          </html>
+        `;
+  
+        const { uri } = await Print.printToFileAsync({ html });
+  
+        console.log("Archivo PDF guardado en la biblioteca de medios");
+  
+        // Notificar
+        const notificationContent = {
+          title: "Descarga completa",
+          body: "Su compra se ha exportado a PDF correctamente",
+        };
+  
+        Notifications.scheduleNotificationAsync({
+          content: notificationContent,
+          trigger: null,
+        });
+  
+        // Compartir el archivo PDF
+        await shareAsync(uri);
+  
+        setExportingPDF(false); // Establecer el estado de exportingPDF a false para ocultar el indicador de carga
+      } catch (error) {
+        console.log("Error al exportar la compra a PDF:", error);
+        setExportingPDF(false); // Establecer el estado de exportingPDF a false en caso de error
+      }
+    } else {
+      console.log("Permisos denegados");
+      alert("Permisos denegados");
+      setExportingPDF(false); // Establecer el estado de exportingPDF a false si se deniegan los permisos
+    }
   };
   
 
@@ -60,7 +114,7 @@ export const PedidosScreeen = (props: any) => {
         { text: "Cancelar", style: "cancel" },
         {
           text: "Cancelar compra",
-          onPress: () => handleCancelarCompra(compra), // Corrección aquí
+          onPress: () => handleCancelarCompra(compra),
           style: "destructive",
         },
       ]
@@ -101,22 +155,6 @@ export const PedidosScreeen = (props: any) => {
               <View key={index} style={styles.compraContainer}>
                 <View style={styles.field}>
                   <View style={styles.tableRow}>
-                  <TouchableOpacity onPress={() => handleReclamo(compra.id)}>
-                      <Feather name="alert-triangle" size={24} color="black" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => handleShoppingCart(compra.id, compra.sucursal_id, compra)}>
-                      <Feather name="shopping-cart" size={24} color="black" />
-                    </TouchableOpacity>
-
-                    {compra.estado === "PAGO" && (
-                      <TouchableOpacity onPress={() => handleCancelar(compra)}>
-                        <Feather name="x-circle" size={24} color="red" />
-                      </TouchableOpacity>
-                    )}
-                  
-                  </View>
-                  <View style={styles.tableRow}>
                   <Text style={styles.tableHeader}>Compra #{index + 1}</Text>
                   </View>
                   
@@ -146,16 +184,25 @@ export const PedidosScreeen = (props: any) => {
                       {compra.fechaCompra && dayjs(compra.fechaCompra).format('DD/MM/YYYY HH:mm')}
                     </Text>
                   </View>
+                  <View style={styles.tableRowButtons}>
+                    <TouchableOpacity  style={styles.touchbutton}  onPress={() => handleReclamo(compra.id)}>
+                      <Feather name="alert-triangle" size={24} color="black" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity  style={styles.touchbutton} onPress={() => handleShoppingCart(compra.id, compra.sucursal_id, compra)}>
+                      <Feather name="shopping-cart" size={24} color="black" />
+                    </TouchableOpacity>
                   
+                    <TouchableOpacity disabled={exportingPDF}  style={styles.touchbutton} onPress={() => handleExportPDF(compra)}>
+                      <Feather name="download" size={24} color="black" />
+                    </TouchableOpacity>
 
-
-                  <View style={styles.tableRow}>
-                    
-                     
-                       
-                      
-                        
-                        
+                    {compra.estado === "PAGO" && (
+                      <TouchableOpacity  style={styles.touchbutton} onPress={() => handleCancelar(compra)}>
+                        <Feather name="x-circle" size={24} color="red" />
+                      </TouchableOpacity>
+                    )}
+                  
                   </View>
                 </View>
 
@@ -212,12 +259,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
-    // Otros estilos adicionales
+  },
+  loadingContainer: {
+    alignSelf: "center",
+    marginTop: 20,
   },
   compraHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    // Otros estilos adicionales
   },
   compraContainer: {
     marginBottom: 20,
@@ -242,6 +291,35 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     justifyContent: "space-between",
   },
+  tableRowButtons:{
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  touchbutton: {
+    backgroundColor: "#F2F2F2",
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 10,
+    marginHorizontal: 5,
+  },
+  /*
+  tableRowButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    
+  },
+  touchbutton: {
+    backgroundColor: "#EE2737",
+    padding: 10,
+    borderRadius: 8,
+    marginHorizontal: 5,
+  },*/
   tableLabel: {
     fontWeight: "bold",
     marginRight: 10,

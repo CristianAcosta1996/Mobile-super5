@@ -1,6 +1,6 @@
 import Feather from "react-native-vector-icons/Feather";
-
-import React, { useState } from "react";
+import jsPDF from 'jspdf';
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -9,13 +9,15 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { ActivityIndicator, DataTable, useTheme } from "react-native-paper";
 import {
   useCancelarCompraMutation,
   useGetComprasQuery,
+  useGetProductosQuery,
 } from "../../../store/super5/super5Api";
-import { CompraDTO } from "../../../interfaces/interfaces";
+import { CarritoDto, CompraDTO, Producto } from "../../../interfaces/interfaces";
 import ModalReclamos from "../components/ModalReclamos";
 import ModalShoppingCart from "../components/ModalShoppingCart";
 import dayjs from "dayjs";
@@ -23,7 +25,6 @@ import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import * as Notifications from 'expo-notifications';
-
 export const PedidosScreeen = (props: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCartVisible, setModalCartVisible] = useState(false);
@@ -33,11 +34,38 @@ export const PedidosScreeen = (props: any) => {
   const [compra, setCompra] = useState<CompraDTO | undefined>(undefined);
   const theme = useTheme();
   const [exportingPDF, setExportingPDF] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { data: compras, isLoading } = useGetComprasQuery();
+  const { data: compras, isLoading, refetch: refetchCompras } = useGetComprasQuery();
+  //const { data: productos } = useGetProductosQuery(String(sucursalID));
+  
+  
+    const { data: productos } = useGetProductosQuery(String(sucursalID));
+    // Resto del código que utiliza la variable 'productos'
+    console.log('Productos todos: ',productos);
+    const productosFiltrados2 = compra?.carrito.map((carritoItem: CarritoDto, carritoIndex: number) => ( 
+      productos?.filter(producto => producto.id == String(carritoItem.producto_id))
+    ) )
+    
+  console.log('id de la compra seleccionada>>>> ',idCompra); 
 
+  console.log('Productos filtradosDOS: ',productosFiltrados2);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetchCompras();
+    } catch (error) {
+      console.error('Error al obtener las compras:', error);
+    }
+    setRefreshing(false);
+  };
+ // Muestra un indicador de carga mientras se está actualizando
+  const renderRefreshControl = () => (
+    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+  );
   const [startCancelarCompra] = useCancelarCompraMutation();
-
+  
   const handleReclamo = (id_compra?: number) => {
     console.log("reclamo");
     setModalVisible(true); 
@@ -51,7 +79,7 @@ export const PedidosScreeen = (props: any) => {
     setSucursalID(id_sucursal);
     setCompra(compra);
   };
-
+/*
   const handleExportPDF = async (compra?: CompraDTO) => {
     console.log("Exportar a PDF la compra seleccionada");
     setExportingPDF(true); // Establecer el estado de exportingPDF a true para mostrar el indicador de carga
@@ -104,7 +132,137 @@ export const PedidosScreeen = (props: any) => {
       setExportingPDF(false); // Establecer el estado de exportingPDF a false si se deniegan los permisos
     }
   };
-  
+*/
+
+const handleExportPDF = async (compra?: CompraDTO) => {
+  console.log("Exportar a PDF la compra seleccionada");
+  setIdCompra(compra?.id);
+  setSucursalID(compra?.sucursal_id);
+  setCompra(compra);
+  setExportingPDF(true); // Establecer el estado de exportingPDF a true para mostrar el indicador de carga
+
+  const { status } = await MediaLibrary.requestPermissionsAsync();
+
+  if (status === "granted") {
+    try {
+      let productosHTML = '';
+     
+      productosFiltrados2?.forEach((products: Producto[] | undefined) => {
+        if (!products) {
+          return;
+        }
+      
+        products.forEach((product: Producto) => {
+          const carritoItem = compra?.carrito.find((item) => String(item.producto_id) === String(product.id));
+      
+          const cantidad = carritoItem?.cantidad ?? '';
+          console.log(carritoItem?.cantidad);
+          const productHTML = `
+            <style>
+              .product-table {
+                width: 100%;
+                border-collapse: collapse;
+              }
+              
+              .product-table th,
+              .product-table td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: left;
+              }
+              
+              .product-table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+              }
+              
+              .product-image {
+                max-width: 100px;
+                height: auto;
+              }
+            </style>
+            
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>ID Producto</th>
+                  <th>Imagen</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Descripción</th>
+                  <th>Cantidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${product.id}</td>
+                  <td><img src="${product.imagen}" alt="Imagen del producto" class="product-image"></td>
+                  <td>${product.nombre}</td>
+                  <td>$${product.aplicaDescuento ? product?.precioDescuento : product?.precio}</td>
+                  <td>${product.descripcion}</td>
+                  <td>${cantidad}</td>
+                </tr>
+              </tbody>
+            </table>
+          `;
+            
+          productosHTML += productHTML;
+        });
+      });
+      
+      const html = `
+        <html>
+          <style>
+            .logo-image {
+              max-width: 100px;
+              height: auto;
+            }
+          </style>
+          <body>
+            <img src="../../../../assets/imagenSinFondo.png" alt="logo" class="logo-image">
+            <h1>Detalles de la compra</h1>
+            <p>ID Compra: ${compra?.id}</p>
+            <p>Forma de entrega: ${compra?.formaEntrega}</p>
+            <p>Estado: ${compra?.estado}</p>
+            <p>Precio: $${compra?.precio}</p>
+            <p>Fecha de compra: ${dayjs(compra?.fechaCompra).format("DD/MM/YYYY HH:mm")}</p>
+            <p>Fecha de confirmacion: ${dayjs(compra?.fechaConfirmacion).format("DD/MM/YYYY HH:mm")}</p>
+            <h2>Detalles de los productos</h2>
+            ${productosHTML}
+          </body>
+        </html>
+      `;
+
+      const { uri } = await Print.printToFileAsync({ html });
+
+      console.log("Archivo PDF guardado en la biblioteca de medios");
+
+      // Notificar
+      const notificationContent = {
+        title: "Descarga completa",
+        body: "Su compra se ha exportado a PDF correctamente",
+      };
+
+      Notifications.scheduleNotificationAsync({
+        content: notificationContent,
+        trigger: null,
+      });
+
+      // Compartir el archivo PDF
+      await shareAsync(uri);
+
+      setExportingPDF(false); // Establecer el estado de exportingPDF a false para ocultar el indicador de carga
+    } catch (error) {
+      console.log("Error al exportar la compra a PDF:", error);
+      setExportingPDF(false); // Establecer el estado de exportingPDF a false en caso de error
+    }
+  } else {
+    console.log("Permisos denegados");
+    alert("Permisos denegados");
+    setExportingPDF(false); // Establecer el estado de exportingPDF a false si se deniegan los permisos
+  }
+};
+
 
   const handleCancelar = (compra: CompraDTO) => {
     Alert.alert(
@@ -149,7 +307,7 @@ export const PedidosScreeen = (props: any) => {
       </View>
 
       <SafeAreaView style={styles.scrollContainer}>
-        <ScrollView contentContainerStyle={styles.fieldContainer}>
+        <ScrollView contentContainerStyle={styles.fieldContainer} refreshControl={renderRefreshControl()}>
           {compras.length > 0 ? (
             compras.map((compra: CompraDTO, index: number) => (
               <View key={index} style={styles.compraContainer}>
@@ -306,20 +464,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginHorizontal: 5,
   },
-  /*
-  tableRowButtons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    
-  },
-  touchbutton: {
-    backgroundColor: "#EE2737",
-    padding: 10,
-    borderRadius: 8,
-    marginHorizontal: 5,
-  },*/
   tableLabel: {
     fontWeight: "bold",
     marginRight: 10,

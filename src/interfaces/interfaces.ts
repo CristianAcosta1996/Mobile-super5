@@ -53,6 +53,7 @@ export interface Token {
   
   export interface CarritoDto {
     producto_id: number;
+    producto: string;
     cantidad: number;
   }
   

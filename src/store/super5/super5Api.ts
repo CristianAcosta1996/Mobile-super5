@@ -255,9 +255,9 @@ export const super5Api = createApi({
       }),
     }),
 
-    getCompras: builder.query<any[], void>({
+    getCompras: builder.query<CompraDTO[], void>({
       query: () => "venta/listar",
-      providesTags: ["Compras"],
+      providesTags: ["Compras"]
     }),
     
     getUserData: builder.query<UserDataProps, void>({

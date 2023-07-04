@@ -31,63 +31,67 @@ export const customDividerProps: CustomDividerProps = {
   },
   bold: true,
 };
-
-
-
-
-export const MenuLateralIzquierdo = () => {
-  const { data: compras } = useGetComprasQuery();
+/*
   const { registerForPushNotificationsAsync, sendNotificationCompraConfirmada } = useNotifications();
   const [expoPushToken, setExpoPushToken] = useState<string>('');
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const notificationListener = useRef<Notifications.Subscription | null>(null);
   const responseListener = useRef<Notifications.Subscription | null>(null);
-  
+
+*/
+
+
+
+export const MenuLateralIzquierdo = () => {
+  const {  sendNotificationCompraConfirmada } = useNotifications();
+  const [expoPushToken, setExpoPushToken] = useState<string>('');
+  const [notification, setNotification] = useState<Notifications.Notification | null>(null);
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
+
+  const [estadosAnteriores, setEstadosAnteriores] = useState<string[]>([]);
+  const [comprasConfirmadas, setComprasConfirmadas] = useState<string[]>([]);
+
+  const { data: comprasS, refetch: refetchCompras  } = useGetComprasQuery();
+
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token || ''));
-  
-    notificationListener.current = Notifications.addNotificationReceivedListener((receivedNotification) => {
-      setNotification(receivedNotification);
-    });
+
   
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       console.log(response);
     });
-  
-    // Enviar una notificación cada 10 segundos
-  // Variable para almacenar los estados anteriores de las compras
-  let estadosAnteriores: { [index: number]: string } = {};
-  
-  const interval = setInterval(() => {
-    console.log('ENTRE AL INTERVALO');
-  if (expoPushToken) {
-    if (compras) {
-      compras.map((compra: CompraDTO, index:number) => {
-        // Verificar si el estado actual es diferente al estado anterior
-        if (compra.estado !== estadosAnteriores[index]) {
-          const estadoActual = compra.estado ?? ''; // Utilizar cadena vacía como valor predeterminado si es undefined
-  
-          if (estadoActual === 'CONFIRMADO') {
-            // El estado de la compra ha cambiado a "CONFIRMADO", realizar acciones
-            console.log('La compra', index, 'está confirmada:', compra);
-            sendNotificationCompraConfirmada(expoPushToken);
-            
-          }else{
-            console.log('no compra');
+    const interval = setInterval(() => {
+      console.log('ENTRE AL INTERVALO');
+      if (comprasS) {
+        comprasS.forEach((compra: CompraDTO, index: number) => {
+          const estadoActual = compra.estado ?? '';
+          const estadoAnterior = estadosAnteriores[index] || '';
+          console.log('Estado anterior:', index, compra.id, estadoAnterior);
+          console.log('Estado actual:', estadoActual);
+
+          if (estadoActual === 'CONFIRMADO' && !comprasConfirmadas.includes(String(compra.id))) {
+            if (estadoAnterior === 'PAGO' && estadoActual === 'CONFIRMADO') {
+              console.log('La compra', index, 'está confirmada:', compra.id);
+              sendNotificationCompraConfirmada(expoPushToken, comprasS, compra);
+              setComprasConfirmadas(prevComprasConfirmadas => [...prevComprasConfirmadas, String(compra.id)]);
+              console.log('Notifico');
+              // ...
+            }
+
+
+          } else {
+            console.log('No notificoX');
           }
-          
-          // Actualizar el estado anterior con el estado actual
-          estadosAnteriores[index] = estadoActual;
-        }
-      });
-    }
-    
-  }
-  }, 10000);
-  
-  
-  
-  
+          estadosAnteriores[index] = estadoActual; // Actualizamos el estado
+        });
+
+        
+        refetchCompras();
+      }else{
+        console.log('else de compra');
+      }
+    }, 10000);
+
     return () => {
       clearInterval(interval);
       if (notificationListener.current) {
@@ -97,18 +101,35 @@ export const MenuLateralIzquierdo = () => {
         Notifications.removeNotificationSubscription(responseListener.current);
       }
     };
-  }, [expoPushToken]);
+  }, [comprasS, refetchCompras, expoPushToken]);
+/*
+  const sendNotificationCompraConfirmada = (compra: CompraDTO) => {
+    const notificationContent = {
+      title: 'Compra confirmada',
+      body: `La compra ${compra.id} ha sido confirmada.`,
+    };
 
-  return (
-    <DrawerRoot.Navigator
-      screenOptions={{ headerShown: false }}
-      id="menu-left"
-      drawerContent={(props) => <ContenidoDrawer {...props} />}
-    >
-      <DrawerRoot.Screen component={AppStack} name="Inicio" />
-    </DrawerRoot.Navigator>
-  );
-};
+    Notifications.scheduleNotificationAsync({
+      content: notificationContent,
+      trigger: null,
+    });
+
+    console.log('Notificación de compra confirmada enviada');
+  };
+*/
+    
+    
+    return (
+      <DrawerRoot.Navigator
+        screenOptions={{ headerShown: false }}
+        id="menu-left"
+        drawerContent={(props) => <ContenidoDrawer {...props} />}
+      >
+        <DrawerRoot.Screen component={AppStack} name="Inicio" />
+      </DrawerRoot.Navigator>
+    );
+  };
+  
 
 const ContenidoDrawer = (props: any) => {
   

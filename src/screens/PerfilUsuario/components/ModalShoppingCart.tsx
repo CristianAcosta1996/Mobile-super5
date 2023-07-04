@@ -30,11 +30,6 @@ export const ModalShoppingCart = ({ visible, setVisible, idSucursal, compraID, c
   ) )
   console.log('Productos filtradosDOS: ',productosFiltrados2);
 
-  //Iterar sobre el carrito y filtrar por los id de los productos del carrito
-  const productosFiltrados = productos?.filter(producto => producto.id == '1');
-  
-
- //console.log('Productos filtrados: ',productosFiltrados);
   const handleCancel = () => {
     setVisible(false);
   };

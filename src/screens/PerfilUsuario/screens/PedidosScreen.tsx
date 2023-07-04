@@ -135,6 +135,7 @@ export const PedidosScreeen = (props: any) => {
 */
 
 const handleExportPDF = async (compra?: CompraDTO) => {
+
   console.log("Exportar a PDF la compra seleccionada");
   setIdCompra(compra?.id);
   setSucursalID(compra?.sucursal_id);
@@ -146,17 +147,14 @@ const handleExportPDF = async (compra?: CompraDTO) => {
   if (status === "granted") {
     try {
       let productosHTML = '';
-     
-      productosFiltrados2?.forEach((products: Producto[] | undefined) => {
-        if (!products) {
-          return;
-        }
       
-        products.forEach((product: Producto) => {
-          const carritoItem = compra?.carrito.find((item) => String(item.producto_id) === String(product.id));
-      
+        compra?.carrito.forEach((carritoItem: CarritoDto) => {
           const cantidad = carritoItem?.cantidad ?? '';
           console.log(carritoItem?.cantidad);
+          const nombreProducto = carritoItem?.producto ?? '';
+          console.log(carritoItem?.producto);
+          const productoId = carritoItem?.producto_id ?? '';
+          console.log(carritoItem?.producto_id);
           const productHTML = `
             <style>
               .product-table {
@@ -186,21 +184,16 @@ const handleExportPDF = async (compra?: CompraDTO) => {
               <thead>
                 <tr>
                   <th>ID Producto</th>
-                  <th>Imagen</th>
-                  <th>Nombre</th>
-                  <th>Precio</th>
-                  <th>Descripción</th>
+                  <th>Nombre</th
                   <th>Cantidad</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>${product.id}</td>
-                  <td><img src="${product.imagen}" alt="Imagen del producto" class="product-image"></td>
-                  <td>${product.nombre}</td>
-                  <td>$${product.aplicaDescuento ? product?.precioDescuento : product?.precio}</td>
-                  <td>${product.descripcion}</td>
+                  <td>${productoId}</td>
+                  <td>${nombreProducto}</td>
                   <td>${cantidad}</td>
+                 
                 </tr>
               </tbody>
             </table>
@@ -208,7 +201,7 @@ const handleExportPDF = async (compra?: CompraDTO) => {
             
           productosHTML += productHTML;
         });
-      });
+    
       
       const html = `
         <html>
@@ -247,6 +240,7 @@ const handleExportPDF = async (compra?: CompraDTO) => {
         content: notificationContent,
         trigger: null,
       });
+
 
       // Compartir el archivo PDF
       await shareAsync(uri);

@@ -4,12 +4,12 @@ import { Input } from 'react-native-elements';
 import { IconButton, useTheme, Portal } from 'react-native-paper';
 import { useAltaMutation } from '../../store/super5/super5Api';
 import LoginScreen from './LoginScreen';
-import PopupMessage from '../../components/PopupMessage';
 import Gif from 'react-native-gif';
 import RNPickerSelect from 'react-native-picker-select';
 import { format } from 'date-fns';
 import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
+import PopupMessage from '../../components/PopupMessage';
 
 const AltaUserScreen = () => {
   interface FormValues {
@@ -48,7 +48,27 @@ const AltaUserScreen = () => {
 
   const [startCreate, { isLoading, isSuccess, data }] = useAltaMutation();
 
-
+  const {
+    isAuthenticatingLogin,
+    handleLogin,
+    isSuccessLogin,
+    dataLogin,
+   } = useAuth();
+   
+  //const { handleLogin } = useAuth();
+  
+  if (isSuccessLogin)
+  return (
+    <>
+      <PopupMessage text="¡Bienvenido!" iconName="thumb-up" />
+    </>
+  );
+  if (isAuthenticatingLogin)
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator animating={true} color={theme.colors.primary} />
+      </View>
+    );
 
   const handleCreate = () => {
     startCreate({
@@ -61,6 +81,7 @@ const AltaUserScreen = () => {
       fechaNacimiento: selectedDate instanceof Date ? selectedDate : null,
     }).then((resp: any) => {
       console.log(resp);
+      //handleLogin( formValues.user, formValues.password);
       setDateVisible(true);
       setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
     });

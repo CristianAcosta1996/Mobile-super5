@@ -25,6 +25,7 @@ import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import * as Notifications from 'expo-notifications';
+import { styleProductTable, styleCompra, logo } from '../../../utils/stylesToPDF';
 export const PedidosScreeen = (props: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCartVisible, setModalCartVisible] = useState(false);
@@ -156,47 +157,23 @@ const handleExportPDF = async (compra?: CompraDTO) => {
           const productoId = carritoItem?.producto_id ?? '';
           console.log(carritoItem?.producto_id);
           const productHTML = `
-            <style>
-              .product-table {
-                width: 100%;
-                border-collapse: collapse;
-              }
-              
-              .product-table th,
-              .product-table td {
-                border: 1px solid #ccc;
-                padding: 8px;
-                text-align: left;
-              }
-              
-              .product-table th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-              }
-              
-              .product-image {
-                max-width: 100px;
-                height: auto;
-              }
-            </style>
-            
-            <table class="product-table">
-              <thead>
-                <tr>
-                  <th>ID Producto</th>
-                  <th>Nombre</th
-                  <th>Cantidad</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>${productoId}</td>
-                  <td>${nombreProducto}</td>
-                  <td>${cantidad}</td>
-                 
-                </tr>
-              </tbody>
-            </table>
+          ${styleProductTable}
+          <table class="product-table">
+            <thead>
+              <tr>
+                <th>ID Producto</th>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${productoId}</td>
+                <td>${nombreProducto}</td>
+                <td style="text-align: right">${cantidad}</td>
+              </tr>
+            </tbody>
+          </table>
           `;
             
           productosHTML += productHTML;
@@ -205,23 +182,48 @@ const handleExportPDF = async (compra?: CompraDTO) => {
       
       const html = `
         <html>
-          <style>
-            .logo-image {
-              max-width: 100px;
-              height: auto;
-            }
-          </style>
+          ${styleCompra}
           <body>
-            <img src="../../../../assets/imagenSinFondo.png" alt="logo" class="logo-image">
-            <h1>Detalles de la compra</h1>
-            <p>ID Compra: ${compra?.id}</p>
-            <p>Forma de entrega: ${compra?.formaEntrega}</p>
-            <p>Estado: ${compra?.estado}</p>
-            <p>Precio: $${compra?.precio}</p>
-            <p>Fecha de compra: ${dayjs(compra?.fechaCompra).format("DD/MM/YYYY HH:mm")}</p>
-            <p>Fecha de confirmacion: ${dayjs(compra?.fechaConfirmacion).format("DD/MM/YYYY HH:mm")}</p>
-            <h2>Detalles de los productos</h2>
-            ${productosHTML}
+            <div class="container">
+              <div class="header">
+                ${logo}
+              </div>
+              <h1>Detalles de la compra</h1>
+              <div class='div-table'>
+                <table>
+                  <tr>
+                    <td>ID Compra</td>
+                    <td>${compra?.id}</td>
+                  </tr>
+                  <tr>
+                    <td>Forma de entrega</td>
+                    <td>${compra?.formaEntrega}</td>
+                  </tr>
+                  <tr>
+                    <td>Estado</td>
+                    <td>${compra?.estado}</td>
+                  </tr>
+                  <tr>
+                    <td>Precio</td>
+                    <td>$ ${compra?.precio}</td>
+                  </tr>
+                  <tr>
+                    <td>Fecha de compra</td>
+                    <td>${dayjs(compra?.fechaCompra).format("DD/MM/YYYY HH:mm")}</td>
+                  </tr>
+                  <tr>
+                    <td>Fecha de confirmación</td>
+                    <td>${dayjs(compra?.fechaConfirmacion).format("DD/MM/YYYY HH:mm")}</td>
+                  </tr>
+                </table>
+              </div>
+              <h2>Detalles de los productos</h2>
+              ${productosHTML}
+            </div>
+            <div class="footer">
+              <p>© 2023 Super5. Todos los derechos reservados.</p>
+              <p>Montevideo - Uruguay</p>
+            </div>
           </body>
         </html>
       `;

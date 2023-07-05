@@ -21,7 +21,7 @@ export const useNotifications = () => {
   
         const notificationContent = {
           title: 'Super5 - Compra',
-          body: `Su compra N°: ${compra.id} ha sido confirmada!\n ${productos} \n Total: ${compra.precio}  .`,
+          body: `Su compra N°: ${compra.id} ha sido confirmada!\n ${productos} \n Total: $ ${compra.precio}.`,
           data: { 
             data: compras,
             productos: productos

@@ -146,10 +146,12 @@ export const CarritoScreen = () => {
             <View style={styles.addressContainer}>
               <Icon name="map-marker" size={24} color="#7e57c2" style={styles.icon} />
               {
-                !sucursalName && <Text style={styles.selectionText}>Retiro en sucursal</Text>
+                !sucursalName ?
+                ( <Text style={styles.selectionText}>Retiro en sucursal</Text>)
+                :
+                (<Text style={styles.selectionText}>Retiro en sucursal: {sucursalName}</Text>)
               }
-              <Text style={styles.selectionText}>Retiro en sucursal: {sucursalName}</Text>
-            </View>
+              </View>
             <TouchableOpacity style={styles.button} onPress={handleSeleccionarSucursal}>
               <Feather
                 name={modoEnvio === 'SUCURSAL' ? 'check-circle' : 'circle'}
@@ -182,7 +184,7 @@ export const CarritoScreen = () => {
           <View style={styles.finalizarCompraContainer}>
             <View style={styles.valorTotalContainer}>
               <Text variant="displaySmall">Total: </Text>
-              <Text variant="displaySmall">{precioTotalCarrito} </Text>
+              <Text variant="displaySmall">$ {precioTotalCarrito} </Text>
             </View>
 
             <CustomDivider

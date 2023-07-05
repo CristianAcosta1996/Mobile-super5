@@ -15,8 +15,7 @@ export const PaymentScreen = () => {
 
   
   const handleWebViewError = (syntheticEvent: { nativeEvent: any; }) => {
-    const { nativeEvent } = syntheticEvent;
-    console.warn('Error loading page:', nativeEvent);
+    navigation.navigate('Home');
   };
 
   const obtenerCompraGuardada = async () => {

@@ -74,6 +74,7 @@ export const useCarrito = () => {
     let arregloCompra: CarritoDto[] = [];
     const carritoDto = carrito.map(({ producto, cantidad }) => ({
       producto_id: +producto.id,
+      producto: '',
       cantidad,
     }));
     console.log(carritoDto);
@@ -83,13 +84,18 @@ export const useCarrito = () => {
       formaEntrega: modoEnvio,
       sucursal_id: +sucursal.id,
     };
-    console.log('sucursal: ', sucursal.id);
-    startCompraPaypal(compra).then((resp: any) => {
-      console.log('compra dentro de startCompraPaypal: ', compra);
-      console.log('respuesta: ', resp.data);
-      dispatch(realizarCompraPaypal({compra: resp.data}));
-      navigation.navigate("Payment");
-    });
+    //
+    if(modoEnvio){ 
+      console.log('sucursal: ', sucursal.id);
+      startCompraPaypal(compra).then((resp: any) => {
+        console.log('compra dentro de startCompraPaypal: ', compra);
+        console.log('respuesta: ', resp.data);
+        dispatch(realizarCompraPaypal({compra: resp.data}));
+        navigation.navigate("Payment");
+      });
+    }else{
+      alert('Indique el modo de envio.')
+    }
   };
 
   return {

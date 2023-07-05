@@ -50,8 +50,8 @@ export const ProfileScreen = () => {
   console.log(userData);
   console.log("la fecha",userData?.fechaNacimiento?.toString());
 
-  const [name, setName] = useState(userData?.nombre);
-  const [lastName, setLastName] = useState(userData?.apellido);
+  const [name, setName] = useState<string | undefined>(userData?.nombre);
+  const [lastName, setLastName] = useState<string | undefined>(userData?.apellido);
 
   
   const [editMode, setEditMode] = useState(false);
@@ -62,8 +62,8 @@ export const ProfileScreen = () => {
   const [currentDateVisible, setCurrentDateVisible] = useState(true);
 
 
-  const [phone, setPhone] = useState(userData?.telefono);
-  const [email, setEmail] = useState(userData?.correo);
+  const [phone, setPhone] = useState<string | undefined>(userData?.telefono);
+  const [email, setEmail] = useState<string | undefined>(userData?.correo);
   const [fechaNac, setFechaNac] = useState((userData?.fechaNacimiento?.toString().slice(0, -19)));
   //const [birthDate, setBirthDate] = useState(formattedBirthDate);
   const [nacimiento, setNacimiento] = useState<Dayjs | null>(dayjs(fechaNac));
@@ -120,16 +120,30 @@ export const ProfileScreen = () => {
     setEditMode(!editMode);
     setEditDateMode(false);
     setCurrentDateVisible(true);
-    if (name && lastName && selectedDate && phone) {
+    const newName = name ?? userData?.nombre;
+    const newLastName = lastName?? userData?.apellido;
+    const newPhone = phone ?? userData?.telefono;
+    const newDate = selectedDate ?? userData?.fechaNacimiento ?? new Date(0);
+    console.log('DATOOOOS----------------',newName, newLastName, newPhone, newDate);
+      if(newName && newLastName && newPhone && newDate){
+        await handleModificarComprador(
+          newName, newLastName, newPhone, newDate );
+      }else{
+        alert('Complete todos los campos');
+      }
+      // Ningún campo está vacío, puedes llamar a la función handleModificarComprador
       
-      await handleModificarComprador(name, lastName, phone, selectedDate);
-      console.log('Dentro del save!///////////////////////////');
-    }
   };
   const handleCancel = async () => {
     setEditMode(!editMode);
     setCurrentDateVisible(true);
     setEditDateMode(false);
+
+    setName(userData?.nombre);
+    setLastName(userData?.apellido);
+    setPhone(userData?.telefono);
+    setEmail(userData?.correo);
+    setNacimiento(dayjs(userData?.fechaNacimiento));
   };
 
   const handleCancelEditDate = async () => {
@@ -198,6 +212,7 @@ export const ProfileScreen = () => {
               style={styles.input}
               value={phone}
               onChangeText={handlePhoneChange}
+              keyboardType="phone-pad"
             />
           ) : (
             <Text style={styles.text}>{phone}</Text>

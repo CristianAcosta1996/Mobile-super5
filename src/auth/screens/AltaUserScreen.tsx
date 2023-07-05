@@ -137,18 +137,17 @@ const AltaUserScreen = () => {
           style={styles.input}
         />
         <Input
-          label="Usuario"
-          value={formValues.user}
-          onChangeText={(value: string) => setFormValues({ ...formValues, user: value })}
-          style={styles.input}
-        />
-        <Input
           label="Apellido"
           value={formValues.apellido}
           onChangeText={(value: string) => setFormValues({ ...formValues, apellido: value })}
           style={styles.input}
         />
-
+        <Input
+          label="Usuario"
+          value={formValues.user}
+          onChangeText={(value: string) => setFormValues({ ...formValues, user: value })}
+          style={styles.input}
+        />
         <Input
           label="Contraseña"
           value={formValues.password}
@@ -208,9 +207,6 @@ const AltaUserScreen = () => {
 
           {selectedDate && (
             <>
-              <Text>Fecha seleccionada: {selectedDate.toDateString()}</Text>
-              <Text>Fecha seleccionada: {formattedDate}</Text>
-
               <Input
                 label="Fecha seleccionada"
                 value={formattedDate}

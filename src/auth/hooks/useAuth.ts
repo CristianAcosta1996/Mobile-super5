@@ -146,7 +146,7 @@ export const useAuth = () => {
       bloqueado: 0,
       eliminado: 0,
       rol: 1,
-      fechaNacimiento: birthDate.getTime(),
+      fechaNacimiento: birthDate,
     })
       .unwrap()
       .then((resp) => {

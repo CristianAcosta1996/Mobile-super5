@@ -25,7 +25,7 @@ export const useHome = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isCatVisible, setIsCatVisible] = useState(false);
     const [visibleSuc, setVisibleSuc] = useState(false);
-    
+    const [productsIsLoading, setProductsIsLoading] = useState(true);
     const modalSucursalProps: ModalSucursalProps = {
     selectedName: selectedName,
     setSelectedName: setSelectedName,
@@ -44,6 +44,7 @@ export const useHome = () => {
     };
 
     useEffect(() => {
+    setProductsIsLoading(true);
     fetch(`http://192.168.1.159:8080/api/producto/obtenerPorSucursal/${selectedName}`)
         .then(response => response?.json())
         .then(data => {
@@ -52,6 +53,7 @@ export const useHome = () => {
             (product.descripcion?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
         );
         setProducts(filteredProducts);
+        setProductsIsLoading(false);
         })
         .catch(error => console.error(error));
     }, [selectedName, searchQuery]);
@@ -68,15 +70,16 @@ export const useHome = () => {
     const handlePressSucursal = () => {
     setVisibleSuc(true);
     };
-return{
-    handlePressSucursal,
-    filteredProducts,
-    handleFilterIconPress,
-    modalCatProps,
-    modalSucursalProps,
-    selectedNameSuc,
-    searchQuery,
-    setSearchQuery,
-};
+    return{
+        handlePressSucursal,
+        filteredProducts,
+        handleFilterIconPress,
+        modalCatProps,
+        modalSucursalProps,
+        selectedNameSuc,
+        searchQuery,
+        setSearchQuery,
+        productsIsLoading,
+    };
 };
 

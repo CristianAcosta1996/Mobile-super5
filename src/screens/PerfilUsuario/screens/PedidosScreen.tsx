@@ -45,7 +45,7 @@ export const PedidosScreeen = (props: any) => {
     // Resto del código que utiliza la variable 'productos'
     console.log('Productos todos: ',productos);
     const productosFiltrados2 = compra?.carrito.map((carritoItem: CarritoDto, carritoIndex: number) => ( 
-      productos?.filter(producto => producto.id == String(carritoItem.producto_id))
+      productos?.filter((producto: { id: string; }) => producto.id == String(carritoItem.producto_id))
     ) )
     
   console.log('id de la compra seleccionada>>>> ',idCompra); 

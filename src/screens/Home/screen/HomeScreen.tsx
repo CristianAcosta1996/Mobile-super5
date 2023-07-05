@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ActivityIndicator, Button, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { ActivityIndicator, Animated, Button, Easing, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from '../../../components/Card';
 import ImageSwiper from "../../../components/ImageSwiper";
 import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
@@ -7,10 +7,11 @@ import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
 import { Feather } from "@expo/vector-icons";
 import { useHome } from "../hooks/useHome";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTheme } from "react-native-paper";
+import { MD3Colors, ProgressBar, useTheme } from "react-native-paper";
 import { Producto } from "../../../interfaces/interfaces";
 export const HomeScreen = () => {
   const theme = useTheme();
+  const rotation = new Animated.Value(0); 
   const {
     handlePressSucursal,
     filteredProducts,
@@ -20,6 +21,7 @@ export const HomeScreen = () => {
     selectedNameSuc,
     searchQuery,
     setSearchQuery,
+    productsIsLoading,
  } = useHome();
 
   return (
@@ -46,16 +48,29 @@ export const HomeScreen = () => {
             <Feather name="filter" size={24} color="gray" style={styles.filterIcon} /> 
           </TouchableOpacity>
       </View>
-      <FlatList
-          data={filteredProducts}
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-          renderItem={({ item }) => <Card product={item as unknown as Producto} />}
-          ListHeaderComponent={<ImageSwiper/>}
-          ListFooterComponent={filteredProducts.length > 0 ?  (
-            <ActivityIndicator animating={true} color={theme.colors.primary} />
-          ) : null}  
-      />
+      {!productsIsLoading ? 
+        (
+          <FlatList
+            data={filteredProducts}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+            renderItem={({ item }) => <Card product={item as unknown as Producto} />}
+            ListHeaderComponent={<ImageSwiper/>}
+            ListFooterComponent={filteredProducts.length > 0 ?  (
+              <ActivityIndicator animating={true} color={theme.colors.primary} />
+            ) : null}  
+          />
+        )
+        :
+        (
+          <>
+            <View style={styles.containerLoading}>
+              <Text style={{ marginLeft: 10 }}>Cargando productos...</Text>      
+              <ActivityIndicator animating={true} color={theme.colors.primary} />
+            </View>
+          </>
+        )
+      }
       </SafeAreaView>
       <ModalCategorias 
        {...modalCatProps}
@@ -72,6 +87,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 20,
     
+  },
+  isloadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  containerLoading:{
+    flex: 1,
+    width: '100%', // Ancho del modal
+    maxHeight: '100%', // Altura máxima del modal
+    alignSelf: 'center', // Centrar horizontalmente
+    alignItems: 'center', // Centrar verticalmente
+    justifyContent: 'center', // Centrar verticalmente
+    marginTop: '20%',
+    height: 100,
+    paddingHorizontal: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 10,
+    
+    marginBottom: 160,
+  },
+  loader: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#000',
+    borderTopColor: '#0000ff',
   },
   columnWrapper: {
     justifyContent: 'space-between',

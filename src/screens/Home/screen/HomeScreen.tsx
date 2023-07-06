@@ -32,8 +32,12 @@ export const HomeScreen = () => {
       />
     <TouchableOpacity onPress={() => handlePressSucursal()}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Icon name="store" size={20} color="#000" />
-        <Text style={{ marginLeft: 8 }}>Estas comprando en sucursal: {selectedNameSuc}</Text>
+        {selectedNameSuc&& (
+        <>
+          <Icon name="store" size={20} color="#000" />
+          <Text style={{ marginLeft: 8 }}>Estas comprando en sucursal: {selectedNameSuc}</Text>
+        </>)}
+        
       </View>
     </TouchableOpacity>
       <View style={styles.searchBarContainer}>

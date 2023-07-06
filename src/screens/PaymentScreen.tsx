@@ -4,6 +4,7 @@ import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { ActivityIndicator, useTheme } from 'react-native-paper';
+import { event } from 'react-native-reanimated';
 
 export const PaymentScreen = () => {
   const theme = useTheme();
@@ -14,8 +15,34 @@ export const PaymentScreen = () => {
   }, []);
 
   
-  const handleWebViewError = (syntheticEvent: { nativeEvent: any; }) => {
-    navigation.navigate('Home');
+  const handleWebViewError = (event: any) => {
+    console.log('entro en hanle errorrrrrr/////////////////////////////')
+    const { url: newUrl } = event;
+    if (newUrl?.includes("compra/finalizar-compra")) {
+      console.log("go to finalizar compra >>>>>>>>>>>>>");
+      // Realizar la acción deseada
+      navigation.navigate('FinalizacionCompra');
+
+      // Regresar 'false' para evitar la carga de la URL de destino
+      return false;
+    }else{ 
+      return false;
+    }
+  };
+  const handleWebViewError2 = (event: any) => {
+    const { url } = event;
+    const newUrl = 'https://www.paypal.com/uy/home';
+    event.url = newUrl;
+    if (event.url.includes("https://www.paypal.com/uy/home")) {
+      console.log("Ready to go to FinalizarCompra");
+      
+      navigation.navigate('FinalizacionCompra');
+
+      // Regresar 'false' para evitar la carga de la URL de destino
+      return false;
+    }else{ 
+      return true;
+    }
   };
 
   const obtenerCompraGuardada = async () => {
@@ -35,15 +62,20 @@ export const PaymentScreen = () => {
 
   return (
     <View style={styles.container}>
-      {url ? (
+      {url !== null ? (
         <WebView
           style={styles.webview}
           source={{ uri: url }}
-          onError={handleWebViewError}
+          onError={() => handleWebViewError2(event)}
+          onLoadError={() => handleWebViewError2(event)}
           onShouldStartLoadWithRequest={(event) => {
-            const { url: newUrl } = event;
-            
-            if (newUrl.includes("compra/finalizar-compra")) {
+           
+            if (event.url.includes("compra/finalizar-compra")) {
+              console.log(event.url);
+              const newUrl = 'https://www.paypal.com/uy/home';
+              event.url = newUrl;
+              console.log('-------------------------------------------------------');
+              console.log(event.url);
               console.log("go to finalizar compra >>>>>>>>>>>>>");
               // Realizar la acción deseada
               navigation.navigate('FinalizacionCompra');
@@ -51,9 +83,10 @@ export const PaymentScreen = () => {
               // Regresar 'false' para evitar la carga de la URL de destino
               return false;
             }
+            return false;
     
             // Regresar 'true' para permitir la carga de la URL
-            return true;
+            
           }}
         />
       ) : (

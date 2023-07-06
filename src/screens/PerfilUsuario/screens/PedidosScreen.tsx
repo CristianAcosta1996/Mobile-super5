@@ -136,7 +136,7 @@ export const PedidosScreeen = (props: any) => {
 */
 
 const handleExportPDF = async (compra?: CompraDTO) => {
-
+  console.log(compra?.precio);
   console.log("Exportar a PDF la compra seleccionada");
   setIdCompra(compra?.id);
   setSucursalID(compra?.sucursal_id);

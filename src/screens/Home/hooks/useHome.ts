@@ -17,7 +17,7 @@ interface Product {
   }
 export const useHome = () => {
     const [products, setProducts] = useState<Product[]>([]);
-    const [selectedName, setSelectedName] = useState('');// el numero
+    const [selectedName, setSelectedName] = useState<string | undefined>();// el numero
     const [selectedNameSuc, setSelectedNameSuc] = useState('');// el nombre string
 
     const [selectedCatId, setSelectedCatId] = useState<number | null>(null);// el numero
@@ -45,19 +45,20 @@ export const useHome = () => {
 
     useEffect(() => {
     setProductsIsLoading(true);
-    fetch(`http://192.168.1.159:8080/api/producto/obtenerPorSucursal/${selectedName}`)
-        .then(response => response?.json())
-        .then(data => {
-        const filteredProducts = data.filter((product: Product) =>
-            (product.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) || '') ||
-            (product.descripcion?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
-        );
-        setProducts(filteredProducts);
-        setProductsIsLoading(false);
-        })
-        .catch(error => console.error(error));
-    }, [selectedName, searchQuery]);
-
+    
+        selectedName && fetch(`http://192.168.1.159:8080/api/producto/obtenerPorSucursal/${selectedName}`)
+            .then(response => response?.json())
+            .then(data => {
+            const filteredProducts = data.filter((product: Product) =>
+                (product.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) || '') ||
+                (product.descripcion?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
+            );
+            setProducts(filteredProducts);
+            setProductsIsLoading(false);
+            })
+            .catch(error => console.error(error));
+        }, [selectedName, searchQuery]);
+    
     const handleFilterIconPress = () => {
     setIsCatVisible(true);
     };

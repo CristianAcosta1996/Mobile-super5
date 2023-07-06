@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Modal,Image, TextInput, Button, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
+import { useTheme, Text, ActivityIndicator } from 'react-native-paper';
 import { useCrearReclamoMutation, useGetProductosQuery } from '../../../store/super5/super5Api';
 
 import { CarritoDto, CompraDTO, Producto } from '../../../interfaces/interfaces';
@@ -22,7 +22,7 @@ export const ModalShoppingCart = ({ visible, setVisible, idSucursal, compraID, c
                     ) 
                     )} */
   const theme = useTheme();
-  const { data: productos } = useGetProductosQuery(String(idSucursal));
+  const { data: productos, isLoading, isError } = useGetProductosQuery(String(idSucursal));
   console.log('id de la compra seleccionada>>>> ',compraID); 
 
   const productosFiltrados2 = compra?.carrito.map((carritoItem: CarritoDto, carritoIndex: number) => ( 
@@ -39,6 +39,11 @@ export const ModalShoppingCart = ({ visible, setVisible, idSucursal, compraID, c
       <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={() => {}}>
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalContent}>
+          {isLoading && ( 
+                      <View style={styles.container}>
+                        <ActivityIndicator animating={true} color={theme.colors.primary} />
+                      </View>)
+                    }
             {productosFiltrados2?.map((products: Producto[] | undefined, index) => {
               if (!products) {
                 return null; // Si products es undefined, no se muestra nada
@@ -49,6 +54,7 @@ export const ModalShoppingCart = ({ visible, setVisible, idSucursal, compraID, c
                 
                 return (
                   <View key={product?.id} style={styles.card}>
+                    
                     <View style={styles.cardImageContainer}>
                       <Image
                         source={{ uri: product?.imagen }}

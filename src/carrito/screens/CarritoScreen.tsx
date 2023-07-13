@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Text, useTheme } from 'react-native-paper';
 import { CustomDivider } from '../../components/CustomDivider';
 import { CarritoItem } from '../components/CarritoItem';
@@ -10,7 +10,9 @@ import { Input } from 'react-native-elements';
 import { Feather } from '@expo/vector-icons';
 import ModalSucursal from '../../screens/Home/components/ModalSucursal';
 import ModalDirecciones from '../../screens/PerfilUsuario/components/ModalDirecciones';
-
+import { useNavigation } from '@react-navigation/native';
+import { useValidarCuponMutation } from '../../store/super5/super5Api';
+import { PromocionDTO } from '../../interfaces/interfaces';
 interface CarritoItem {
   id: number;
   nombre: string;
@@ -24,11 +26,12 @@ interface CarritoItem {
 
 export const CarritoScreen = () => {
   const theme = useTheme();
-  const { carrito, sucursal } = useAppSelector((state) => state.super5);
+  const { carrito, sucursal} = useAppSelector((state) => state.super5);
   const { 
     precioTotalCarrito, 
     limpiarElCarrito, 
     handlePagarCompra,
+    subTotal,
     cupon,
     setCupon,
     cuponAplicado,
@@ -37,22 +40,45 @@ export const CarritoScreen = () => {
     setDireccionId,
     modoEnvio,
     setModoEnvio,
+    setCuponDescuento,
+    cuponDescuento,
   
   } = useCarrito();
-
+  const navigation: any = useNavigation();
   const [direccion, setDireccion] = useState('');
   const [sucursalName, setSucursalName] = useState('');
   const [sucursalNumber, setSucursalNumber] = useState('');
-
+  
  
   const [mostrarSeccion, setMostrarSeccion] = useState(false);
   const [modalSucursalVisible, setModalSucursalVisible] = useState(false);
   const [modalDireccionVisible, setModalDireccionVisible] = useState(false);
 
+  const [startValidarCupon, { isLoading }] = useValidarCuponMutation();
+
   const handleAplicarDescuento = () => {
     if (cupon !== '') {
-      setCuponAplicado(true);
+      startValidarCupon({ cuponDescuentoVenta: cupon })
+            .unwrap()
+            .then((resp) => {
+              console.log(resp);
+              if (typeof resp === "string") return;
+             // handleOnSucces(resp);
+             setCuponDescuento(resp);
+            })
+            .catch((err) => {
+              console.log(err);
+              
+              setCupon('');
+              alert('Cupon no valido');
+              //handleSnackbar({ isError: true, show: true, message: err.data });
+              //handleOnSucces(null);
+            });
+
+
       // Lógica para aplicar el descuento
+      setCuponAplicado(true);
+      
     } else {
       setCuponAplicado(false);
     }
@@ -73,11 +99,25 @@ export const CarritoScreen = () => {
     
     setModalSucursalVisible(true);
   };
-
+  const { status } = useAppSelector(state => state.auth);
   const handleContinuar = () => {
-    setMostrarSeccion(true);
+    if (status === "authenticated") {
+      setMostrarSeccion(true);
+      
+    } else {
+      Alert.alert(
+        'Iniciar sesion para continuar',
+        'Debe iniciar sesion para realizar la compra',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Iniciar sesion', onPress: handleIniciarSesion, style: 'destructive' }
+        ]
+      );
+    }
   };
-
+  const handleIniciarSesion = () => {
+    navigation.navigate('Login');
+  }
   const renderCarritoItems = () => {
     return carrito.map((item) => <CarritoItem key={item.producto.id} product={item} />);
   };
@@ -182,25 +222,41 @@ export const CarritoScreen = () => {
             onChangeText={setCupon}
           />
           <View style={styles.finalizarCompraContainer}>
-            <View style={styles.valorTotalContainer}>
-              <Text variant="displaySmall">Total: </Text>
-              <Text variant="displaySmall">$ {precioTotalCarrito} </Text>
-            </View>
+  <View style={styles.valorTotalContainer}>
+    {cuponAplicado && cupon && (
+      <>
+        <View style={styles.textContainer}>
+          <Text style={{ fontSize: 24 }}>Sub Total:</Text>
+          <Text style={styles.textValue}>$ {subTotal}</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={{ fontSize: 24 }}>Descuento:</Text>
+          <Text style={styles.textValue}>- $ {cuponDescuento?.importeDescuentoVenta}</Text>
+        </View>
+      </>
+    )}
+    <View style={styles.textContainer}>
+      <Text style={{ fontSize: 24 }}>Total:</Text>
+      <Text style={styles.textValue}>$ {precioTotalCarrito}</Text>
+    </View>
+  </View>
 
-            <CustomDivider
-              style={{
-                width: '80%',
-                backgroundColor: theme.colors.primary,
-                marginBottom: 20,
-                alignSelf: 'center',
-              }}
-              bold
-            />
+  <CustomDivider
+    style={{
+      width: '80%',
+      backgroundColor: theme.colors.primary,
+      marginBottom: 20,
+      alignSelf: 'center',
+    }}
+    bold
+  />
 
-            <Button mode="contained" icon="cash-register" onPress={handlePagarCompra}>
-              Finalizar Compra
-            </Button>
-          </View>
+  <Button mode="contained" icon="cash-register" onPress={handlePagarCompra}>
+    Finalizar Compra
+  </Button>
+</View>
+
+
         </>
       )}
     </View>
@@ -213,6 +269,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+
   addressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -252,13 +309,26 @@ const styles = StyleSheet.create({
   },
   
   finalizarCompraContainer: {
-    width: '80%',
-    marginVertical: 30,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
   },
   valorTotalContainer: {
+    alignItems: 'center',
+
+  },
+  textContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    justifyContent: 'space-between', // Alinear elementos a izquierda y derecha
+    alignItems: 'center',
+    marginBottom: 3,
+    
+  },
+  textValue: {
+    textAlign: 'right', // Alinear el valor a la derecha
+    paddingLeft: 60,
+    fontSize: 24
   },
   input: {
     paddingVertical: 10,

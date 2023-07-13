@@ -3,7 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView, Alert } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-import { useAltaDirMutation } from '../../../store/super5/super5Api';
+import { useAltaDirMutation, useGetSucursalesQuery } from '../../../store/super5/super5Api';
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
 import { useEliminarDireccion } from "../hooks/useEliminarDireccion";
 
@@ -11,6 +11,8 @@ export const MapaDirection = (props: any) => {
   
   const { handleEliminarDireccion } = useEliminarDireccion();
   const [startCreate, { isLoading, isSuccess, data }] = useAltaDirMutation();
+
+  const { data: sucursales } = useGetSucursalesQuery();
   const [address, setAddress] = useState("");
   const [addresses, setAddresses] = useState<string[]>([]);
   const [editMode, setEditMode] = useState(false);
@@ -301,6 +303,13 @@ export const MapaDirection = (props: any) => {
               draggable
               onDragEnd={onMarkerDragEnd}
             />
+             {sucursales?.map((sucursal) => (
+                <Marker
+                  key={sucursal.nombre}
+                  coordinate={{ latitude: +sucursal.direccion.latitud, longitude: +sucursal.direccion.longitud }}
+                  icon={{ uri: 'https://cdn.discordapp.com/attachments/1086451309487587421/1113673314997645333/super5markerWhite42.png' }}
+                />
+              ))}
           </MapView>
         </View>
       )}

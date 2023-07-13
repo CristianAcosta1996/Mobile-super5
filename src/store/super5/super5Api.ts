@@ -6,11 +6,12 @@ import {
   Token,
   Direccion,
   ReclamoDTO,
+  PromocionDTO,
 } from "../../interfaces/interfaces";
 import { RootState } from "../store";
 import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
 
-const apiUrl: string = "http://192.168.1.159:8080/api";
+const apiUrl: string = "http://super5-391418.rj.r.appspot.com/api";
 
 /*interface Token {
   sub: string;
@@ -218,6 +219,11 @@ export const super5Api = createApi({
         method: "GET",
       }),
     }),
+
+    getSucursales: builder.query<Sucursal[], void>({
+      query: () => "sucursal/obtener",
+      providesTags: ["Sucursal"],
+    }),
     
     getDirecciones: builder.query<Direccion[], void>({
       query: () => "direccion/listar",
@@ -304,6 +310,21 @@ export const super5Api = createApi({
       }),
       invalidatesTags: ["Direccion"],
     }),
+    validarCupon: builder.mutation<PromocionDTO | string,
+    { cuponDescuentoVenta: string }>({
+      query: (body) => ({
+        url: "promocion/validarCupon",
+        method: "POST",
+        body,
+        responseHandler: async (response) => {
+          if (!response.ok) {
+            const error = await response.text();
+            return error;
+          }
+          return response.json();
+        },
+      }),
+    }),
     
   }),
 
@@ -313,6 +334,7 @@ export const {
   useLoginMutation, 
   useAltaMutation, 
   useObtenerSucursalesMutation,
+  useGetSucursalesQuery,
   useObtenerProdsQuery,
   useAltaDirMutation,
   useGenerarCompraPaypalMutation,
@@ -329,5 +351,6 @@ export const {
   useModificarContrasenaMutation,
   useGetReclamosQuery,
   useEliminarDireccionMutation,
-  useGetProductosQuery
+  useGetProductosQuery,
+  useValidarCuponMutation
 } = super5Api;

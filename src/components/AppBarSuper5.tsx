@@ -3,21 +3,34 @@ import { Appbar, Badge } from "react-native-paper";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { Image, TouchableOpacity, View , Text} from "react-native";
 import { AntDesign, Feather } from '@expo/vector-icons'; 
-import { useAuth } from "../auth/hooks/useAuth";
 import { useAppSelector } from "../hooks/hooks";
 
 export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
   const { status } = useAppSelector(state => state.auth);
+  const {
+    carrito,
+  } = useAppSelector((state) => ({ ...state.super5 }));
   const titulo = getHeaderTitle(options, route.name);
   return (
     <Appbar.Header>
       {titulo === "Home" && (
+        
+        <>
         <Appbar.Action
           icon="menu"
           onPress={() => {
             navigation.toggleDrawer();
           }}
         />
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Image
+            source={require("../../assets/imagenSinFondo.png")}
+            style={{ width: 180, height: 60 }}
+          />
+        </View>
+        </>
       )}
       {back && (
         <Appbar.BackAction
@@ -67,35 +80,27 @@ export const AppBarSuper5 = ({ navigation, route, options, back }: any) => {
         >
           <Feather name="shopping-cart" size={30} color="black" />
           <Badge
-            size={18}
-            style={{
-              position: 'absolute',
-              top: -6,
-              right: -6,
-              backgroundColor: 'red',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minWidth: 20,
-              height: 20,
-              borderRadius: 10,
-            }}
-          >
-            3
-          </Badge>
-          {/*
-                      <Badge
-              badgeContent={
-                (carrito.length >= 1 &&
-                  carrito
-                    .map((item) => item.cantidad)
-                    .reduce((prev, current) => prev + current)) ||
-                undefined
-              }
-              color="error"
+              size={18}
+              style={{
+                position: 'absolute',
+                top: -6,
+                right: -6,
+                backgroundColor: 'red',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minWidth: 20,
+                height: 20,
+                borderRadius: 10
+              }}
             >
-              <ShoppingCart fontSize="small" />
+            {(carrito?.length >= 1 &&
+                  carrito
+                    .map((item: { cantidad: any }) => item.cantidad)
+                    .reduce((prev: any, current: any) => prev + current)) || 0
+            }
             </Badge>
-             */}
+
+             
        </TouchableOpacity>
       )}
     </Appbar.Header>

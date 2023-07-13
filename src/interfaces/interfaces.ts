@@ -99,3 +99,30 @@ export interface Token {
       id: number;
     };
   }
+  export interface Usuario {
+    id: number;
+    usuario: string;
+    contrasenia: null;
+    nombre: string;
+    apellido: string;
+    eliminado: boolean;
+    bloqueado: boolean;
+    googleId: string;
+    correo: string;
+    telefono: string;
+    rol: number;
+    fechaNacimiento: string;
+  }
+  export interface PromocionDTO {
+    id: number;
+    nombre: string | null;
+    fechaDesde: string | null;
+    fechaHasta: string;
+    tipoPromo: "PRODUCTO" | null;
+    porcDescuentoProducto: number | null;
+    cuponDescuentoVenta: string | null;
+    aplicado: boolean | null;
+    importeDescuentoVenta: number;
+    producto: Producto | null;
+    cliente: Usuario | null;
+  }

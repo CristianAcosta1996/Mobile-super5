@@ -70,22 +70,38 @@ const AltaUserScreen = () => {
       </View>
     );
 
-  const handleCreate = () => {
-    startCreate({
-      nombre: formValues.nombre,
-      apellido: formValues.apellido,
-      correo: formValues.email,
-      contrasenia: formValues.password,
-      telefono: formValues.telefono,
-      usuario: formValues.user,
-      fechaNacimiento: selectedDate instanceof Date ? selectedDate : null,
-    }).then((resp: any) => {
-      console.log(resp);
-      //handleLogin( formValues.user, formValues.password);
-      setDateVisible(true);
-      setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
-    });
-  };
+    const handleCreate = () => {
+      startCreate({
+        nombre: formValues.nombre,
+        apellido: formValues.apellido,
+        correo: formValues.email,
+        contrasenia: formValues.password,
+        telefono: formValues.telefono,
+        usuario: formValues.user,
+        fechaNacimiento: selectedDate instanceof Date ? selectedDate : null,
+      })
+        .then((resp: any) => {
+          if (resp.error) {
+            console.log('Error al crear:', resp.error);
+            // Aquí puedes mostrar un mensaje de error al usuario
+            alert(resp.error.data);
+            setDateVisible(true);
+            setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
+          } else {
+            console.log('respppp ok', resp);
+            setDateVisible(true);
+            setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
+            //handleLogin(formValues.user, formValues.password);
+          }
+        })
+        .catch((error: any) => {
+          console.log('Error al crear:', error);
+          // Aquí puedes mostrar un mensaje de error al usuario
+          alert('Error al crear. Por favor, inténtelo de nuevo.');
+        });
+    };
+    
+    
   
   const {
     dayItems,

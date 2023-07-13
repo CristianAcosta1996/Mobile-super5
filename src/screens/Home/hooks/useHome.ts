@@ -44,9 +44,9 @@ export const useHome = () => {
     };
 
     useEffect(() => {
-    setProductsIsLoading(true);
+        setProductsIsLoading(true);
     
-        selectedName && fetch(`http://192.168.1.159:8080/api/producto/obtenerPorSucursal/${selectedName}`)
+        selectedName && fetch(`http://super5-391418.rj.r.appspot.com/api/producto/obtenerPorSucursal/${selectedName}`)
             .then(response => response?.json())
             .then(data => {
             const filteredProducts = data.filter((product: Product) =>
@@ -57,7 +57,7 @@ export const useHome = () => {
             setProductsIsLoading(false);
             })
             .catch(error => console.error(error));
-        }, [selectedName, searchQuery]);
+    }, [selectedName, searchQuery]);
     
     const handleFilterIconPress = () => {
     setIsCatVisible(true);

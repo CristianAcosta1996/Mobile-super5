@@ -158,7 +158,8 @@ export const useAuth = () => {
         
       })
       .catch((error) => {
-        console.error(error);
+        console.error('-----------------------------------',error);
+        alert(error);
       });
   };
   return {

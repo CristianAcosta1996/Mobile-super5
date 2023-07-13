@@ -12,6 +12,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useAuth } from "../../../auth/hooks/useAuth";
 import RNPickerSelect from 'react-native-picker-select';
 import { Input } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 export const ProfileScreen = () => {
   const { data: userData } = useGetUserDataQuery();
 
@@ -68,7 +69,7 @@ export const ProfileScreen = () => {
   //const [birthDate, setBirthDate] = useState(formattedBirthDate);
   const [nacimiento, setNacimiento] = useState<Dayjs | null>(dayjs(fechaNac));
   
-
+  const navigation: any = useNavigation();
 
 
   useEffect(() => {
@@ -329,8 +330,38 @@ export const ProfileScreen = () => {
       
 
       </View>
+      <View>
+      <TouchableOpacity onPress={() => {navigation.navigate('Direcciones');}}>
+        <View style={styles.itemContainer}>
+          <Feather name="map-pin" size={24} color="black" />
+          <Text style={styles.itemText}>Direcciones</Text>
+          <View style={styles.iconContainer}>
+            <Feather name="chevron-right" size={24} color="black" />
+          </View>
+        </View>
+      </TouchableOpacity>
       
-      <MapaDirection/>
+      <TouchableOpacity onPress={() => {navigation.navigate('Pedidos');}}>
+        <View style={styles.itemContainer}>
+          <Feather name="shopping-bag" size={24} color="black" />
+          <Text style={styles.itemText}>Mis Pedidos</Text>
+          <View style={styles.iconContainer}>
+            <Feather name="chevron-right" size={24} color="black" />
+          </View>
+        </View>
+      </TouchableOpacity>
+      
+      <TouchableOpacity onPress={() => {navigation.navigate('Reclamos');}}>
+        <View style={styles.itemContainer}>
+          <Feather name="message-square" size={24} color="black" />
+          <Text style={styles.itemText}>Mis Reclamos</Text>
+          <View style={styles.iconContainer}>
+            <Feather name="chevron-right" size={24} color="black" />
+          </View>
+        </View>
+      </TouchableOpacity>
+    </View>
+      
     </View>
     
 
@@ -342,6 +373,7 @@ export const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -362,6 +394,18 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderRadius: 8,
     padding: 10,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+  },
+  iconContainer: {
+    marginLeft: 'auto',
+  },
+  itemText: {
+    marginLeft: 10,
+    fontSize: 16,
   },
   field: {
     flexDirection: "row",

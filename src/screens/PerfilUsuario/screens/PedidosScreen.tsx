@@ -26,6 +26,7 @@ import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import * as Notifications from 'expo-notifications';
 import { styleProductTable, styleCompra, logo } from '../../../utils/stylesToPDF';
+import { useAuth } from "../../../auth/hooks/useAuth";
 export const PedidosScreeen = (props: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalCartVisible, setModalCartVisible] = useState(false);
@@ -38,7 +39,7 @@ export const PedidosScreeen = (props: any) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const { data: compras, isLoading, refetch: refetchCompras } = useGetComprasQuery();
-  //const { data: productos } = useGetProductosQuery(String(sucursalID));
+
   
   
     const { data: productos } = useGetProductosQuery(String(sucursalID));

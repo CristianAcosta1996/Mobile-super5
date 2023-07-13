@@ -10,6 +10,7 @@ import {
   CarritoDto,
   CarritoItem,
   Producto,
+  PromocionDTO,
 } from "../../interfaces/interfaces";
 import { CompraDTO } from "../../interfaces/interfaces";
 
@@ -24,6 +25,8 @@ export const useCarrito = () => {
 
 
   const [cupon, setCupon] = useState('');
+  const[cuponDescuento, setCuponDescuento] = useState<PromocionDTO | null>(null);
+  const[subTotal, setSubTotal] = useState<number | null>(null);
   const [cuponAplicado, setCuponAplicado] = useState(false);
   const [direccionId, setDireccionId] = useState('');
   const [modoEnvio, setModoEnvio] = useState('');
@@ -38,7 +41,7 @@ export const useCarrito = () => {
       return;
     }
     setPrecioTotalCarrito(calcularPrecioTotalCarrito());
-  }, [carrito]);
+  }, [carrito, cupon, cuponDescuento]);
 
   const handleOnClose = () => {
     setOpen(!open);
@@ -58,14 +61,21 @@ export const useCarrito = () => {
   };
 
   const calcularPrecioTotalCarrito = (): number => {
-    let contador = 0;
+    let precioFinal = 0;
     carrito.forEach(({ producto: { precio, precioDescuento }, cantidad }) => {
-      contador += !precioDescuento
+      precioFinal += !precioDescuento
         ? precio * cantidad
         : precioDescuento * cantidad;
     });
-    
-    return contador;
+
+    if (cuponDescuento&&cupon) {
+      const calculoDePrecio = precioFinal - cuponDescuento.importeDescuentoVenta;
+      setSubTotal(precioFinal);
+      
+      return calculoDePrecio <= 0 ? 0 : calculoDePrecio;
+    }else{
+      return precioFinal;
+    }
   };
   
   
@@ -83,6 +93,7 @@ export const useCarrito = () => {
       direccion_id: modoEnvio === "DOMICILIO" ? Number(direccionId) : undefined,
       formaEntrega: modoEnvio,
       sucursal_id: +sucursal.id,
+      promocion_id: cuponDescuento?.id,
     };
     //
     if(modoEnvio){ 
@@ -107,6 +118,7 @@ export const useCarrito = () => {
     calcularPrecioTotalCarrito,
     precioTotalCarrito,
     handlePagarCompra,
+    subTotal,
     cupon,
     setCupon,
     cuponAplicado,
@@ -114,6 +126,8 @@ export const useCarrito = () => {
     direccionId,
     setDireccionId,
     modoEnvio,
-    setModoEnvio
+    setModoEnvio,
+    setCuponDescuento,
+    cuponDescuento,
   };
 };

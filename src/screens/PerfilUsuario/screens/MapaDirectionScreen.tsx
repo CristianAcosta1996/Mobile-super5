@@ -3,17 +3,17 @@ import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, TextInput, Modal, ScrollView, SafeAreaView, Alert } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-import { useAltaDirMutation, useGetSucursalesQuery } from '../../../store/super5/super5Api';
+import { useAltaDirMutation, useGetSucursalesQuery, useModificarDireccionMutation } from '../../../store/super5/super5Api';
 import { useGetDireccionesQuery } from "../../../store/super5/super5Api";
 import { useEliminarDireccion } from "../hooks/useEliminarDireccion";
+import { ActivityIndicator, useTheme } from "react-native-paper";
+import { Direccion } from "../../../interfaces/interfaces";
 
 export const MapaDirection = (props: any) => {
   
-  const { handleEliminarDireccion } = useEliminarDireccion();
+  const { handleEliminarDireccion, isLoadingDelete } = useEliminarDireccion();
   const [startCreate, { isLoading, isSuccess, data }] = useAltaDirMutation();
-
   const { data: sucursales } = useGetSucursalesQuery();
-  const [address, setAddress] = useState("");
   const [addresses, setAddresses] = useState<string[]>([]);
   const [editMode, setEditMode] = useState(false);
   const [editInputMode, setEditInputMode] = useState(true);
@@ -33,62 +33,91 @@ export const MapaDirection = (props: any) => {
   };
 
   
-
-  const handleEditAddress = (index: number) => {
-    alert('Esta funcion no se ha implementado aun');
-    /*
-    setEditInputMode(editInputMode? editInputMode : !editInputMode);
+  const theme = useTheme();
+  const handleEditAddress = async (index: number) => {
+    //alert('Esta funcion no se ha implementado aun');
+    
+    console.log('2');
+   // selectedAddressIndex === index && editMode
     setSelectedAddressIndex(index);
-    setSelectedAddress(addresses[index]);
-    */
+    setEditMode(editMode);
+    setEditInputMode(!editInputMode);
   };
+  const [
+    startModificarDireccion,
+  ] = useModificarDireccionMutation();
 
-  const handleCreate = () => {
-    console.log(long);
-    startCreate({
-      direccion: dir,
-      ciudad: ciud,
-      departamento: dept,
-      longitud: long,
-      latitud: lat,
-      aclaracion: aclar,
-    })
-      .then((resp: any) => {
-        if (resp) {
-          alert(`Dirección agregada con éxito!`);
-          refetchDirecciones(); // Actualizar los datos después de agregar una nueva dirección
-        }
-        console.log(resp);
-      })
-      .catch((error: any) => {
-        console.log('Error al agregar la dirección:', error);
-      });
+  const handleModificarDireccion = async (
+    idDireccion:string
+  ) => {
+      startModificarDireccion({
+        id: idDireccion,
+        direccion: dir,
+        ciudad: ciud,
+        departamento: dept,
+        longitud: String(long),
+        latitud: String(lat),
+        aclaracion: aclar,
+
+      }).unwrap()
+          .then((resp) => {
+              alert("Modificacion exitosa");
+          })
+          .catch((error) => {
+              alert(error.data);
+          })
   };
+    const handleCreate = () => {
+      console.log(long);
+      startCreate({
+        direccion: dir,
+        ciudad: ciud,
+        departamento: dept,
+        longitud: long,
+        latitud: lat,
+        aclaracion: aclar,
+      })
+        .then((resp: any) => {
+          if (resp) {
+            alert(`Dirección agregada con éxito!`);
+            refetchDirecciones(); // Actualizar los datos después de agregar una nueva dirección
+          }
+          console.log(resp);
+        })
+        .catch((error: any) => {
+          console.log('Error al agregar la dirección:', error);
+        });
+    };
   
-  const handleSaveAddress = () => {
+  const handleSaveAddress = async (direccionSelected: Direccion) => {
    
-    /*if (selectedAddressIndex !== null && selectedAddress.trim() !== "") {
-      const updatedAddresses = [...addresses];
-      updatedAddresses[selectedAddressIndex] = selectedAddress.trim();
-      setAddresses(updatedAddresses);
+    if (selectedAddress.trim() !== "") {
+      setAddresses([...addresses, selectedAddress]);
+      setSelectedAddress("");
+      console.log('antes del modificar');
+      console.log(aclar);
+      await handleModificarDireccion(direccionSelected.id);
+      setAclar("");
+
       setSelectedAddressIndex(null);
       setSelectedAddress("");
+      setEditInputMode(true?false:true);
+      refetchDirecciones();
       
     }
-    
-    setEditInputMode(!editInputMode? editInputMode : !editInputMode);
-    */
   };
 
   const handleCancelEditAddress = () => {
     setSelectedAddressIndex(null);
     setSelectedAddress("");
+    setEditInputMode(true?false:true);
   };
   
   const handleToggleEditMode = () => {
     console.log('2');
     setEditInputMode(!editInputMode);
     setEditMode(!editMode);
+    
     setSelectedAddressIndex(null);
     setSelectedAddress("");
     setEditMapMode(!editMapMode);
@@ -230,12 +259,22 @@ export const MapaDirection = (props: any) => {
               <Feather name="map-pin" size={20} color="black" />
               {selectedAddressIndex === index && editMode ? (
                 <>
-                  <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    value={selectedAddress}
-                    onChangeText={handleAddressChange}
-                  />
-                  <TouchableOpacity onPress={handleSaveAddress}>
+                   
+             <TextInput
+              style={styles.input}
+              value={selectedAddress}
+              onChangeText={handleAddressChange}
+              editable={false}
+              placeholder="Dirección"
+            />
+              
+             <TextInput
+              style={styles.input}
+              value={aclar}
+              onChangeText={setAclar}
+              placeholder="Aclaracion (op)"
+            />
+                  <TouchableOpacity onPress={()=>handleSaveAddress(direcciones)}>
                     <Feather name="check" size={20} color="black" />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={handleCancelEditAddress}>
@@ -244,7 +283,12 @@ export const MapaDirection = (props: any) => {
                 </>
               ) : (
                 <>
-                  <Text style={styles.text}>{direcciones.direccion}</Text>
+                 
+                    
+                      <Text style={styles.text}>{direcciones.direccion}</Text>
+                      {direcciones.aclaracion && <Text style={styles.text}>({direcciones.aclaracion})</Text>}
+                    
+                  
                   {editMode && (
                     <View style={{ flexDirection: "row", marginLeft: 'auto' }}>
                       <TouchableOpacity onPress={() => handleEditAddress(index)}>
@@ -253,8 +297,13 @@ export const MapaDirection = (props: any) => {
                       <TouchableOpacity
                         style={{ marginLeft: 20 }}
                         onPress={() => handleDeleteAddress(index)}
-                      >
+                      >{isLoadingDelete? ( 
+                        <View>
+                          <ActivityIndicator animating={true} color={theme.colors.primary} />
+                        </View>)
+                        :
                         <Feather name="trash" size={20} color="black" />
+                      }
                       </TouchableOpacity>
                     </View>
                   )}
@@ -284,7 +333,14 @@ export const MapaDirection = (props: any) => {
             />}
             {!editInputMode &&
             <TouchableOpacity onPress={handleAddAddress}>
-              <Feather name="plus" size={20} color="black" />
+                    {isLoading? ( 
+                      <View>
+                        <ActivityIndicator animating={true} color={theme.colors.primary} />
+                      </View>)
+                      :
+                      <Feather name="plus" size={20} color="black" />
+                    }
+              
             </TouchableOpacity>
             }
           </View>
@@ -362,11 +418,23 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+    
   },
   field: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding:5,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   label: {
     marginLeft: 10,
@@ -386,6 +454,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
+   
   },
   confirmButton: {
     alignItems: "center",
@@ -403,6 +472,22 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
+  addressTextContainer: {
+    
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    marginRight:20,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    
+  },
+
 });
 
 export default MapaDirection;

@@ -2,9 +2,9 @@ import { useEliminarDireccionMutation } from "../../../store/super5/super5Api";
 
 export const useEliminarDireccion = () => {
     const [
-        startEliminarDireccion,
+        startEliminarDireccion,{ isLoading, isSuccess, data }
     ] = useEliminarDireccionMutation();
-
+const isLoadingDelete = isLoading;
     const handleEliminarDireccion = async (
         id: string,
         direccion: string,
@@ -36,5 +36,5 @@ export const useEliminarDireccion = () => {
 
     };
 
-    return { handleEliminarDireccion }
+    return { handleEliminarDireccion, isLoadingDelete }
 }

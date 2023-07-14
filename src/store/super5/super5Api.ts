@@ -13,16 +13,6 @@ import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/com
 
 const apiUrl: string = "http://super5-391418.rj.r.appspot.com/api";
 
-/*interface Token {
-  sub: string;
-  apellido: string;
-  correo: string;
-  usuario: string;
-  exp: number;
-  nombre: string;
-  iat: number;
-  rol: number;
-}*/
 
 interface LoginProps {
   usuarioOCorreo: string;
@@ -302,6 +292,14 @@ export const super5Api = createApi({
       providesTags: ["AtenderReclamo"],
     }),
 
+    modificarDireccion: builder.mutation<Token, Direccion>({
+      query: (body) => ({
+        url: "direccion/modificar",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Direccion"],
+    }),
     eliminarDireccion: builder.mutation<Direccion, any>({
       query: (body) => ({
         url: "direccion/eliminar",
@@ -352,5 +350,6 @@ export const {
   useGetReclamosQuery,
   useEliminarDireccionMutation,
   useGetProductosQuery,
-  useValidarCuponMutation
+  useValidarCuponMutation,
+  useModificarDireccionMutation
 } = super5Api;

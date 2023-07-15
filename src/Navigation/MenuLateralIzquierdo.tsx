@@ -102,21 +102,6 @@ export const MenuLateralIzquierdo = () => {
       }
     };
   }, [comprasS, refetchCompras, expoPushToken]);
-/*
-  const sendNotificationCompraConfirmada = (compra: CompraDTO) => {
-    const notificationContent = {
-      title: 'Compra confirmada',
-      body: `La compra ${compra.id} ha sido confirmada.`,
-    };
-
-    Notifications.scheduleNotificationAsync({
-      content: notificationContent,
-      trigger: null,
-    });
-
-    console.log('Notificación de compra confirmada enviada');
-  };
-*/
     
     
     return (
@@ -133,23 +118,8 @@ export const MenuLateralIzquierdo = () => {
 
 const ContenidoDrawer = (props: any) => {
   
-
-  const {
-    isAuthenticatingLogin,
-    statusLogin,
-    isAuthenticatingRegistro,
-    statusRegistro,
-    isErrorLogin,
-    errorLogin,
-    isSuccessLogin,
-    isErrorSignup,
-    errorSignup,
-    isSuccessSignup,
-    dataLogin,
-    dataSignup,
-   } = useAuth();
-   const [modalVisible, setModalVisible] = useState(false);
-const [selectedDireccion, setSelectedDireccion] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDireccion, setSelectedDireccion] = useState('');
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
@@ -170,26 +140,6 @@ const [selectedDireccion, setSelectedDireccion] = useState('');
           style={customDividerProps.style}
           bold={customDividerProps.bold}
         />
-        <Button
-          icon="view-list"
-          style={{ width: 250, marginVertical: 25 }}
-          mode="contained-tonal"
-          onPress={() => {
-            setModalVisible(true);
-          }}
-        >
-          Categorias
-        </Button>
-        <Button
-          icon="magnify"
-          style={{ width: 250, marginBottom: 25 }}
-          mode="contained-tonal"
-          onPress={() => {
-            props.navigation.navigate("Search");
-          }}
-        >
-          Busqueda
-        </Button>
           
         <CustomDivider
           style={customDividerProps.style}
@@ -349,7 +299,7 @@ const SegundaSeccion = () => {
           <Button
             icon={buttons[0].icon}
             style={buttons[0].style}
-            mode="text"
+            mode="elevated"
             contentStyle={buttons[0].contentStyle}
             onPress={buttons[0].handleOnPress}
           >
@@ -358,7 +308,7 @@ const SegundaSeccion = () => {
           <Button
             icon={buttons[1].icon}
             style={buttons[1].style}
-            mode="text"
+            mode="elevated"
             contentStyle={buttons[1].contentStyle}
             onPress={buttons[1].handleOnPress}
           >
@@ -367,7 +317,7 @@ const SegundaSeccion = () => {
           <Button
             icon={buttons[2].icon}
             style={buttons[2].style}
-            mode="text"
+            mode="elevated"
             contentStyle={buttons[2].contentStyle}
             onPress={buttons[2].handleOnPress}
           >
@@ -381,7 +331,7 @@ const SegundaSeccion = () => {
           key={index}
           icon={btn.icon}
           style={btn.style}
-          mode="text"
+          mode="elevated"
           contentStyle={btn.contentStyle}
           onPress={btn.handleOnPress}
         >

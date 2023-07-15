@@ -1,14 +1,37 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, ActivityIndicator } from 'react-native';
 import { useGetReclamosQuery } from '../../../store/super5/super5Api';
+import { useTheme } from 'react-native-paper';
 
 const ReclamosScreen = () => {
-  const { data: reclamos } = useGetReclamosQuery();
-
+  const { data: reclamos, isLoading, refetch: refetchReclamos } = useGetReclamosQuery();
+  const [refreshing, setRefreshing] = useState(false);
+  const theme = useTheme();
+  const handleRefresh = async () => {
+      setRefreshing(true);
+      try {
+        await refetchReclamos();
+      } catch (error) {
+        console.error('Error al obtener las compras:', error);
+      }
+      setRefreshing(false);
+    };
+  // Muestra un indicador de carga mientras se está actualizando
+    const renderRefreshControl = () => (
+      <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+    );
+  if (isLoading) {
+    return (
+      <View style={styles.containerLoading}>
+        <Text>Cargando Reclamos...</Text>
+        <ActivityIndicator animating={true} color={theme.colors.primary} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Lista de Reclamos</Text>
-      <ScrollView contentContainerStyle={styles.reclamosContainer}>
+      <ScrollView contentContainerStyle={styles.reclamosContainer} refreshControl={renderRefreshControl()}>
         {reclamos && reclamos.length > 0 ? (
           reclamos.map((reclamo) => (
             <View key={reclamo.id} style={styles.reclamoItem}>
@@ -44,6 +67,13 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#F5F5F5', // Color de fondo principal
   },
+  containerLoading: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },  
   heading: {
     fontSize: 20,
     fontWeight: 'bold',

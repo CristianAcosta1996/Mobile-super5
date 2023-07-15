@@ -81,60 +81,6 @@ export const PedidosScreeen = (props: any) => {
     setSucursalID(id_sucursal);
     setCompra(compra);
   };
-/*
-  const handleExportPDF = async (compra?: CompraDTO) => {
-    console.log("Exportar a PDF la compra seleccionada");
-    setExportingPDF(true); // Establecer el estado de exportingPDF a true para mostrar el indicador de carga
-  
-    const { status } = await MediaLibrary.requestPermissionsAsync();
-  
-    if (status === "granted") {
-      try {
-        const html = `
-          <html>
-            <body>
-              <h1>Detalles de la compra</h1>
-              <p>ID Compra: ${compra?.id}</p>
-              <p>Forma de entrega: ${compra?.formaEntrega}</p>
-              <p>Estado: ${compra?.estado}</p>
-              <p>Precio: $${compra?.precio}</p>
-              <p>Fecha de compra: ${dayjs(compra?.fechaCompra).format(
-                "DD/MM/YYYY HH:mm"
-              )}</p>
-            </body>
-          </html>
-        `;
-  
-        const { uri } = await Print.printToFileAsync({ html });
-  
-        console.log("Archivo PDF guardado en la biblioteca de medios");
-  
-        // Notificar
-        const notificationContent = {
-          title: "Descarga completa",
-          body: "Su compra se ha exportado a PDF correctamente",
-        };
-  
-        Notifications.scheduleNotificationAsync({
-          content: notificationContent,
-          trigger: null,
-        });
-  
-        // Compartir el archivo PDF
-        await shareAsync(uri);
-  
-        setExportingPDF(false); // Establecer el estado de exportingPDF a false para ocultar el indicador de carga
-      } catch (error) {
-        console.log("Error al exportar la compra a PDF:", error);
-        setExportingPDF(false); // Establecer el estado de exportingPDF a false en caso de error
-      }
-    } else {
-      console.log("Permisos denegados");
-      alert("Permisos denegados");
-      setExportingPDF(false); // Establecer el estado de exportingPDF a false si se deniegan los permisos
-    }
-  };
-*/
 
 const handleExportPDF = async (compra?: CompraDTO) => {
   console.log(compra?.precio);
@@ -214,7 +160,11 @@ const handleExportPDF = async (compra?: CompraDTO) => {
                   </tr>
                   <tr>
                     <td>Fecha de confirmación</td>
-                    <td>${dayjs(compra?.fechaConfirmacion).format("DD/MM/YYYY HH:mm")}</td>
+                    <td>${compra?.fechaConfirmacion?  dayjs(compra?.fechaConfirmacion).format("DD/MM/YYYY HH:mm") : "No confirmada"}</td>
+                  </tr>
+                  <tr>
+                    <td>Fecha de finalizacion</td>
+                    <td>${compra?.fechaFinalizacion?  dayjs(compra?.fechaFinalizacion).format("DD/MM/YYYY HH:mm") : "No finalizada"}</td>
                   </tr>
                 </table>
               </div>
@@ -339,6 +289,33 @@ const handleExportPDF = async (compra?: CompraDTO) => {
                       {compra.fechaCompra && dayjs(compra.fechaCompra).format('DD/MM/YYYY HH:mm')}
                     </Text>
                   </View>
+
+                  {compra.fechaConfirmacion&&
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Fecha de confirmacion:</Text>
+                      <Text style={styles.tableValue}>
+                        {compra.fechaConfirmacion && dayjs(compra.fechaConfirmacion).format('DD/MM/YYYY HH:mm')}
+                      </Text>
+                    </View>
+                  }
+
+                  {compra.fechaFinalizacion&&
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Fecha de finalizacion:</Text>
+                      <Text style={styles.tableValue}>
+                        {compra.fechaFinalizacion && dayjs(compra.fechaFinalizacion).format('DD/MM/YYYY HH:mm')}
+                      </Text>
+                    </View>
+                  }
+
+                  {compra.fechaCancelacion&&
+                    <View style={styles.tableRow}>
+                      <Text style={styles.tableLabel}>Fecha de cancelacion:</Text>
+                      <Text style={styles.tableValue}>
+                        {compra.fechaCancelacion && dayjs(compra.fechaCancelacion).format('DD/MM/YYYY HH:mm')}
+                      </Text>
+                    </View>
+                  }
                   <View style={styles.tableRowButtons}>
                     <TouchableOpacity  style={styles.touchbutton}  onPress={() => handleReclamo(compra.id)}>
                       <Feather name="alert-triangle" size={24} color="black" />

@@ -7,7 +7,7 @@ import { useAppSelector } from '../../hooks/storeHooks';
 import { useCarrito } from '../hooks/useCarrito';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input } from 'react-native-elements';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import ModalSucursal from '../../screens/Home/components/ModalSucursal';
 import ModalDirecciones from '../../screens/PerfilUsuario/components/ModalDirecciones';
 import { useNavigation } from '@react-navigation/native';
@@ -129,27 +129,55 @@ export const CarritoScreen = () => {
   };
   return (
     <View style={styles.container}>
-       <Text variant="displaySmall">Mi Carrito</Text>
-       <Button
-          mode="text"
-          icon="trash-can"
-          style={{ alignSelf: 'flex-start', marginBottom: 10 }}
-          onPress={limpiarElCarrito}
-        >
-          Vaciar carrito
-        </Button>
-        <ScrollView style={{ width: '100%', marginBottom: 10 }}>
-          <View style={styles.carritoItemsContainer}>{renderCarritoItems()}</View>
-        </ScrollView>
+       
+       {carrito.length > 0 ? (
+        <>
+          <Text variant="displaySmall">Mi Carrito</Text>
+          <Button
+            mode="text"
+            icon="trash-can"
+            style={{ alignSelf: 'flex-start', marginBottom: 10 }}
+            onPress={limpiarElCarrito}
+          >
+            Vaciar carrito
+          </Button>
+          <ScrollView style={{ width: '100%', marginBottom: 10 }}>
+            <View style={styles.carritoItemsContainer}>{renderCarritoItems()}</View>
+          </ScrollView>
+        </>
+        ):(
+          <>
+          
+          <View style={styles.containerCartEmpty}>
+      <Ionicons name="cart-outline" size={80} color="#FF0056" />
+      <Text style={styles.title}>¡Tu carrito está vacío!</Text>
+      <Text style={styles.subtitle}>Agrega algunos productos increíbles para comenzar tu experiencia de compra.</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate('Home');
+        }}
+      >
+        <Ionicons name="home" size={50} color="#FF0056" />
+      </TouchableOpacity>
+    </View>
+            
+          </>
+        )}
+        
+        
       {!mostrarSeccion && (
       <>
-        <Button
-          mode="contained"
-          onPress={handleContinuar}
-          style={{ marginBottom: 10 }}
-        >
-          Continuar
-        </Button>
+        {carrito.length > 0 && (
+          <Button
+            mode="contained"
+            onPress={handleContinuar}
+            style={{ marginBottom: 10 }}
+          >
+            Continuar
+          </Button>
+        )}
+
        </>
       )}
       {modoEnvio === 'DOMICILIO' && modalDireccionVisible && (
@@ -329,6 +357,32 @@ const styles = StyleSheet.create({
     textAlign: 'right', // Alinear el valor a la derecha
     paddingLeft: 60,
     fontSize: 24
+  },
+  containerCartEmpty: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    marginTop: 10,
+    textAlign: 'center',
   },
   input: {
     paddingVertical: 10,

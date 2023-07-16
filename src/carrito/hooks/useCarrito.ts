@@ -34,6 +34,7 @@ export const useCarrito = () => {
   const { carrito } = useAppSelector((state) => state.super5);
   const [startCompraPaypal, { data }] = useGenerarCompraPaypalMutation();
   const { sucursal } = useAppSelector((state) => state.super5);
+  const [mostrarSeccion, setMostrarSeccion] = useState(false);
 
   useEffect(() => {
     if (carrito.length === 0) {
@@ -57,6 +58,7 @@ export const useCarrito = () => {
   };
 
   const limpiarElCarrito = () => {
+    setMostrarSeccion(false);
     dispatch(limpiarCarrito());
   };
 
@@ -129,5 +131,7 @@ export const useCarrito = () => {
     setModoEnvio,
     setCuponDescuento,
     cuponDescuento,
+    mostrarSeccion, 
+    setMostrarSeccion
   };
 };

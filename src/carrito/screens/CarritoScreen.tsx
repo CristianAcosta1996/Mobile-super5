@@ -42,6 +42,8 @@ export const CarritoScreen = () => {
     setModoEnvio,
     setCuponDescuento,
     cuponDescuento,
+    mostrarSeccion, 
+    setMostrarSeccion
   
   } = useCarrito();
   const navigation: any = useNavigation();
@@ -50,7 +52,7 @@ export const CarritoScreen = () => {
   const [sucursalNumber, setSucursalNumber] = useState('');
   
  
-  const [mostrarSeccion, setMostrarSeccion] = useState(false);
+  //const [mostrarSeccion, setMostrarSeccion] = useState(false);
   const [modalSucursalVisible, setModalSucursalVisible] = useState(false);
   const [modalDireccionVisible, setModalDireccionVisible] = useState(false);
 

@@ -99,12 +99,6 @@ export const LoginScreen = (props: any) => {
       </TouchableOpacity>
 
     </View>
-    <View>
-    <TouchableOpacity>
-          <FontAwesome name="google" size={20}/>
-          <Text>Login with Google</Text>
-        </TouchableOpacity>
-    </View>
     
   </View>
 

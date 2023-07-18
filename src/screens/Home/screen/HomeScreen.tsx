@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { ActivityIndicator, Animated, Button, Easing, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from '../../../components/Card';
 import ImageSwiper from "../../../components/ImageSwiper";
-import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
-import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
+import ModalSucursal from "../components/ModalSucursal";
+import ModalCategorias from "../components/ModalCategorias";
 import { Feather } from "@expo/vector-icons";
 import { useHome } from "../hooks/useHome";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { MD3Colors, ProgressBar, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { Producto } from "../../../interfaces/interfaces";
 export const HomeScreen = () => {
   const theme = useTheme();
-  const rotation = new Animated.Value(0); 
   const {
     handlePressSucursal,
     filteredProducts,
@@ -22,25 +21,25 @@ export const HomeScreen = () => {
     searchQuery,
     setSearchQuery,
     productsIsLoading,
- } = useHome();
+  } = useHome();
 
   return (
     <View style={styles.container}>
       <SafeAreaView>
-      <ModalSucursal 
-       {...modalSucursalProps}
-      />
-    <TouchableOpacity onPress={() => handlePressSucursal()}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        {selectedNameSuc&& (
-        <>
-          <Icon name="store" size={20} color="#000" />
-          <Text style={{ marginLeft: 8 }}>Estas comprando en sucursal: {selectedNameSuc}</Text>
-        </>)}
-        
-      </View>
-    </TouchableOpacity>
-      <View style={styles.searchBarContainer}>
+        <ModalSucursal
+          {...modalSucursalProps}
+        />
+        <TouchableOpacity onPress={() => handlePressSucursal()}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {selectedNameSuc && (
+              <>
+                <Icon name="store" size={20} color="#000" />
+                <Text style={{ marginLeft: 8 }}>Estas comprando en sucursal: {selectedNameSuc}</Text>
+              </>)}
+
+          </View>
+        </TouchableOpacity>
+        <View style={styles.searchBarContainer}>
           <Feather name="search" size={24} color="gray" style={styles.searchIcon} />
           <TextInput
             style={styles.searchBar}
@@ -49,35 +48,35 @@ export const HomeScreen = () => {
             onChangeText={text => setSearchQuery(text)}
           />
           <TouchableOpacity onPress={handleFilterIconPress}>
-            <Feather name="filter" size={24} color="gray" style={styles.filterIcon} /> 
+            <Feather name="filter" size={24} color="gray" style={styles.filterIcon} />
           </TouchableOpacity>
-      </View>
-      {!productsIsLoading ? 
-        (
-          <FlatList
-            data={filteredProducts}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            renderItem={({ item }) => <Card product={item as unknown as Producto} />}
-            ListHeaderComponent={<ImageSwiper/>}
-            ListFooterComponent={filteredProducts.length > 0 ?  (
-              <ActivityIndicator animating={true} color={theme.colors.primary} />
-            ) : null}  
-          />
-        )
-        :
-        (
-          <>
-            <View style={styles.containerLoading}>
-              <Text style={{ marginLeft: 10 }}>Cargando productos...</Text>      
-              <ActivityIndicator animating={true} color={theme.colors.primary} />
-            </View>
-          </>
-        )
-      }
+        </View>
+        {!productsIsLoading ?
+          (
+            <FlatList
+              data={filteredProducts}
+              numColumns={2}
+              columnWrapperStyle={styles.columnWrapper}
+              renderItem={({ item }) => <Card product={item as unknown as Producto} />}
+              ListHeaderComponent={<ImageSwiper />}
+              ListFooterComponent={filteredProducts.length > 0 ? (
+                <ActivityIndicator animating={true} color={theme.colors.primary} />
+              ) : null}
+            />
+          )
+          :
+          (
+            <>
+              <View style={styles.containerLoading}>
+                <Text style={{ marginLeft: 10 }}>Cargando productos...</Text>
+                <ActivityIndicator animating={true} color={theme.colors.primary} />
+              </View>
+            </>
+          )
+        }
       </SafeAreaView>
-      <ModalCategorias 
-       {...modalCatProps}
+      <ModalCategorias
+        {...modalCatProps}
       />
     </View>
   );
@@ -90,14 +89,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 20,
-    
+
   },
   isloadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  containerLoading:{
+  containerLoading: {
     flex: 1,
     width: '100%', // Ancho del modal
     maxHeight: '100%', // Altura máxima del modal
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 10,
-    
+
     marginBottom: 160,
   },
   loader: {
@@ -165,7 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centrar verticalmente
     marginTop: '50%',
   },
-  
+
   closeButton: {
     position: 'absolute',
     top: 10,
@@ -196,5 +195,6 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 });
+
 
 export default HomeScreen;

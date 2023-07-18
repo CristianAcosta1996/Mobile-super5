@@ -10,7 +10,6 @@ interface AuthSliceState {
   apellido: string | null | undefined;
   email: string | null | undefined;
   telefono: string | null | undefined;
-  //fechaNac: Date | null | undefined;
   uid?: string | null | undefined;
   token?: string | null | undefined;
   errorMessage?: string | null | undefined;
@@ -50,11 +49,6 @@ const initialState = (): AuthSliceState => {
   return state;
 };
 
-/*
-  validar usuario respecto a las rutas, el tipo de usuario se deberia guardar en el localstorage? o solo el id,
-  cuando el usuario inicia sesion el servidor deberia enviar todos los datos del usuario para poder mostrar las rutas protegidas?, porque asi podemos sacar el tipo de usuario y no seria necesario 
-  persistirlo en el localstorage.
-*/
 
 export const authSlice = createSlice({
   name: "auth",

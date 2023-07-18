@@ -23,16 +23,22 @@
       "supportsTablet": true
     },
     "android": {
-      "package":"com.proyectotecnologo.mobilesuper5",
+      "package": "com.proyectotecnologo.mobilesuper5",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
-     
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["@react-native-google-signin/google-signin"]
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "590845b6-e931-4e30-9f96-a595f0ae10b4"
+      }
+    }
   }
 }

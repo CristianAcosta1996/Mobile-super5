@@ -8,11 +8,9 @@ import { useCarrito } from '../hooks/useCarrito';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input } from 'react-native-elements';
 import { Feather, Ionicons } from '@expo/vector-icons';
-import ModalSucursal from '../../screens/Home/components/ModalSucursal';
 import ModalDirecciones from '../../screens/PerfilUsuario/components/ModalDirecciones';
 import { useNavigation } from '@react-navigation/native';
 import { useValidarCuponMutation } from '../../store/super5/super5Api';
-import { PromocionDTO } from '../../interfaces/interfaces';
 interface CarritoItem {
   id: number;
   nombre: string;
@@ -26,10 +24,10 @@ interface CarritoItem {
 
 export const CarritoScreen = () => {
   const theme = useTheme();
-  const { carrito, sucursal} = useAppSelector((state) => state.super5);
-  const { 
-    precioTotalCarrito, 
-    limpiarElCarrito, 
+  const { carrito, sucursal } = useAppSelector((state) => state.super5);
+  const {
+    precioTotalCarrito,
+    limpiarElCarrito,
     handlePagarCompra,
     subTotal,
     cupon,
@@ -42,52 +40,39 @@ export const CarritoScreen = () => {
     setModoEnvio,
     setCuponDescuento,
     cuponDescuento,
-    mostrarSeccion, 
+    mostrarSeccion,
     setMostrarSeccion
-  
+
   } = useCarrito();
   const navigation: any = useNavigation();
   const [direccion, setDireccion] = useState('');
   const [sucursalName, setSucursalName] = useState('');
-  const [sucursalNumber, setSucursalNumber] = useState('');
-  
- 
-  //const [mostrarSeccion, setMostrarSeccion] = useState(false);
+
   const [modalSucursalVisible, setModalSucursalVisible] = useState(false);
   const [modalDireccionVisible, setModalDireccionVisible] = useState(false);
 
-  const [startValidarCupon, { isLoading }] = useValidarCuponMutation();
+  const [startValidarCupon] = useValidarCuponMutation();
 
   const handleAplicarDescuento = () => {
     if (cupon !== '') {
       startValidarCupon({ cuponDescuentoVenta: cupon })
-            .unwrap()
-            .then((resp) => {
-              console.log(resp);
-              if (typeof resp === "string") return;
-             // handleOnSucces(resp);
-             setCuponDescuento(resp);
-            })
-            .catch((err) => {
-              console.log(err);
-              
-              setCupon('');
-              alert('Cupon no valido');
-              //handleSnackbar({ isError: true, show: true, message: err.data });
-              //handleOnSucces(null);
-            });
+        .unwrap()
+        .then((resp) => {
+          console.log(resp);
+          if (typeof resp === "string") return;
+          setCuponDescuento(resp);
+        })
+        .catch((err) => {
+          console.log(err);
 
-
-      // Lógica para aplicar el descuento
+          setCupon('');
+          alert('Cupon no valido');
+        });
       setCuponAplicado(true);
-      
+
     } else {
       setCuponAplicado(false);
     }
-  };
-  const closeModal = () => {
-    setModalSucursalVisible(false);
-    setModalDireccionVisible(false);
   };
 
   const handleSeleccionarDireccion = () => {
@@ -98,14 +83,14 @@ export const CarritoScreen = () => {
   const handleSeleccionarSucursal = () => {
     setModoEnvio('SUCURSAL');
     setSucursalName(sucursal.nombre)
-    
+
     setModalSucursalVisible(true);
   };
   const { status } = useAppSelector(state => state.auth);
   const handleContinuar = () => {
     if (status === "authenticated") {
       setMostrarSeccion(true);
-      
+
     } else {
       Alert.alert(
         'Iniciar sesion para continuar',
@@ -124,15 +109,10 @@ export const CarritoScreen = () => {
     return carrito.map((item) => <CarritoItem key={item.producto.id} product={item} />);
   };
 
-    const handleCancelarSeleccion = () => {
-    setDireccion('');
-    setSucursalName('');
-    setModoEnvio('');
-  };
   return (
     <View style={styles.container}>
-       
-       {carrito.length > 0 ? (
+
+      {carrito.length > 0 ? (
         <>
           <Text variant="displaySmall">Mi Carrito</Text>
           <Button
@@ -147,49 +127,47 @@ export const CarritoScreen = () => {
             <View style={styles.carritoItemsContainer}>{renderCarritoItems()}</View>
           </ScrollView>
         </>
-        ):(
-          <>
-          
+      ) : (
+        <>
           <View style={styles.containerCartEmpty}>
-      <Ionicons name="cart-outline" size={80} color="#FF0056" />
-      <Text style={styles.title}>¡Tu carrito está vacío!</Text>
-      <Text style={styles.subtitle}>Agrega algunos productos increíbles para comenzar tu experiencia de compra.</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          navigation.navigate('Home');
-        }}
-      >
-        <Ionicons name="home" size={50} color="#FF0056" />
-      </TouchableOpacity>
-    </View>
-            
-          </>
-        )}
-        
-        
-      {!mostrarSeccion && (
-      <>
-        {carrito.length > 0 && (
-          <Button
-            mode="contained"
-            onPress={handleContinuar}
-            style={{ marginBottom: 10 }}
-          >
-            Continuar
-          </Button>
-        )}
+            <Ionicons name="cart-outline" size={80} color="#FF0056" />
+            <Text style={styles.title}>¡Tu carrito está vacío!</Text>
+            <Text style={styles.subtitle}>Agrega algunos productos increíbles para comenzar tu experiencia de compra.</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                navigation.navigate('Home');
+              }}
+            >
+              <Ionicons name="home" size={50} color="#FF0056" />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
 
-       </>
+
+      {!mostrarSeccion && (
+        <>
+          {carrito.length > 0 && (
+            <Button
+              mode="contained"
+              onPress={handleContinuar}
+              style={{ marginBottom: 10 }}
+            >
+              Continuar
+            </Button>
+          )}
+
+        </>
       )}
       {modoEnvio === 'DOMICILIO' && modalDireccionVisible && (
         <ModalDirecciones
-        selectedDireccion={direccion}
-        setSelectedDireccion={setDireccion}
-        visible={modalDireccionVisible}
-        setVisible={setModalDireccionVisible}
-        selectedDireccionId={direccionId}
-        setSelectedDireccionId={setDireccionId}
+          selectedDireccion={direccion}
+          setSelectedDireccion={setDireccion}
+          visible={modalDireccionVisible}
+          setVisible={setModalDireccionVisible}
+          selectedDireccionId={direccionId}
+          setSelectedDireccionId={setDireccionId}
         />
       )}
 
@@ -217,11 +195,11 @@ export const CarritoScreen = () => {
               <Icon name="map-marker" size={24} color="#7e57c2" style={styles.icon} />
               {
                 !sucursalName ?
-                ( <Text style={styles.selectionText}>Retiro en sucursal</Text>)
-                :
-                (<Text style={styles.selectionText}>Retiro en sucursal: {sucursalName}</Text>)
+                  (<Text style={styles.selectionText}>Retiro en sucursal</Text>)
+                  :
+                  (<Text style={styles.selectionText}>Retiro en sucursal: {sucursalName}</Text>)
               }
-              </View>
+            </View>
             <TouchableOpacity style={styles.button} onPress={handleSeleccionarSucursal}>
               <Feather
                 name={modoEnvio === 'SUCURSAL' ? 'check-circle' : 'circle'}
@@ -252,41 +230,39 @@ export const CarritoScreen = () => {
             onChangeText={setCupon}
           />
           <View style={styles.finalizarCompraContainer}>
-  <View style={styles.valorTotalContainer}>
-    {cuponAplicado && cupon && (
-      <>
-        <View style={styles.textContainer}>
-          <Text style={{ fontSize: 24 }}>Sub Total:</Text>
-          <Text style={styles.textValue}>$ {subTotal}</Text>
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={{ fontSize: 24 }}>Descuento:</Text>
-          <Text style={styles.textValue}>- $ {cuponDescuento?.importeDescuentoVenta}</Text>
-        </View>
-      </>
-    )}
-    <View style={styles.textContainer}>
-      <Text style={{ fontSize: 24 }}>Total:</Text>
-      <Text style={styles.textValue}>$ {precioTotalCarrito}</Text>
-    </View>
-  </View>
+            <View style={styles.valorTotalContainer}>
+              {cuponAplicado && cupon && (
+                <>
+                  <View style={styles.textContainer}>
+                    <Text style={{ fontSize: 24 }}>Sub Total:</Text>
+                    <Text style={styles.textValue}>$ {subTotal}</Text>
+                  </View>
+                  <View style={styles.textContainer}>
+                    <Text style={{ fontSize: 24 }}>Descuento:</Text>
+                    <Text style={styles.textValue}>- $ {cuponDescuento?.importeDescuentoVenta}</Text>
+                  </View>
+                </>
+              )}
+              <View style={styles.textContainer}>
+                <Text style={{ fontSize: 24 }}>Total:</Text>
+                <Text style={styles.textValue}>$ {precioTotalCarrito}</Text>
+              </View>
+            </View>
 
-  <CustomDivider
-    style={{
-      width: '80%',
-      backgroundColor: theme.colors.primary,
-      marginBottom: 20,
-      alignSelf: 'center',
-    }}
-    bold
-  />
+            <CustomDivider
+              style={{
+                width: '80%',
+                backgroundColor: theme.colors.primary,
+                marginBottom: 20,
+                alignSelf: 'center',
+              }}
+              bold
+            />
 
-  <Button mode="contained" icon="cash-register" onPress={handlePagarCompra}>
-    Finalizar Compra
-  </Button>
-</View>
-
-
+            <Button mode="contained" icon="cash-register" onPress={handlePagarCompra}>
+              Finalizar Compra
+            </Button>
+          </View>
         </>
       )}
     </View>
@@ -322,7 +298,7 @@ const styles = StyleSheet.create({
     marginLeft: 1,
     paddingHorizontal: 12,
   },
-  
+
   container: {
     flex: 1,
     alignItems: 'center',
@@ -337,7 +313,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  
+
   finalizarCompraContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -353,7 +329,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', // Alinear elementos a izquierda y derecha
     alignItems: 'center',
     marginBottom: 3,
-    
+
   },
   textValue: {
     textAlign: 'right', // Alinear el valor a la derecha

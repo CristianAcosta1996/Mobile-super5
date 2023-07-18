@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import ModalSucursal, { ModalSucursalProps } from "../components/ModalSucursal";
-import ModalCategorias, { ModalCatProps } from "../components/ModalCategorias";
-import { useAppSelector } from "../../../hooks/storeHooks";
+import { ModalSucursalProps } from "../components/ModalSucursal";
+import { ModalCatProps } from "../components/ModalCategorias";
 interface Product {
     id: string,
     nombre: string,
@@ -12,9 +11,9 @@ interface Product {
     stock: number,
     precioDescuento: null,
     aplicaDescuento: null,
-    descripcion: string 
+    descripcion: string
     cantidad: number,
-  }
+}
 export const useHome = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedName, setSelectedName] = useState<string | undefined>();// el numero
@@ -27,51 +26,51 @@ export const useHome = () => {
     const [visibleSuc, setVisibleSuc] = useState(false);
     const [productsIsLoading, setProductsIsLoading] = useState(true);
     const modalSucursalProps: ModalSucursalProps = {
-    selectedName: selectedName,
-    setSelectedName: setSelectedName,
-    setSelectedNameSuc: setSelectedNameSuc,
-    visible: visibleSuc,
-    setVisible: setVisibleSuc
+        selectedName: selectedName,
+        setSelectedName: setSelectedName,
+        setSelectedNameSuc: setSelectedNameSuc,
+        visible: visibleSuc,
+        setVisible: setVisibleSuc
     };
 
     const modalCatProps: ModalCatProps = {
-    categorias: [],
-    product: null,
-    isVisible: isCatVisible,
-    setVisible: setIsCatVisible,
-    selectedCategory: selectedCatId,
-    setSelectedCategory: setSelectedCatId,
+        categorias: [],
+        product: null,
+        isVisible: isCatVisible,
+        setVisible: setIsCatVisible,
+        selectedCategory: selectedCatId,
+        setSelectedCategory: setSelectedCatId,
     };
 
     useEffect(() => {
         setProductsIsLoading(true);
-    
+
         selectedName && fetch(`http://super5-391418.rj.r.appspot.com/api/producto/obtenerPorSucursal/${selectedName}`)
             .then(response => response?.json())
             .then(data => {
-            const filteredProducts = data.filter((product: Product) =>
-                (product.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) || '') ||
-                (product.descripcion?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
-            );
-            setProducts(filteredProducts);
-            setProductsIsLoading(false);
+                const filteredProducts = data.filter((product: Product) =>
+                    (product.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) || '') ||
+                    (product.descripcion?.toLowerCase().includes(searchQuery.toLowerCase()) || '')
+                );
+                setProducts(filteredProducts);
+                setProductsIsLoading(false);
             })
             .catch(error => console.error(error));
     }, [selectedName, searchQuery]);
-    
+
     const handleFilterIconPress = () => {
-    setIsCatVisible(true);
+        setIsCatVisible(true);
     };
 
 
     const filteredProducts = selectedCatId
-    ? products.filter(product => product.categoriaId === selectedCatId)
-    : products;
+        ? products.filter(product => product.categoriaId === selectedCatId)
+        : products;
 
     const handlePressSucursal = () => {
-    setVisibleSuc(true);
+        setVisibleSuc(true);
     };
-    return{
+    return {
         handlePressSucursal,
         filteredProducts,
         handleFilterIconPress,

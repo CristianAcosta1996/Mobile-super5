@@ -9,15 +9,12 @@ import {
   startLogout,
 } from "../../store/auth/thunks";
 import { useNavigation } from "@react-navigation/native";
-import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
-import { ToastAndroid } from "react-native";
-import { Snackbar } from "react-native-paper";
 import { format } from 'date-fns';
 import { useState } from "react";
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const navigation: any = useNavigation();
-  const [ 
+  const [
     startLogin,
     {
       isLoading: isAuthenticatingLogin,
@@ -52,7 +49,7 @@ export const useAuth = () => {
       contrasenia: password,
     }).unwrap()
       .then((resp: any) => {
-        console.log("respuesta: ",resp);
+        console.log("respuesta: ", resp);
         setTimeout(() => {
           const token: string = resp;
           dispatch(startEmailAndPasswordLogin(token));
@@ -60,7 +57,7 @@ export const useAuth = () => {
         }, 3000);
       })
       .catch((error) => {
-        console.log("respuesta: eror ++>>> ",error);
+        console.log("respuesta: eror ++>>> ", error);
         alert('Usuario y/o contraseña incorrecta.');
       });
   };
@@ -76,11 +73,6 @@ export const useAuth = () => {
     dayItems.push({ label: i.toString(), value: i.toString() });
   }
 
-  // Items para Meses
-  /*const monthItems = [];
-  for (let i = 1; i <= 12; i++) {
-    monthItems.push({ label: i.toString(), value: i.toString() });
-  }*/
   const monthItems = [
     { label: 'Enero', value: '1' },
     { label: 'Febrero', value: '2' },
@@ -155,10 +147,9 @@ export const useAuth = () => {
           dispatch(startEmailAndPasswordLogin(token));
         }, 3000);
         if (resp) alert(`Usuario creado con exito!`)
-        
+
       })
       .catch((error) => {
-        console.error('-----------------------------------',error);
         alert(error);
       });
   };

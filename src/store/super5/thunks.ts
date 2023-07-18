@@ -1,7 +1,6 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as WebBrowser from 'expo-web-browser';
 import {
   CarritoItem,
   CompraDTO,
@@ -17,12 +16,9 @@ import {
 import {
   guardarCarrito,
   limpiarCarrito as limpiarCarritoStorage,
-  guardarcompraPaypal,
   guardarSucursal,
 } from "../../utils/localstorage";
 import { agregarSucursal } from "./super5Slice";
-import { useNavigation } from "@react-navigation/native";
-import { Linking } from "react-native";
 
 export const quitarProductoDelCarrito = (
   producto: Producto

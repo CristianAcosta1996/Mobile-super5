@@ -1,37 +1,32 @@
 import * as React from 'react';
-import { View, StyleSheet, Image, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useState } from 'react';
-import { IconButton, useTheme, Modal, ActivityIndicator, Portal } from 'react-native-paper';
+import { IconButton, useTheme, ActivityIndicator } from 'react-native-paper';
 
-//import { AuthContext } from '../../AuthContext';
 import { useAuth } from '../hooks/useAuth';
 import PopupMessage from '../../components/PopupMessage';
 
 export const LoginScreen = (props: any) => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
- // const [startLogin, { isLoading, isSuccess, data }] = useLoginMutation();
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const {
     isAuthenticatingLogin,
     handleLogin,
     isSuccessLogin,
-    dataLogin,
-   } = useAuth();
-   
-  //const { handleLogin } = useAuth();
-  
+  } = useAuth();
+
   if (isSuccessLogin)
-  return (
-    <>
-      <PopupMessage text="¡Bienvenido!" iconName="thumb-up" />
-    </>
-  );
+    return (
+      <>
+        <PopupMessage text="¡Bienvenido!" iconName="thumb-up" />
+        <ActivityIndicator animating={true} color={theme.colors.primary} />
+      </>
+    );
   if (isAuthenticatingLogin)
     return (
       <View style={styles.container}>
@@ -40,71 +35,70 @@ export const LoginScreen = (props: any) => {
     );
 
 
-
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  return(
-  <View style={styles.container}>
-    <Input
-      style={styles.input}
-      placeholder='Nombre de usuario'
-      leftIcon={
-        <Icon
-          name='user'
-          size={24}
-          color='#7e57c2'
-        />
-      }
-    value={username}
-    onChangeText={(username) => setUsername(username)}
-    />
-    <Input
-      style={styles.input}
-      placeholder='Contraseña'
-      
-      leftIcon={
-        <Icon
-          name='lock'
-          size={24}
-          color='#7e57c2'
-        />
-        
-      }
-      secureTextEntry={!showPassword}
-      rightIcon={
-        <IconButton
-          size={24}
-          icon={showPassword ? 'eye-off' : 'eye'}
-          onPress={handleTogglePasswordVisibility}
-        />
-      }
-      value={password}
-      onChangeText={(password) => setPassword(password)}
-    />
+  return (
+    <View style={styles.container}>
+      <Input
+        style={styles.input}
+        placeholder='Nombre de usuario'
+        leftIcon={
+          <Icon
+            name='user'
+            size={24}
+            color='#7e57c2'
+          />
+        }
+        value={username}
+        onChangeText={(username) => setUsername(username)}
+      />
+      <Input
+        style={styles.input}
+        placeholder='Contraseña'
 
-       
-      <TouchableOpacity  onPress={() => { props.navigation.navigate("ForgotPassword"); }} >
+        leftIcon={
+          <Icon
+            name='lock'
+            size={24}
+            color='#7e57c2'
+          />
+
+        }
+        secureTextEntry={!showPassword}
+        rightIcon={
+          <IconButton
+            size={24}
+            icon={showPassword ? 'eye-off' : 'eye'}
+            onPress={handleTogglePasswordVisibility}
+          />
+        }
+        value={password}
+        onChangeText={(password) => setPassword(password)}
+      />
+
+      <TouchableOpacity onPress={() => { props.navigation.navigate("ForgotPassword"); }} >
         <Text style={styles.textPassword}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
 
       <View>
-    <View style={styles.buttonContainer}>
-    <TouchableOpacity style={styles.button}  onPress={() => { handleLogin(username, password) }} >
-        <Text style={styles.buttonText}>Iniciar sesion</Text>
-      </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => { handleLogin(username, password) }} >
+            <Text style={styles.buttonText}>Iniciar sesion</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => { props.navigation.navigate("AltaUser"); }} >
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => { props.navigation.navigate("AltaUser"); }} >
+            <Text style={styles.buttonText}>Registrarse</Text>
+          </TouchableOpacity>
+
+        </View>
+
+      </View>
 
     </View>
-    
-  </View>
 
-  </View>
-  
-)};
+  )
+};
 
 
 

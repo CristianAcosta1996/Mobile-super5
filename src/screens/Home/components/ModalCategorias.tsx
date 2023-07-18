@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useListarCategoriasMutation } from "../../../store/super5/super5Api";
-import { ActivityIndicator, useTheme} from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import { Categorias } from '../../../interfaces/interfaces';
 import { Producto } from '../../../interfaces/interfaces';
 import { Feather } from '@expo/vector-icons';
@@ -24,7 +24,6 @@ const ModalCategorias = ({
 }: ModalCatProps) => {
   const [modalVisible, setModalVisible] = useState(isVisible);
   const [listarCategorias, { data, isLoading, isError }] = useListarCategoriasMutation();
-  //const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [categoryNames, setCategoryNames] = useState<string[]>([]);
 
   useEffect(() => {
@@ -48,26 +47,26 @@ const ModalCategorias = ({
     setModalVisible(false);
     setVisible(false);
   };
-  
+
   const handleSelected = (name: string) => {
     if (data) {
       const selectedCategoria = data.find(categoria => categoria.nombre === name);
-  
+
       if (selectedCategoria) {
         const categoriaNumber = selectedCategoria.id;
         setSelectedCategory(categoriaNumber);
-  
+
         setModalVisible(false);
         setVisible(false);
         console.log('categoria: ' + categoriaNumber + 'categoriaNumber nombre: ' + name);
       }
-  
+
     }
   };
-  
+
   const renderItem = ({ item }: { item: string }) => {
     const isSelected = item === selectedCategory?.toString();
-    
+
 
     return (
       <TouchableOpacity
@@ -90,8 +89,8 @@ const ModalCategorias = ({
 
   return (
     <View style={styles.container}>
-      <Modal 
-        visible={modalVisible? modalVisible : isVisible} 
+      <Modal
+        visible={modalVisible ? modalVisible : isVisible}
         animationType="slide" transparent={true}
       >
         <SafeAreaView style={styles.modalContainer}>

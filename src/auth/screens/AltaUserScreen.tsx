@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { Input } from 'react-native-elements';
-import { IconButton, useTheme, Portal } from 'react-native-paper';
+import { IconButton, useTheme } from 'react-native-paper';
 import { useAltaMutation } from '../../store/super5/super5Api';
 import LoginScreen from './LoginScreen';
 import Gif from 'react-native-gif';
 import RNPickerSelect from 'react-native-picker-select';
-import { format } from 'date-fns';
 import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
 import PopupMessage from '../../components/PopupMessage';
@@ -38,31 +37,28 @@ const AltaUserScreen = () => {
   const theme = useTheme();
   const [visible, setVisible] = React.useState(false);
 
-    
-  
+
+
 
   const [formValues, setFormValues] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
 
 
-  const [startCreate, { isLoading, isSuccess, data }] = useAltaMutation();
+  const [startCreate, { isLoading, isSuccess }] = useAltaMutation();
 
   const {
     isAuthenticatingLogin,
     handleLogin,
     isSuccessLogin,
-    dataLogin,
-   } = useAuth();
-   
-  //const { handleLogin } = useAuth();
-  
+  } = useAuth();
+
   if (isSuccessLogin)
-  return (
-    <>
-      <PopupMessage text="¡Bienvenido!" iconName="thumb-up" />
-    </>
-  );
+    return (
+      <>
+        <PopupMessage text="¡Bienvenido!" iconName="thumb-up" />
+      </>
+    );
   if (isAuthenticatingLogin)
     return (
       <View style={styles.container}>
@@ -70,39 +66,34 @@ const AltaUserScreen = () => {
       </View>
     );
 
-    const handleCreate = () => {
-      startCreate({
-        nombre: formValues.nombre,
-        apellido: formValues.apellido,
-        correo: formValues.email,
-        contrasenia: formValues.password,
-        telefono: formValues.telefono,
-        usuario: formValues.user,
-        fechaNacimiento: selectedDate instanceof Date ? selectedDate : null,
-      })
-        .then((resp: any) => {
-          if (resp.error) {
-            console.log('Error al crear:', resp.error);
-            // Aquí puedes mostrar un mensaje de error al usuario
-            alert(resp.error.data);
-            setDateVisible(true);
-            setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
-          } else {
-            console.log('respppp ok', resp);
-            setDateVisible(true);
-            setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
-            //handleLogin(formValues.user, formValues.password);
-          }
-        })
-        .catch((error: any) => {
-          console.log('Error al crear:', error);
+  const handleCreate = () => {
+    startCreate({
+      nombre: formValues.nombre,
+      apellido: formValues.apellido,
+      correo: formValues.email,
+      contrasenia: formValues.password,
+      telefono: formValues.telefono,
+      usuario: formValues.user,
+      fechaNacimiento: selectedDate instanceof Date ? selectedDate : null,
+    })
+      .then((resp: any) => {
+        if (resp.error) {
+          console.log('Error al crear:', resp.error);
           // Aquí puedes mostrar un mensaje de error al usuario
-          alert('Error al crear. Por favor, inténtelo de nuevo.');
-        });
-    };
-    
-    
-  
+          alert(resp.error.data);
+          setDateVisible(true);
+          setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
+        } else {
+          console.log('respppp ok', resp);
+          setDateVisible(true);
+          setFormValues(initialState); // Restablecer los valores del formulario a su estado inicial
+        }
+      })
+      .catch((error: any) => {
+        console.log('Error al crear:', error);
+        alert('Error al crear. Por favor, inténtelo de nuevo.');
+      });
+  };
   const {
     dayItems,
     monthItems,
@@ -117,7 +108,7 @@ const AltaUserScreen = () => {
     day,
     month,
     year,
-   } = useAuth();
+  } = useAuth();
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -127,9 +118,9 @@ const AltaUserScreen = () => {
       <View style={styles.container}>
         <ActivityIndicator animating={true} color={theme.colors.primary} />
         <Gif
-            source={require('../../../assets/loading.gif')}
-            style={{ width: 200, height: 200 }}
-            resizeMode="cover"
+          source={require('../../../assets/loading.gif')}
+          style={{ width: 200, height: 200 }}
+          resizeMode="cover"
         />
       </View>
     );
@@ -253,62 +244,62 @@ const AltaUserScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    containerScroll: {
-        flex: 1,
-    },
-    container: {
-      justifyContent: 'center',
-      backgroundColor: '#f2f2f2',
-      padding: 16,
-    },
-    buttonContainer: {
-        marginBottom: 10,
+  containerScroll: {
+    flex: 1,
+  },
+  container: {
+    justifyContent: 'center',
+    backgroundColor: '#f2f2f2',
+    padding: 16,
+  },
+  buttonContainer: {
+    marginBottom: 10,
 
-    },
-    dateContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 12,
-    },
-    label: {
-      marginRight: 12,
-      width: 70, 
-      textAlign: 'right',
-    },
-    button: {
-        backgroundColor: '#7e57c2',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    inputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 12,
-    },
-    icon: {
-        marginRight: 12,
-    },
-    input: {
-        marginBottom: -8,
-    },
-    calendarButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    calendarButtonText: {
-      color: 'gray',
-      fontWeight: 'bold',
-    },
-    calendarIcon: {
-      color: 'gray',
-      marginLeft: 5,
-    },
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  label: {
+    marginRight: 12,
+    width: 70,
+    textAlign: 'right',
+  },
+  button: {
+    backgroundColor: '#7e57c2',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  icon: {
+    marginRight: 12,
+  },
+  input: {
+    marginBottom: -8,
+  },
+  calendarButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  calendarButtonText: {
+    color: 'gray',
+    fontWeight: 'bold',
+  },
+  calendarIcon: {
+    color: 'gray',
+    marginLeft: 5,
+  },
 });
 export default AltaUserScreen;

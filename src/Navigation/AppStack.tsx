@@ -6,7 +6,6 @@ import { ProfileScreen } from "../screens/PerfilUsuario/screens/ProfileScreen";
 import LoginScreen from "../auth/screens/LoginScreen";
 import AltaUserScreen from "../auth/screens/AltaUserScreen";
 import PasswordScreen from "../screens/PasswordScreen";
-import { Directions } from "react-native-gesture-handler";
 import PaymentScreen from "../screens/PaymentScreen";
 import FinalizacionCompraScreen from "../screens/FinalizacionCompraScreen";
 import MapaDirection from "../screens/PerfilUsuario/screens/MapaDirectionScreen";
@@ -20,19 +19,19 @@ export const AppStack = () => {
     <Stack.Navigator
       screenOptions={{ header: (props) => <AppBarSuper5 {...props} /> }}
     >
-      
+
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="ForgotPassword" component={PasswordScreen} />
       <Stack.Screen name="AltaUser" component={AltaUserScreen} />
-      <Stack.Screen name="Payment" component={PaymentScreen} /> 
+      <Stack.Screen name="Payment" component={PaymentScreen} />
       <Stack.Screen name="Carrito" component={CarritoScreen} />
       <Stack.Screen name="FinalizacionCompra" component={FinalizacionCompraScreen} />
       <Stack.Screen name="Direcciones" component={MapaDirection} />
       <Stack.Screen name="Pedidos" component={PedidosScreeen} />
       <Stack.Screen name="Reclamos" component={ReclamosScreeen} />
 
-      
+
       <Stack.Screen
         name="Shopping-Cart"
         component={CarritoScreen}

@@ -8,7 +8,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 interface CardProps {
   product: Producto;
-  
+
 }
 
 export const Card = ({ product }: CardProps) => {
@@ -16,7 +16,7 @@ export const Card = ({ product }: CardProps) => {
   const [zoomed, setZoomed] = useState(false);
   const { agregarItemAlCarrito } = useCarrito();
   const [categoria, setCategoria] = useState();
-  const [listarCategorias, { data, isLoading, isError }] = useListarCategoriasMutation();
+  const [listarCategorias, { data }] = useListarCategoriasMutation();
 
   const addToCart = () => {
     console.log(`Agregaste ${quantity} unidades al carrito por un total de ${product.precio * quantity} dólares`);
@@ -31,7 +31,7 @@ export const Card = ({ product }: CardProps) => {
     setZoomed(false);
   };
 
-  
+
 
   useEffect(() => {
     listarCategorias();
@@ -48,7 +48,7 @@ export const Card = ({ product }: CardProps) => {
       setCategoria(categoriaName)
     }
   }, [data]);
-  
+
 
   return (
     <View style={[styles.card]}>
@@ -66,12 +66,12 @@ export const Card = ({ product }: CardProps) => {
         </View>
       </LongPressGestureHandler>
       <View style={styles.content}>
-       <View style={[styles.categoriaContainer, zoomed && styles.hiddenText]}>
-       <Text style={[styles.categoria, zoomed && styles.hiddenText]}>{categoria}</Text>
+        <View style={[styles.categoriaContainer, zoomed && styles.hiddenText]}>
+          <Text style={[styles.categoria, zoomed && styles.hiddenText]}>{categoria}</Text>
 
-       </View>
+        </View>
         <Text style={[styles.title, zoomed && styles.hiddenText]}>{product.nombre}</Text>
-        
+
         {product.aplicaDescuento && (
           <>
             <Text style={[styles.price, { textDecorationLine: 'line-through', opacity: 0.4 }]}>
@@ -79,7 +79,7 @@ export const Card = ({ product }: CardProps) => {
             </Text>
 
             <Text style={styles.price}>
-              <FontAwesome name="tags" size={16} color="red" style={styles.discountIcon} /> 
+              <FontAwesome name="tags" size={16} color="red" style={styles.discountIcon} />
               $ {product.precioDescuento}
             </Text>
           </>
@@ -101,11 +101,11 @@ export const Card = ({ product }: CardProps) => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
-      <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
-      <View style={styles.cartIcon}>
-        <FontAwesome name="shopping-cart" size={16} color="white"/>
-      </View>
-    </TouchableOpacity>
+        <Text style={styles.addToCartButtonText}>Agregar al carrito</Text>
+        <View style={styles.cartIcon}>
+          <FontAwesome name="shopping-cart" size={16} color="white" />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };

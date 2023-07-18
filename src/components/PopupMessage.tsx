@@ -24,10 +24,10 @@ const PopupMessage: React.FC<PopupMessageProps> = ({ text, iconName }) => {
 
   return (
     <Modal visible={isVisible} transparent>
-        <View style={styles.container}>
+      <View style={styles.container}>
         <Icon name={iconName} size={24} color="white" style={styles.icon} />
         <Text style={styles.text}>{text}</Text>
-        </View>
+      </View>
     </Modal>
   );
 };

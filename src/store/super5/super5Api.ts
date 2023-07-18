@@ -9,7 +9,6 @@ import {
   PromocionDTO,
 } from "../../interfaces/interfaces";
 import { RootState } from "../store";
-import { Timestamp } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
 
 const apiUrl: string = "http://super5-391418.rj.r.appspot.com/api";
 
@@ -29,12 +28,12 @@ interface AltaProps {
   fechaNacimiento: Date | null;
 }
 interface AltaDireccionProps {
-direccion : string,
-ciudad: string,
-departamento: string,
-longitud:  Number | undefined,
-latitud: Number | undefined,
-aclaracion: string
+  direccion: string,
+  ciudad: string,
+  departamento: string,
+  longitud: Number | undefined,
+  latitud: Number | undefined,
+  aclaracion: string
 }
 
 interface UserDataProps {
@@ -58,13 +57,13 @@ interface ObtenerSucursalesProps {
   id: number,
   nombre: string,
   direccion: {
-      id: number,
-      direccion: string,
-      ciudad: string,
-      departamento: string,
-      longitud: string,
-      latitud: string,
-      aclaracion: string
+    id: number,
+    direccion: string,
+    ciudad: string,
+    departamento: string,
+    longitud: string,
+    latitud: string,
+    aclaracion: string
   }
 }
 
@@ -78,15 +77,13 @@ interface ObtenerProdsProps {
   stock: number,
   precioDescuento: null,
   aplicaDescuento: null,
-  descripcion: string 
+  descripcion: string
 }
 
-interface ListarCategoriasProps{
+interface ListarCategoriasProps {
   id: number,
   nombre: string
 }
-
-/*----------------------------------*/
 
 interface SignupProps {
   nombre: string;
@@ -127,15 +124,15 @@ type AuthResponse = {
 
 export const super5Api = createApi({
   reducerPath: "super5Api",
-  baseQuery: fetchBaseQuery({ 
+  baseQuery: fetchBaseQuery({
     baseUrl: apiUrl,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
-    
+
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
       }
-    
+
       return headers;
     },
   }),
@@ -149,7 +146,7 @@ export const super5Api = createApi({
     "Direccion",
     "Compras",
   ],
-  
+
   endpoints: (builder) => ({
     login: builder.mutation<string, LoginProps>({
       query: (body) => ({
@@ -176,7 +173,7 @@ export const super5Api = createApi({
         body,
         responseHandler: (response) => response.text(),
       })
-     
+
     }),
     modificarContrasena: builder.mutation<any, ModificarContrasenaProps>({
       query: (body) => ({
@@ -214,7 +211,7 @@ export const super5Api = createApi({
       query: () => "sucursal/obtener",
       providesTags: ["Sucursal"],
     }),
-    
+
     getDirecciones: builder.query<Direccion[], void>({
       query: () => "direccion/listar",
       providesTags: ["Direccion"],
@@ -229,12 +226,12 @@ export const super5Api = createApi({
 
     obtenerProds: builder.query<ObtenerProdsProps[], string>({ //sucursalSelected
       query: (id) => `producto/obtenerPorSucursal/${id}`,
-    }), 
+    }),
     getProductos: builder.query<Producto[], string>({
       query: (id) => `producto/obtenerPorSucursal/${id}`,
       providesTags: ["Producto"],
     }),
-/*----------------*/
+    /*----------------*/
     generarCompraPaypal: builder.mutation<CompraDTO, CompraDTO>({
       query: (body) => ({
         url: "paypal/crear",
@@ -255,7 +252,7 @@ export const super5Api = createApi({
       query: () => "venta/listar",
       providesTags: ["Compras"]
     }),
-    
+
     getUserData: builder.query<UserDataProps, void>({
       query: () => "usuario/obtenerUsuario",
       providesTags: ["UserData"],
@@ -309,28 +306,28 @@ export const super5Api = createApi({
       invalidatesTags: ["Direccion"],
     }),
     validarCupon: builder.mutation<PromocionDTO | string,
-    { cuponDescuentoVenta: string }>({
-      query: (body) => ({
-        url: "promocion/validarCupon",
-        method: "POST",
-        body,
-        responseHandler: async (response) => {
-          if (!response.ok) {
-            const error = await response.text();
-            return error;
-          }
-          return response.json();
-        },
+      { cuponDescuentoVenta: string }>({
+        query: (body) => ({
+          url: "promocion/validarCupon",
+          method: "POST",
+          body,
+          responseHandler: async (response) => {
+            if (!response.ok) {
+              const error = await response.text();
+              return error;
+            }
+            return response.json();
+          },
+        }),
       }),
-    }),
-    
+
   }),
 
 });
 
-export const { 
-  useLoginMutation, 
-  useAltaMutation, 
+export const {
+  useLoginMutation,
+  useAltaMutation,
   useObtenerSucursalesMutation,
   useGetSucursalesQuery,
   useObtenerProdsQuery,

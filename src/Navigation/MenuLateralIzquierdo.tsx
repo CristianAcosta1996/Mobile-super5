@@ -43,7 +43,7 @@ export const customDividerProps: CustomDividerProps = {
 
 
 export const MenuLateralIzquierdo = () => {
-  const {  sendNotificationCompraConfirmada } = useNotifications();
+  const { sendNotificationCompraConfirmada } = useNotifications();
   const [expoPushToken, setExpoPushToken] = useState<string>('');
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const notificationListener = useRef<Notifications.Subscription | null>(null);
@@ -52,11 +52,11 @@ export const MenuLateralIzquierdo = () => {
   const [estadosAnteriores, setEstadosAnteriores] = useState<string[]>([]);
   const [comprasConfirmadas, setComprasConfirmadas] = useState<string[]>([]);
 
-  const { data: comprasS, refetch: refetchCompras  } = useGetComprasQuery();
+  const { data: comprasS, refetch: refetchCompras } = useGetComprasQuery();
 
   useEffect(() => {
 
-  
+
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       console.log(response);
     });
@@ -85,9 +85,9 @@ export const MenuLateralIzquierdo = () => {
           estadosAnteriores[index] = estadoActual; // Actualizamos el estado
         });
 
-        
+
         refetchCompras();
-      }else{
+      } else {
         console.log('else de compra');
       }
     }, 10000);
@@ -102,45 +102,45 @@ export const MenuLateralIzquierdo = () => {
       }
     };
   }, [comprasS, refetchCompras, expoPushToken]);
-    
-    
-    return (
-      <DrawerRoot.Navigator
-        screenOptions={{ headerShown: false }}
-        id="menu-left"
-        drawerContent={(props) => <ContenidoDrawer {...props} />}
-      >
-        <DrawerRoot.Screen component={AppStack} name="Inicio" />
-      </DrawerRoot.Navigator>
-    );
-  };
-  
+
+
+  return (
+    <DrawerRoot.Navigator
+      screenOptions={{ headerShown: false }}
+      id="menu-left"
+      drawerContent={(props) => <ContenidoDrawer {...props} />}
+    >
+      <DrawerRoot.Screen component={AppStack} name="Inicio" />
+    </DrawerRoot.Navigator>
+  );
+};
+
 
 const ContenidoDrawer = (props: any) => {
-  
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDireccion, setSelectedDireccion] = useState('');
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
-      {modalVisible && (
-        <ModalDirecciones
+        {modalVisible && (
+          <ModalDirecciones
             selectedDireccion={selectedDireccion}
             setSelectedDireccion={setSelectedDireccion}
             visible={true}
-            setVisible={setModalVisible} 
-            selectedDireccionId={""} 
+            setVisible={setModalVisible}
+            selectedDireccionId={""}
             setSelectedDireccionId={function (direccion: string): void {
               throw new Error("Function not implemented here.");
-            } }  
-        />
-      )}
-        <PrimeraSeccion props = {props}/>
+            }}
+          />
+        )}
+        <PrimeraSeccion props={props} />
         <CustomDivider
           style={customDividerProps.style}
           bold={customDividerProps.bold}
         />
-          
+
         <CustomDivider
           style={customDividerProps.style}
           bold={customDividerProps.bold}
@@ -179,36 +179,38 @@ const PrimeraSeccion = (props: any) => {
   const handleLogoutConfirm = () => {
     dispatch(startLogout());
     Alert.alert('Cierre de sesión', 'Has cerrado sesión correctamente. Vuelva Pronto :D');
+    props.props.navigation.navigate("Home");
+
   };
-const { status } = useAppSelector(state => state.auth);
-  return(
+  const { status } = useAppSelector(state => state.auth);
+  return (
     <View>
-    <Image
-      source={require("../../assets/imagenSinFondo.png")}
-      style={styles.brandLogo}
-    />
-    {status === "authenticated" ? ( // Verificar si el usuario ha iniciado sesión
-      <Button
-        mode="contained"
-        style={{ width: 250, marginVertical: 25 }}
-        onPress={() => {
-          handleLogout();
-        }}
-      >
-        Cerrar Sesión
-      </Button>
-    ) : (
-      <Button
-        mode="contained"
-        style={{ width: 250, marginVertical: 25 }}
-        onPress={() => {
-          props.props.navigation.navigate("Login");
-        }}
-      >
-        Iniciar Sesión
-      </Button>
-    )}
-  </View>
+      <Image
+        source={require("../../assets/imagenSinFondo.png")}
+        style={styles.brandLogo}
+      />
+      {status === "authenticated" ? ( // Verificar si el usuario ha iniciado sesión
+        <Button
+          mode="contained"
+          style={{ width: 250, marginVertical: 25 }}
+          onPress={() => {
+            handleLogout();
+          }}
+        >
+          Cerrar Sesión
+        </Button>
+      ) : (
+        <Button
+          mode="contained"
+          style={{ width: 250, marginVertical: 25 }}
+          onPress={() => {
+            props.props.navigation.navigate("Login");
+          }}
+        >
+          Iniciar Sesión
+        </Button>
+      )}
+    </View>
   )
 }
 
@@ -234,7 +236,7 @@ const commonBtnProperties: BtnPropertiesProps = {
     justifyContent: "flex-start",
     gap: 8,
   },
-  handleOnPress: () => {},
+  handleOnPress: () => { },
 }
 
 
@@ -243,12 +245,12 @@ const SegundaSeccion = () => {
   const handleAyuda = () => {
     console.log('helppp');
     const phoneNumber = "+1 555 056 3468"; // ver numero
-    const message = "Hola..."; 
+    const message = "Hola...";
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
+
     // Abrir enlace en el navegador
     Linking.openURL(url);
-    
+
     // Abrir enlace en la aplicación de WhatsApp (si está instalada)
     Linking.canOpenURL("whatsapp://send").then(supported => {
       if (supported) {
@@ -257,7 +259,7 @@ const SegundaSeccion = () => {
         // WhatsApp no está instalado en el dispositivo
         alert('No tienes Whatsapp instalado en el dispositivo');
       }
-    }); 
+    });
   };
   const { status } = useAppSelector(state => state.auth);
   const navigation: any = useNavigation();
@@ -266,25 +268,25 @@ const SegundaSeccion = () => {
       ...commonBtnProperties,
       icon: "shopping",
       title: "Mis Pedidos",
-      handleOnPress: ()=>{navigation.navigate('Pedidos')} // Ver screen de pedidos
+      handleOnPress: () => { navigation.navigate('Pedidos') } // Ver screen de pedidos
     },
     {
       ...commonBtnProperties,
       icon: "map-search-outline",
       title: "Mis Direcciones",
-      handleOnPress: ()=>{navigation.navigate('Direcciones')}
+      handleOnPress: () => { navigation.navigate('Direcciones') }
     },
     {
       ...commonBtnProperties,
       icon: "inbox",
       title: "Mis Reclamos",
-      handleOnPress: ()=>{navigation.navigate('Reclamos')} 
+      handleOnPress: () => { navigation.navigate('Reclamos') }
     },
     {
       ...commonBtnProperties,
       icon: "headset",
       title: "Ayuda",
-      handleOnPress: ()=>{handleAyuda()}
+      handleOnPress: () => { handleAyuda() }
     },
     {
       ...commonBtnProperties,

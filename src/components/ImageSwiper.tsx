@@ -4,7 +4,7 @@ import Swiper from 'react-native-swiper';
 
 const ImageSwiper = () => {
   const productImages = [
-    require('../../assets/1.png'), 
+    require('../../assets/1.png'),
     require('../../assets/2.png'),
     require('../../assets/3.png'),
     require('../../assets/4.png'),
@@ -14,7 +14,7 @@ const ImageSwiper = () => {
   const renderImages = () => {
     return productImages.map((image, index) => (
       <View key={index} style={styles.slide}>
-        <Image source={image} style={styles.image} /> 
+        <Image source={image} style={styles.image} />
       </View>
     ));
   };

@@ -1,58 +1,5 @@
 import jwt_decode from "jwt-decode";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-/*
-
-interface TokenInfo {
-  token: string;
-  infoToken: {
-    tipoUsuario: "admin" | "sucursal" | "comprador";
-    nombreUsuario: string;
-    apellidoUsuario: string;
-    emailUsuario: string;
-    imageUrlUsuario: string;
-    usuario: string;
-    uid: string;
-  };
-}
-
-export const getToken = () => {
-  try {
-    const token = JSON.parse(localStorage.getItem("token") || "");
-    const decoded: any = jwt_decode(token);
-    if (!token) return;
-    const {
-      tipoUsuario,
-      nombre: nombreUsuario,
-      apellido: apellidoUsuario,
-      email: emailUsuario,
-      imagenUrl: imageUrlUsuario,
-      usuario,
-      uid,
-    } = decoded;
-
-    return {
-      token,
-      tipoUsuario,
-      nombreUsuario,
-      apellidoUsuario,
-      emailUsuario,
-      imageUrlUsuario,
-      usuario,
-      uid,
-    };
-  } catch (error) {
-    return;
-  }
-};
-
-export const setToken = (token: string) => {
-  window.localStorage.setItem("token", JSON.stringify(token));
-  return {
-    getToken,
-    setToken,
-  };
-};
-*/
 import {
   CarritoItem,
   CompraDTO,
@@ -63,7 +10,7 @@ import {
 export const getToken = () => {
   try {
     let token;
-    AsyncStorage.getItem('token',(resp)=>{
+    AsyncStorage.getItem('token', (resp) => {
       token = resp;
     });
     if (!token) return undefined;
@@ -112,7 +59,7 @@ export const guardarSucursal = (sucursal: Sucursal): void => {
 export const obtenerSucursalStorage = (): Sucursal | undefined => {
   try {
     let sucursal
-    AsyncStorage.getItem('sucursal', (resp)=>{
+    AsyncStorage.getItem('sucursal', (resp) => {
       sucursal = resp;
     });
     if (sucursal) {
@@ -138,10 +85,10 @@ export const guardarCarrito = (carrito: CarritoItem[]) => {
   }
 };
 
-export const obtenerCarritoStorage = ():CarritoItem[] | undefined => {
+export const obtenerCarritoStorage = (): CarritoItem[] | undefined => {
   try {
     let carrito;
-    AsyncStorage.getItem('carrito', (resp)=>{
+    AsyncStorage.getItem('carrito', (resp) => {
       carrito = resp;
     });
     if (carrito) {
@@ -177,7 +124,7 @@ export const guardarcompraPaypal = (compraPaypal: CompraDTO) => {
 export const obtenerCompraPaypal = () => {
   try {
     let compraPaypal;
-    AsyncStorage.getItem('compraPaypal', (resp)=>{
+    AsyncStorage.getItem('compraPaypal', (resp) => {
       compraPaypal = resp;
     });
     if (compraPaypal) {

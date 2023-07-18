@@ -123,6 +123,7 @@ const ContenidoDrawer = (props: any) => {
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
       <View style={styles.container}>
+
         {modalVisible && (
           <ModalDirecciones
             selectedDireccion={selectedDireccion}
@@ -164,6 +165,7 @@ const ContenidoDrawer = (props: any) => {
   );
 };
 
+
 const PrimeraSeccion = (props: any) => {
   const dispatch = useAppDispatch();
   const handleLogout = () => {
@@ -189,6 +191,7 @@ const PrimeraSeccion = (props: any) => {
         source={require("../../assets/imagenSinFondo.png")}
         style={styles.brandLogo}
       />
+
       {status === "authenticated" ? ( // Verificar si el usuario ha iniciado sesión
         <Button
           mode="contained"
@@ -213,9 +216,6 @@ const PrimeraSeccion = (props: any) => {
     </View>
   )
 }
-
-
-
 
 interface BtnPropertiesProps {
   icon?: string;

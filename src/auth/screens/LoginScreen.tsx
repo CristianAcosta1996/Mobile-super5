@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Input } from 'react-native-elements';
@@ -115,6 +116,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     marginBottom: 10,
+
     borderColor: '#ccc',
   },
   buttonContainer: {
@@ -152,3 +154,4 @@ const styles = StyleSheet.create({
 
 });
 export default LoginScreen;
+

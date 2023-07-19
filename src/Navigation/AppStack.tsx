@@ -42,11 +42,6 @@ export const AppStack = () => {
         component={ProfileScreen}
         options={{ title: "Perfil" }}
       />
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ title: "Login" }}
-      />
     </Stack.Navigator>
   );
 };
